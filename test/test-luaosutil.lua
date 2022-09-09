@@ -9,10 +9,15 @@ local osutils = require('luaosutils')
 
 function callback(download_successful, urlcontents)
    if download_successful then
-   	   -- do something with the url contents in result here
+   	   local fileout = io.open("/Users/robertpatterson/Desktop/gmail.ico", "wb")
+       fileout:write(urlcontents)
+       fileout:close()
+   else
+       print(urlcontents)
    end
+   finenv.RetainLuaState = false
 end
 
-local download_started = osutils.download_url("https://mysite.com/myfile.txt", "test")
+local download_started = osutils.download_url("https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico", callback)
 
 --finenv.RetainLuaState = true

@@ -12,6 +12,10 @@
 
 #include "luaosutils.hpp"
 
+#if OPERATING_SYSTEM == MAC_OS
+#include "luaosutils_mac.h"
+#endif
+
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdocumentation"
@@ -21,7 +25,32 @@
 #pragma GCC diagnostic pop
 #endif
 
-/** \brief demonstrates a simple mathematical calculation that adds 1 to an input value.
+static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
+{
+   // I'm just guessing what this function should do, but this seems to make sense.
+   if (! L)
+      return;
+   luabridge::LuaRef printFunc = luabridge::getGlobal(L, "print");
+   if (printFunc.isFunction())
+      printFunc(str);
+}
+
+template<typename... Args>
+static void __call_lua_function(luabridge::LuaRef function, Args... args)
+{
+   // ToDo: figure out if Lua state is still valid
+   try
+   {
+      function(args...);
+   }
+   catch (luabridge::LuaException &e)
+   {
+      LuaRun_AppendLineToOutput(e.state(), e.what());
+      //ToDo: display error message in message box
+   }
+}
+
+/** \brief downloads the contents of a url into a string
  *
  * stack position 1: the url to download
  * stack position 2: a reference to a lua function to call on completion
@@ -29,11 +58,17 @@
  */
 static int luaosutils_download_url (lua_State *L)
 {
-   bool retval = false;
    std::string urlString = luabridge::Stack<std::string>::get(L, 1);
    luabridge::LuaRef callback = luabridge::Stack<luabridge::LuaRef>::get(L, 2);
    if (! callback.isFunction())
       luaL_error(L, "Function download_url expects a callback function in the second argument.");
+   
+#if OPERATING_SYSTEM == MAC_OS
+   const bool retval = __mac_download_url(urlString, __download_callback([callback](bool success, const std::string &urlResult) -> void
+   {
+      __call_lua_function(callback, success, urlResult);
+   }));
+#endif
 
    luabridge::Stack<bool>::push(L, retval);
    return 1;

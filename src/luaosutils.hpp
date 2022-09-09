@@ -19,6 +19,8 @@
 #endif
 
 #include <stdio.h>
+#include <string>
+#include <functional>
 
 #include "lua.hpp"
 
@@ -28,6 +30,7 @@
 #define DLLEXPORT
 #endif
 
+using __download_callback = std::function<void (bool, const std::string&)>;
 
 #ifdef __cplusplus
 extern "C" {
