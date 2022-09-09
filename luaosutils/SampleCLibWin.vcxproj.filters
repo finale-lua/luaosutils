@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="LuaBridge">
+      <UniqueIdentifier>{8915cc38-9230-4575-960b-56c19fefa0d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaBridge\detail">
+      <UniqueIdentifier>{5e80703c-6a0a-48af-8211-39a44981b056}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\luabridge_interface.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sampleclib.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\Array.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\List.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\LuaBridge.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\Map.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\Optional.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\RefCountedObject.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\RefCountedPtr.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\UnorderedMap.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\Vector.h">
+      <Filter>LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\CFunctions.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\ClassInfo.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Config.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Constructor.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\dump.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\FuncTraits.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Iterator.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\LuaException.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\LuaHelpers.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\LuaRef.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Namespace.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Security.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Stack.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\TypeList.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\TypeTraits.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Userdata.h">
+      <Filter>LuaBridge\detail</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\luabridge_interface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sampleclib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
