@@ -27,20 +27,21 @@ static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 }
 
 template<typename... Args>
-static void __call_lua_function(__luaosutils_callback_session &session, luabridge::LuaRef function, Args... args)
+static void __call_lua_function(__luaosutils_callback_session &session, Args... args)
 {
    if (! __luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
       return;
-   assert(session.state() == function.state());
+   lua_gc(session.state(), LUA_GCSTOP, 0); // prevent garbage collection during callback
    try
    {
-      function(args...);
+      session.function()(args...);
    }
    catch (luabridge::LuaException &e)
    {
       LuaRun_AppendLineToOutput(e.state(), e.what());
-      //ToDo: display error message in message box
    }
+   lua_gc(session.state(), LUA_GCRESTART, 0); // resume garbage collection after callback
+   //ToDo: display any error message in a message box (after resuming GC)
 }
 
 /** \brief downloads the contents of a url into a string
@@ -60,15 +61,27 @@ static int luaosutils_download_url (lua_State *L)
 
 #if OPERATING_SYSTEM == MAC_OS
    const bool success = __mac_download_url(urlString,
-          __download_callback([session, callback](bool success, const std::string &urlResult) -> void
+          __download_callback([session](bool success, const std::string &urlResult) -> void
          {
-            __call_lua_function(*session, callback, success, urlResult);
+            __call_lua_function(*session, success, urlResult);
          }));
 #endif
 
    if (success)
    {
-      luabridge::Stack<luabridge::RefCountedObjectPtr<__luaosutils_callback_session>>::push(L, session);
+      auto udata = (__luaosutils_callback_session*)lua_newuserdata(L, sizeof(__luaosutils_callback_session));
+      memcpy(udata, session, sizeof(__luaosutils_callback_session));
+      // Create a metatable for the userdata through that object can be access in 2 ways- "__gc" and "__index"
+      lua_newtable(L);
+      lua_pushstring(L, "__gc");
+      lua_pushcfunction(L, [](lua_State* L)
+      {
+         auto udata = (__luaosutils_callback_session*)lua_touserdata(L, 1);
+         udata->~__luaosutils_callback_session();
+         return 0;
+      });
+      lua_settable(L, -3);
+      lua_setmetatable(L, -2);
       return 1;
    }
    
@@ -87,10 +100,5 @@ int luaopen_luaosutils (lua_State *L) {
 #else
    luaL_newlib(L, luaosutils);
 #endif
-   luabridge::getGlobalNamespace(L)
-      .beginNamespace("__luaosutils")
-         .beginClass<__luaosutils_callback_session>("callback_session")
-         .endClass()
-      .endNamespace();
    return 1;
 }

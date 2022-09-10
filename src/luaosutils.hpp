@@ -49,34 +49,44 @@
  * the Lua script maintains the returned value in scope. If the Lua state is closed,
  * the pointer goes out of scope, and the callback can no longer be called.
  */
-class __luaosutils_callback_session : public luabridge::RefCountedObject
+class __luaosutils_callback_session
 {
-   using active_sessions_type = std::set<__luaosutils_callback_session*>;
+   using id_type = unsigned long;
+   using active_sessions_type = std::set<id_type>;
    
-   luabridge::LuaRef m_luaRef;
+   id_type m_ID;
+   luabridge::LuaRef m_luaRef; // to take up some space
    
-   static active_sessions_type& get_active_sessions()
+   static active_sessions_type& _get_active_sessions()
    {
       static active_sessions_type g_activeSessions;
       return g_activeSessions;
    }
    
-public:
-   __luaosutils_callback_session(luabridge::LuaRef luaRef) : m_luaRef(luaRef)
+   static id_type _get_session_id()
    {
-      get_active_sessions().insert(this);
+      static id_type sessionID = 0;
+      return ++sessionID;
+   }
+   
+public:
+   __luaosutils_callback_session(luabridge::LuaRef& luaRef) : m_luaRef(luaRef)
+   {
+      m_ID = _get_session_id();
+      _get_active_sessions().insert(m_ID);
    }
    ~__luaosutils_callback_session()
    {
-      m_luaRef = 1;
-      get_active_sessions().erase(this);
+      _get_active_sessions().erase(m_ID);
    }
 
    lua_State* state() const { return m_luaRef.state(); }
    
+   luabridge::LuaRef& function() { return m_luaRef; }
+   
    static bool is_valid_session(__luaosutils_callback_session *session)
    {
-      return get_active_sessions().find(session) != get_active_sessions().end();
+      return _get_active_sessions().find(session->m_ID) != _get_active_sessions().end();
    }
 };
 #endif // __OBJC__

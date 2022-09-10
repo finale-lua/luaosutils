@@ -15,7 +15,8 @@
 bool __mac_download_url (const std::string &urlString, __download_callback callback)
 {
    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:urlString.c_str()]];
-   NSURLSessionDataTask* session = [[NSURLSession sharedSession] dataTaskWithURL:url
+   NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+   NSURLSessionDataTask* sessionTask = [session dataTaskWithURL:url
       completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
       {
          NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
@@ -25,16 +26,16 @@ bool __mac_download_url (const std::string &urlString, __download_callback callb
          else
             callback(true, std::string(static_cast<const char *>([data bytes]), [data length]));
       }];
-   if (! session)
+   if (! sessionTask)
    {
       NSLog(@"Failed to create session for %@", [url absoluteString]);
       return false;
    }
-   if ([session error])
+   if ([sessionTask error])
    {
-      NSLog(@"Failed to create session for %@: %@", [url absoluteString], [[session error] localizedDescription]);
+      NSLog(@"Failed to create session for %@: %@", [url absoluteString], [[sessionTask error] localizedDescription]);
       return false;
    }
-   [session resume];
+   [sessionTask resume];
    return true;
 }
