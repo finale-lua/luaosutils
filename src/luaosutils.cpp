@@ -16,15 +16,6 @@
 #include "luaosutils_mac.h"
 #endif
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdocumentation"
-#endif
-#include "LuaBridge/LuaBridge.h"
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-
 static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 {
    // I'm just guessing what this function should do, but this seems to make sense.
@@ -36,25 +27,39 @@ static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 }
 
 template<typename... Args>
-static void __call_lua_function(luabridge::LuaRef function, Args... args)
+static void __call_lua_function(__luaosutils_callback_session &session, Args... args)
 {
-   // ToDo: figure out if Lua state is still valid
+   if (! __luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
+      return;
+   lua_gc(session.state(), LUA_GCSTOP, 0); // prevent garbage collection during callback
    try
    {
-      function(args...);
+      session.function()(args...);
    }
    catch (luabridge::LuaException &e)
    {
       LuaRun_AppendLineToOutput(e.state(), e.what());
-      //ToDo: display error message in message box
    }
+   lua_gc(session.state(), LUA_GCRESTART, 0); // resume garbage collection after callback
+   //ToDo: display any error message in a message box (after resuming GC)
+}
+
+__luaosutils_callback_session::~__luaosutils_callback_session()
+{
+   if (this->os_session())
+   {
+#if OPERATING_SYSTEM == MAC_OS
+      __mac_cancel_http_request(this->os_session());
+#endif
+   }
+   _get_active_sessions().erase(m_ID);
 }
 
 /** \brief downloads the contents of a url into a string
  *
  * stack position 1: the url to download
  * stack position 2: a reference to a lua function to call on completion
- * \return download status (success or failuer)
+ * \return download session or nil
  */
 static int luaosutils_download_url (lua_State *L)
 {
@@ -62,16 +67,38 @@ static int luaosutils_download_url (lua_State *L)
    luabridge::LuaRef callback = luabridge::Stack<luabridge::LuaRef>::get(L, 2);
    if (! callback.isFunction())
       luaL_error(L, "Function download_url expects a callback function in the second argument.");
-   
+
+   __luaosutils_callback_session* session = new __luaosutils_callback_session(callback);
+
 #if OPERATING_SYSTEM == MAC_OS
-   const bool retval = __mac_download_url(urlString, __download_callback([callback](bool success, const std::string &urlResult) -> void
-   {
-      __call_lua_function(callback, success, urlResult);
-   }));
+   const OSSESSION_ptr os_session = __mac_download_url(urlString,
+          __download_callback([session](bool success, const std::string &urlResult) -> void
+         {
+            __call_lua_function(*session, success, urlResult);
+         }));
 #endif
 
-   luabridge::Stack<bool>::push(L, retval);
-   return 1;
+   if (os_session)
+   {
+      session->set_os_session(os_session);
+      auto udata = (__luaosutils_callback_session*)lua_newuserdata(L, sizeof(__luaosutils_callback_session));
+      memcpy(udata, session, sizeof(__luaosutils_callback_session));
+      // Create a metatable for the userdata through that object can be access in 2 ways- "__gc" and "__index"
+      lua_newtable(L);
+      lua_pushstring(L, "__gc");
+      lua_pushcfunction(L, [](lua_State* L)
+      {
+         auto udata = (__luaosutils_callback_session*)lua_touserdata(L, 1);
+         udata->~__luaosutils_callback_session();
+         return 0;
+      });
+      lua_settable(L, -3);
+      lua_setmetatable(L, -2);
+      return 1;
+   }
+   
+   delete session;
+   return 0;
 }
 
 static const luaL_Reg luaosutils[] = {

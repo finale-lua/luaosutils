@@ -12,6 +12,7 @@
 
 #include "luaosutils.hpp"
 
-bool __mac_download_url (const std::string &urlString, __download_callback callback);
+OSSESSION_ptr __mac_download_url (const std::string &urlString, __download_callback callback);
+void __mac_cancel_http_request(OSSESSION_ptr session);
 
 #endif /* luaosutils_mac_h */

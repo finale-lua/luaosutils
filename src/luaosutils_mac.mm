@@ -12,10 +12,11 @@
 #include "luaosutils.hpp"
 #include "luaosutils_mac.h"
 
-bool __mac_download_url (const std::string &urlString, __download_callback callback)
+OSSESSION_ptr __mac_download_url (const std::string &urlString, __download_callback callback)
 {
    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:urlString.c_str()]];
-   NSURLSessionDataTask* session = [[NSURLSession sharedSession] dataTaskWithURL:url
+   NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+   NSURLSessionDataTask* sessionTask = [session dataTaskWithURL:url
       completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
       {
          NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
@@ -25,16 +26,21 @@ bool __mac_download_url (const std::string &urlString, __download_callback callb
          else
             callback(true, std::string(static_cast<const char *>([data bytes]), [data length]));
       }];
-   if (! session)
+   if (! sessionTask)
    {
       NSLog(@"Failed to create session for %@", [url absoluteString]);
-      return false;
+      return nil;
    }
-   if ([session error])
+   if ([sessionTask error])
    {
-      NSLog(@"Failed to create session for %@: %@", [url absoluteString], [[session error] localizedDescription]);
-      return false;
+      NSLog(@"Failed to create session for %@: %@", [url absoluteString], [[sessionTask error] localizedDescription]);
+      return nil;
    }
-   [session resume];
-   return true;
+   [sessionTask resume];
+   return (__bridge void *)(sessionTask);
+}
+
+void __mac_cancel_http_request(OSSESSION_ptr session)
+{
+   [(__bridge NSURLSessionDataTask*)session cancel];
 }
