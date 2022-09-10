@@ -16,15 +16,6 @@
 #include "luaosutils_mac.h"
 #endif
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdocumentation"
-#endif
-#include "LuaBridge/LuaBridge.h"
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-
 static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 {
    // I'm just guessing what this function should do, but this seems to make sense.
@@ -36,9 +27,11 @@ static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 }
 
 template<typename... Args>
-static void __call_lua_function(luabridge::LuaRef function, Args... args)
+static void __call_lua_function(__luaosutils_callback_session &session, luabridge::LuaRef function, Args... args)
 {
-   // ToDo: figure out if Lua state is still valid
+   if (! __luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
+      return;
+   assert(session.state() == function.state());
    try
    {
       function(args...);
@@ -54,7 +47,7 @@ static void __call_lua_function(luabridge::LuaRef function, Args... args)
  *
  * stack position 1: the url to download
  * stack position 2: a reference to a lua function to call on completion
- * \return download status (success or failuer)
+ * \return download session or nil
  */
 static int luaosutils_download_url (lua_State *L)
 {
@@ -62,16 +55,25 @@ static int luaosutils_download_url (lua_State *L)
    luabridge::LuaRef callback = luabridge::Stack<luabridge::LuaRef>::get(L, 2);
    if (! callback.isFunction())
       luaL_error(L, "Function download_url expects a callback function in the second argument.");
-   
+
+   __luaosutils_callback_session* session = new __luaosutils_callback_session(callback);
+
 #if OPERATING_SYSTEM == MAC_OS
-   const bool retval = __mac_download_url(urlString, __download_callback([callback](bool success, const std::string &urlResult) -> void
-   {
-      __call_lua_function(callback, success, urlResult);
-   }));
+   const bool success = __mac_download_url(urlString,
+          __download_callback([session, callback](bool success, const std::string &urlResult) -> void
+         {
+            __call_lua_function(*session, callback, success, urlResult);
+         }));
 #endif
 
-   luabridge::Stack<bool>::push(L, retval);
-   return 1;
+   if (success)
+   {
+      luabridge::Stack<luabridge::RefCountedObjectPtr<__luaosutils_callback_session>>::push(L, session);
+      return 1;
+   }
+   
+   delete session;
+   return 0;
 }
 
 static const luaL_Reg luaosutils[] = {
@@ -85,5 +87,10 @@ int luaopen_luaosutils (lua_State *L) {
 #else
    luaL_newlib(L, luaosutils);
 #endif
+   luabridge::getGlobalNamespace(L)
+      .beginNamespace("__luaosutils")
+         .beginClass<__luaosutils_callback_session>("callback_session")
+         .endClass()
+      .endNamespace();
    return 1;
 }
