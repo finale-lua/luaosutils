@@ -44,6 +44,17 @@ static void __call_lua_function(__luaosutils_callback_session &session, Args... 
    //ToDo: display any error message in a message box (after resuming GC)
 }
 
+__luaosutils_callback_session::~__luaosutils_callback_session()
+{
+   if (this->os_session())
+   {
+#if OPERATING_SYSTEM == MAC_OS
+      __mac_cancel_http_request(this->os_session());
+#endif
+   }
+   _get_active_sessions().erase(m_ID);
+}
+
 /** \brief downloads the contents of a url into a string
  *
  * stack position 1: the url to download
@@ -60,15 +71,16 @@ static int luaosutils_download_url (lua_State *L)
    __luaosutils_callback_session* session = new __luaosutils_callback_session(callback);
 
 #if OPERATING_SYSTEM == MAC_OS
-   const bool success = __mac_download_url(urlString,
+   const OSSESSION_ptr os_session = __mac_download_url(urlString,
           __download_callback([session](bool success, const std::string &urlResult) -> void
          {
             __call_lua_function(*session, success, urlResult);
          }));
 #endif
 
-   if (success)
+   if (os_session)
    {
+      session->set_os_session(os_session);
       auto udata = (__luaosutils_callback_session*)lua_newuserdata(L, sizeof(__luaosutils_callback_session));
       memcpy(udata, session, sizeof(__luaosutils_callback_session));
       // Create a metatable for the userdata through that object can be access in 2 ways- "__gc" and "__index"

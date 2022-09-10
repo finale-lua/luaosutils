@@ -43,6 +43,10 @@
 #define DLLEXPORT
 #endif
 
+#if OPERATING_SYSTEM == MAC_OS
+using OSSESSION_ptr = void*;
+#endif //OPERATING_SYSTEM == MAC_OS
+
 #ifndef __OBJC__
 /** \brief this class is used to make guarantee that a Lua state is still active when a callback occurs.
  * A RefCountedPtr of it is returned to Lua and the session stays active as long as
@@ -56,7 +60,8 @@ class __luaosutils_callback_session
    
    id_type m_ID;
    luabridge::LuaRef m_luaRef; // to take up some space
-   
+   OSSESSION_ptr m_osSession;
+
    static active_sessions_type& _get_active_sessions()
    {
       static active_sessions_type g_activeSessions;
@@ -70,19 +75,18 @@ class __luaosutils_callback_session
    }
    
 public:
-   __luaosutils_callback_session(luabridge::LuaRef& luaRef) : m_luaRef(luaRef)
+   __luaosutils_callback_session(luabridge::LuaRef& luaRef) : m_luaRef(luaRef), m_osSession(nullptr)
    {
       m_ID = _get_session_id();
       _get_active_sessions().insert(m_ID);
    }
-   ~__luaosutils_callback_session()
-   {
-      _get_active_sessions().erase(m_ID);
-   }
+   ~__luaosutils_callback_session();
 
    lua_State* state() const { return m_luaRef.state(); }
-   
    luabridge::LuaRef& function() { return m_luaRef; }
+   
+   OSSESSION_ptr os_session() const { return m_osSession; }
+   void set_os_session(OSSESSION_ptr session) { m_osSession = session; }
    
    static bool is_valid_session(__luaosutils_callback_session *session)
    {
