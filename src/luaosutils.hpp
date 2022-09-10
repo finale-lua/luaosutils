@@ -10,6 +10,9 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
+#define MAC_OS       1         /* Macintosh operating system */
+#define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
+
 #if defined(__GNUC__)
 #define OPERATING_SYSTEM MAC_OS
 #elif defined(_MSC_VER)
@@ -46,6 +49,10 @@
 #if OPERATING_SYSTEM == MAC_OS
 using OSSESSION_ptr = void*;
 #endif //OPERATING_SYSTEM == MAC_OS
+
+#if OPERATING_SYSTEM == WINDOWS
+using OSSESSION_ptr = void*;
+#endif //OPERATING_SYSTEM == WINDOWS
 
 #ifndef __OBJC__
 /** \brief this class is used to make guarantee that a Lua state is still active when a callback occurs.

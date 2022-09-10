@@ -27,12 +27,6 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\luabridge_interface.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\sampleclib.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\Array.h">
       <Filter>LuaBridge</Filter>
     </ClInclude>
@@ -108,6 +102,9 @@
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Userdata.h">
       <Filter>LuaBridge\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\luaosutils.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -116,10 +113,7 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\luabridge_interface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\sampleclib.cpp">
+    <ClCompile Include="..\src\luaosutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

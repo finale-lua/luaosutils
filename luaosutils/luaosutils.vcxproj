@@ -112,14 +112,12 @@
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\RefCountedPtr.h" />
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\UnorderedMap.h" />
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\Vector.h" />
-    <ClInclude Include="..\src\luabridge_interface.hpp" />
-    <ClInclude Include="..\src\sampleclib.hpp" />
+    <ClInclude Include="..\src\luaosutils.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\luabridge_interface.cpp" />
-    <ClCompile Include="..\src\sampleclib.cpp" />
+    <ClCompile Include="..\src\luaosutils.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

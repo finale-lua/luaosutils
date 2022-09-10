@@ -55,6 +55,15 @@ __luaosutils_callback_session::~__luaosutils_callback_session()
    _get_active_sessions().erase(m_ID);
 }
 
+#if 0 //OPERATING_SYSTEM == WINDOWS
+static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
+{
+   lua_State * l = reinterpret_cast<lua_State *>(lpParameter);
+   //do the download
+   return 0;
+}
+#endif
+
 /** \brief downloads the contents of a url into a string
  *
  * stack position 1: the url to download
@@ -78,12 +87,26 @@ static int luaosutils_download_url (lua_State *L)
          }));
 #endif
 
+   // On Windows, build the framework in a separate thread, because it needs a bigger stack than WinFin provides.
+#if 0 //OPERATING_SYSTEM == WINDOWS
+   HANDLE thread = CreateThread(nullptr, 0x400000, &RunWindowsThread, l, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr);
+   if (! thread)
+      throw std::runtime_error("Unable to create thread to build Lua connection.");
+   DWORD threadResult = WaitForSingleObject(thread, INFINITE);
+   if (threadResult != WAIT_OBJECT_0)
+      throw std::runtime_error("Thread ended with failure code.");
+#endif
+
+#if OPERATING_SYSTEM == WINDOWS
+   OSSESSION_ptr os_session = nullptr;
+#endif
+
    if (os_session)
    {
       session->set_os_session(os_session);
       auto udata = (__luaosutils_callback_session*)lua_newuserdata(L, sizeof(__luaosutils_callback_session));
       memcpy(udata, session, sizeof(__luaosutils_callback_session));
-      // Create a metatable for the userdata through that object can be access in 2 ways- "__gc" and "__index"
+      // Create a metatable for the userdata through that object can be accessed with "__gc". That means we get called when Lua state closes.
       lua_newtable(L);
       lua_pushstring(L, "__gc");
       lua_pushcfunction(L, [](lua_State* L)

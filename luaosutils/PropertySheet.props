@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <LuaVersion>5.2.4</LuaVersion>
     <LuaDir>$(ProjectDir)..\lua-source\lua-$(LuaVersion)\src</LuaDir>
-    <LuaName>sampleclib</LuaName>
+    <LuaName>luaosutils</LuaName>
     <ReleaseDir>$(ProjectDir)..\release</ReleaseDir>
   </PropertyGroup>
   <PropertyGroup>
