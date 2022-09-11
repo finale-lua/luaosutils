@@ -29,7 +29,6 @@ static void __call_lua_function(luaosutils_callback_session &session, Args... ar
 {
    if (! luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
       return;
-   lua_gc(session.state(), LUA_GCSTOP, 0); // prevent garbage collection during callback
    try
    {
       session.function()(args...);
@@ -37,9 +36,8 @@ static void __call_lua_function(luaosutils_callback_session &session, Args... ar
    catch (luabridge::LuaException &e)
    {
       LuaRun_AppendLineToOutput(e.state(), e.what());
+      //ToDo: display any error message in a message box.
    }
-   lua_gc(session.state(), LUA_GCRESTART, 0); // resume garbage collection after callback
-   //ToDo: display any error message in a message box (after resuming GC)
 }
 
 /** \brief downloads the contents of a url into a string

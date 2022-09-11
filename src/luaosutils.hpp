@@ -23,10 +23,8 @@
 #define OPERATING_SYSTEM UNKNOWN
 #endif
 
-#include <stdio.h>
 #include <string>
 #include <functional>
-#include <map>
 
 #include "lua.hpp"
 

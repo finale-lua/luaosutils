@@ -9,6 +9,8 @@
 #ifndef luaosutils_callback_session_hpp
 #define luaosutils_callback_session_hpp
 
+#include <map>
+
 #include "luaosutils.hpp"
 #include "luaosutils_os.h"
 
