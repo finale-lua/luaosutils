@@ -11,6 +11,7 @@
 #define luaosutils_os_h
 
 #include <memory>
+#include <map>
 
 #include "luaosutils.hpp"
 
@@ -22,14 +23,29 @@ using OSSESSION_ptr = void*;
 #include <wininet.h>
 struct win_request_context
 {
+	__download_callback callbackFunction;
 	HINTERNET hInternet;
 	HINTERNET hRequest;
-	INTERNET_BUFFERS ib;
+	HANDLE hThread;
+	bool threadShouldHalt;
+	std::string buffer;
 
-	void SetRequestLength();
-
-	win_request_context();
+	win_request_context(__download_callback callback);
 	~win_request_context();
+
+	static win_request_context* get_context_from_timer(UINT_PTR timerID);
+
+	UINT_PTR TimerID() const { return timerID; }
+	bool SetTimerID(UINT_PTR id);
+
+private:
+	UINT_PTR timerID;
+
+	static std::map< UINT_PTR, win_request_context*>& getTimerMap()
+	{
+		static std::map< UINT_PTR, win_request_context*> timerMap;
+		return timerMap;
+	}
 };
 using OSSESSION_ptr = std::shared_ptr<win_request_context>;
 #endif //OPERATING_SYSTEM == WINDOWS

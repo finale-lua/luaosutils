@@ -12,106 +12,121 @@
 #include "luaosutils.hpp"
 #include "luaosutils_os.h"
 
-win_request_context::win_request_context() : hInternet(0), hRequest(0)
+win_request_context::win_request_context(__download_callback callback) :
+            callbackFunction(callback),
+            hInternet(0), hRequest(0), hThread(0),
+            threadShouldHalt(false), timerID(0)
 {
-   memset(&ib, sizeof(ib), 0);
-   ib.dwStructSize = sizeof(ib);
 }
 
 win_request_context::~win_request_context()
 {
-   if (ib.lpvBuffer) delete [] ib.lpvBuffer;
+   if (timerID)
+      this->SetTimerID(0);
+   if (hThread)
+   {
+      this->threadShouldHalt = true;
+      WaitForSingleObject(hThread, INFINITE);
+      ::CloseHandle(hThread);
+   }
    if (hRequest) InternetCloseHandle(hRequest);
    if (hInternet) InternetCloseHandle(hInternet);
 }
 
-void win_request_context::SetRequestLength()
+win_request_context* win_request_context::get_context_from_timer(UINT_PTR timerID)
 {
-   assert (this->hRequest);
-   DWORD length = 0;
-   DWORD sizeLength = sizeof(length);
-   if (!HttpQueryInfo(this->hRequest, HTTP_QUERY_CONTENT_LENGTH, &length, &sizeLength, 0))
-      length = 16 * 1024; // if we can't get the length, requisition 16K for downloading.;
-   ib.lpvBuffer = new char[length];
-   ib.dwBufferLength = length;
+   auto it = getTimerMap().find(timerID);
+   if (it == getTimerMap().end()) return nullptr;
+   return it->second;
 }
 
-#if 0 //OPERATING_SYSTEM == WINDOWS
+bool win_request_context::SetTimerID(UINT_PTR id)
+{
+   if (id)
+      getTimerMap().emplace(id, this);
+   else if (timerID)
+   {
+      ::KillTimer(NULL, timerID);
+      getTimerMap().erase(timerID);
+   }
+   this->timerID = id;
+   return (id != 0);
+}
+
 static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
 {
-   lua_State * l = reinterpret_cast<lua_State *>(lpParameter);
-   //do the download
+   auto session = reinterpret_cast<win_request_context*>(lpParameter);
+
+   DWORD numBytesRead = 0;
+   char buffer[4096];
+   while (InternetReadFile(session->hRequest, buffer, sizeof(buffer), &numBytesRead) && numBytesRead)
+   {
+      if (session->threadShouldHalt)
+         return -1;
+      session->buffer.append(buffer, numBytesRead);
+   }
+
+   InternetCloseHandle(session->hRequest);
+   session->hRequest = NULL;
+   InternetCloseHandle(session->hInternet);
+   session->hInternet = NULL;
+
    return 0;
 }
-#endif
 
-// On Windows, build the framework in a separate thread, because it needs a bigger stack than WinFin provides.
-#if 0 //OPERATING_SYSTEM == WINDOWS
-HANDLE thread = CreateThread(nullptr, 0x400000, &RunWindowsThread, l, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr);
-if (! thread)
-   throw std::runtime_error("Unable to create thread to build Lua connection.");
-DWORD threadResult = WaitForSingleObject(thread, INFINITE);
-if (threadResult != WAIT_OBJECT_0)
-   throw std::runtime_error("Thread ended with failure code.");
-#endif
-
-static VOID CALLBACK __CallBack(
-   __in HINTERNET hInternet,
-   __in DWORD_PTR dwContext,
-   __in DWORD dwInternetStatus,
-   __in_bcount(dwStatusInformationLength) LPVOID lpvStatusInformation,
-   __in DWORD dwStatusInformationLength
-)
+static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
 {
-   win_request_context* session = (win_request_context*)dwContext;
-
-   switch(dwInternetStatus)
+   win_request_context* session = win_request_context::get_context_from_timer(idEvent);
+   if (!session || !session->hThread)
    {
-      case INTERNET_STATUS_HANDLE_CREATED:
+      if (session)
       {
-         auto res = (INTERNET_ASYNC_RESULT*)lpvStatusInformation;
-         session->hRequest = (HINTERNET)(res->dwResult);
-         break;
+         session->callbackFunction(false, "No timer exists or no download thread exists.");
+         session->SetTimerID(0); // kills the timer
       }
- 
-      case INTERNET_STATUS_REQUEST_COMPLETE:
-      {
-         session->SetRequestLength();
-         break;
-      }
+      return;
+   }
+   DWORD result = WaitForSingleObject(session->hThread, 0);
+   if (result == WAIT_OBJECT_0)
+   {
+      session->SetTimerID(0); // kills the timer
+      DWORD threadResult = 0;
+      if (!GetExitCodeThread(session->hThread, &threadResult) || threadResult)
+         session->callbackFunction(false, "Download thread failed to download the file.");
+      else
+         session->callbackFunction(true, session->buffer);
    }
 }
 
 OSSESSION_ptr __download_url (const std::string &urlString, __download_callback callback)
 {
-   OSSESSION_ptr session = OSSESSION_ptr(new win_request_context);
-   session->hInternet = InternetOpen(TEXT("Luaosutils WinInet Downloader"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, INTERNET_FLAG_ASYNC);
+   OSSESSION_ptr session = OSSESSION_ptr(new win_request_context(callback));
+
+   session->hInternet = InternetOpen(TEXT("Luaosutils WinInet Downloader"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
    if (!session->hInternet) return nullptr;
-
-   INTERNET_STATUS_CALLBACK sessionCallback = InternetSetStatusCallback(session->hInternet, (INTERNET_STATUS_CALLBACK)__CallBack);
-
-   if (sessionCallback == INTERNET_INVALID_STATUS_CALLBACK)
-      return nullptr;
 
    session->hRequest = InternetOpenUrlA(session->hInternet, urlString.c_str(), NULL, 0,
                                        INTERNET_FLAG_SECURE |
                                        INTERNET_FLAG_NO_CACHE_WRITE |
                                        INTERNET_FLAG_NO_AUTO_REDIRECT |
                                        INTERNET_FLAG_NO_COOKIES |
-                                       INTERNET_FLAG_NO_UI, (DWORD_PTR)session.get());
-
-   if (session->hRequest)
-      session->SetRequestLength();
-   else
+                                       INTERNET_FLAG_NO_UI, NULL);
+   if (!session->hRequest)
    {
-      if (GetLastError() != ERROR_IO_PENDING)
-         return nullptr;
+      //ToDo: return error message
+      DWORD errCode = GetLastError();
+      return nullptr;
    }
+
+   session->hThread = CreateThread(NULL, 0, &RunWindowsThread, session.get(), 0, NULL);
+   if (!session->hThread) return nullptr;
+
+   session->SetTimerID(::SetTimer(NULL, 0, USER_TIMER_MINIMUM, &__TimerProc));
+   if (!session->TimerID()) return nullptr;
 
    return session;
 }
 
 void __cancel_session(OSSESSION_ptr session)
 {
-   
 }

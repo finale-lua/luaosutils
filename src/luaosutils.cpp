@@ -26,6 +26,7 @@ static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 
 template<typename... Args>
 static void __call_lua_function(luaosutils_callback_session &session, Args... args)
+//static void __call_lua_function(luaosutils_callback_session& session, bool success, const std::string& urlResult)
 {
    if (! luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
       return;
@@ -61,8 +62,8 @@ static int luaosutils_download_url (lua_State *L)
             luaosutils_callback_session* session = luaosutils_callback_session::get_session_for_id(sessionID);
             if (session)
             {
-               session->set_os_session(nullptr);
                __call_lua_function(*session, success, urlResult);
+               session->set_os_session(nullptr);
             }
          }));
 
