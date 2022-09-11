@@ -18,7 +18,7 @@ If you are bundling this with a plugin suite for end users, you may need to buil
 ### download_url
 
 Downloads the contents of a url to a Lua string. The URL can be text or binary. The Lua string acts as a data buffer for the download and can be subsequently saved as a file (binary or text).
-The funciton uses the HTTPS protocol. On Windows, HTTPS protocal is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
+The function uses the HTTPS protocol. On Windows, HTTPS protocol is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
 
 |Input Type|Description|
 |----------|-----------|
