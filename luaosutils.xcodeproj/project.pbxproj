@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		B53F2F5C28CB68030096F6F8 /* luaosutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */; };
 		B53F2F5D28CB68030096F6F8 /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */; };
-		B53F2F6C28CBB6690096F6F8 /* luaosutils_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B53F2F6B28CBB6690096F6F8 /* luaosutils_mac.mm */; };
-		B53F2F6E28CBB6BF0096F6F8 /* luaosutils_mac.h in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F6D28CBB6BF0096F6F8 /* luaosutils_mac.h */; };
+		B53F2F6C28CBB6690096F6F8 /* luaosutils_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */; };
+		B53F2F6E28CBB6BF0096F6F8 /* luaosutils_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */; };
 		B5AABB4E284E57ED00708D15 /* libLua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AABB4B284E57C900708D15 /* libLua.a */; };
 		B5EFCF2728634BBA003AC07F /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1D28634BB9003AC07F /* Vector.h */; };
 		B5EFCF2828634BBA003AC07F /* List.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1E28634BB9003AC07F /* List.h */; };
@@ -41,10 +41,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B53882D128CDFE09000BB3C5 /* luaosutils_callback_session.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = luaosutils_callback_session.hpp; sourceTree = "<group>"; };
 		B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils.cpp; sourceTree = "<group>"; };
 		B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = luaosutils.hpp; sourceTree = "<group>"; };
-		B53F2F6B28CBB6690096F6F8 /* luaosutils_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_mac.mm; sourceTree = "<group>"; };
-		B53F2F6D28CBB6BF0096F6F8 /* luaosutils_mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_mac.h; sourceTree = "<group>"; };
+		B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_os_mac.mm; sourceTree = "<group>"; };
+		B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_os.h; sourceTree = "<group>"; };
 		B55E2B362610CE9C003E0F63 /* luaosutils.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = luaosutils.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5AABB46284E57C900708D15 /* Lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Lua.xcodeproj; path = "lua-source/Lua.xcodeproj"; sourceTree = "<group>"; };
 		B5AABB52284E69DA00708D15 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
@@ -102,10 +103,11 @@
 		B5AABB41284E569300708D15 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				B53882D128CDFE09000BB3C5 /* luaosutils_callback_session.hpp */,
+				B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */,
+				B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */,
 				B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */,
 				B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */,
-				B53F2F6B28CBB6690096F6F8 /* luaosutils_mac.mm */,
-				B53F2F6D28CBB6BF0096F6F8 /* luaosutils_mac.h */,
 			);
 			name = Source;
 			path = src;
@@ -148,7 +150,7 @@
 				B5EFCF2728634BBA003AC07F /* Vector.h in Headers */,
 				B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */,
 				B5EFCF2928634BBA003AC07F /* RefCountedObject.h in Headers */,
-				B53F2F6E28CBB6BF0096F6F8 /* luaosutils_mac.h in Headers */,
+				B53F2F6E28CBB6BF0096F6F8 /* luaosutils_os.h in Headers */,
 				B5EFCF2B28634BBA003AC07F /* Map.h in Headers */,
 				B53F2F5D28CB68030096F6F8 /* luaosutils.hpp in Headers */,
 				B5EFCF2C28634BBA003AC07F /* LuaBridge.h in Headers */,
@@ -232,7 +234,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B53F2F6C28CBB6690096F6F8 /* luaosutils_mac.mm in Sources */,
+				B53F2F6C28CBB6690096F6F8 /* luaosutils_os_mac.mm in Sources */,
 				B53F2F5C28CB68030096F6F8 /* luaosutils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

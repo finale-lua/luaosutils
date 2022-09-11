@@ -1,5 +1,5 @@
 //
-//  luaosutils_mac.mm
+//  luaosutils_os_mac.mm
 //  luaosutils
 //
 //  Created by Robert Patterson on 9/9/22.
@@ -10,12 +10,14 @@
 #import <Foundation/Foundation.h>
 
 #include "luaosutils.hpp"
-#include "luaosutils_mac.h"
+#include "luaosutils_os.h"
 
-OSSESSION_ptr __mac_download_url (const std::string &urlString, __download_callback callback)
+OSSESSION_ptr __download_url (const std::string &urlString, __download_callback callback)
 {
    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:urlString.c_str()]];
-   NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+   NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
+                                                   delegate:nil
+                                                   delegateQueue:[NSOperationQueue mainQueue]]; // mainQueue uses the main app thread
    NSURLSessionDataTask* sessionTask = [session dataTaskWithURL:url
       completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
       {
@@ -40,9 +42,9 @@ OSSESSION_ptr __mac_download_url (const std::string &urlString, __download_callb
    return (__bridge void *)(sessionTask);
 }
 
-void __mac_cancel_http_request(OSSESSION_ptr session)
+void __cancel_session(OSSESSION_ptr session)
 {
    NSURLSessionDataTask* nssession = (__bridge NSURLSessionDataTask*)session;
    if (! [[nssession progress] isFinished])
-      [(__bridge NSURLSessionDataTask*)session cancel];
+      [nssession cancel];
 }
