@@ -92,6 +92,10 @@ RD*
 *.exp
 *.pdb
 *.lib
-Release
+x64
 Debug
 test
+
+!release/luaosutils.dll
+!release/luaosutils.dylib
+
