@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <string>
 #include <functional>
-#include <set>
+#include <map>
 
 #include "lua.hpp"
 
@@ -64,8 +64,10 @@ using OSSESSION_ptr = void*;
  */
 class __luaosutils_callback_session
 {
+public:
    using id_type = unsigned long;
-   using active_sessions_type = std::set<id_type>;
+private:
+   using active_sessions_type = std::map<id_type, __luaosutils_callback_session*>;
    
    id_type m_ID;
    luabridge::LuaRef m_luaRef;
@@ -77,19 +79,19 @@ class __luaosutils_callback_session
       return g_activeSessions;
    }
    
-   static id_type _get_session_id()
+public:
+   // the id must be calculated externally for the purpose of capturing it in a lambda
+   __luaosutils_callback_session(luabridge::LuaRef& luaRef, id_type id) : m_luaRef(luaRef), m_ID(id), m_osSession(nullptr)
+   {
+      _get_active_sessions().emplace(id, this);
+   }
+   ~__luaosutils_callback_session();
+   
+   static id_type get_new_session_id() // this should always be used to calculate the id
    {
       static id_type sessionID = 0;
       return ++sessionID;
    }
-   
-public:
-   __luaosutils_callback_session(luabridge::LuaRef& luaRef) : m_luaRef(luaRef), m_osSession(nullptr)
-   {
-      m_ID = _get_session_id();
-      _get_active_sessions().insert(m_ID);
-   }
-   ~__luaosutils_callback_session();
 
    lua_State* state() const { return m_luaRef.state(); }
    luabridge::LuaRef& function() { return m_luaRef; }
@@ -97,9 +99,17 @@ public:
    OSSESSION_ptr os_session() const { return m_osSession; }
    void set_os_session(OSSESSION_ptr session) { m_osSession = session; }
    
+   static __luaosutils_callback_session* get_session_for_id(id_type id)
+   {
+      auto it = _get_active_sessions().find(id);
+      if (it == _get_active_sessions().end())
+         return nullptr;
+      return it->second;
+   }
+   
    static bool is_valid_session(__luaosutils_callback_session *session)
    {
-      return _get_active_sessions().find(session->m_ID) != _get_active_sessions().end();
+      return get_session_for_id(session->m_ID) != nullptr;
    }
 };
 #endif // __OBJC__

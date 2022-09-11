@@ -49,7 +49,7 @@ __luaosutils_callback_session::~__luaosutils_callback_session()
    if (this->os_session())
    {
 #if OPERATING_SYSTEM == MAC_OS
-      //__mac_cancel_http_request(this->os_session());
+      __mac_cancel_http_request(this->os_session());
 #endif
    }
    _get_active_sessions().erase(m_ID);
@@ -77,13 +77,18 @@ static int luaosutils_download_url (lua_State *L)
    if (! callback.isFunction())
       luaL_error(L, "Function download_url expects a callback function in the second argument.");
 
-   __luaosutils_callback_session* session = new __luaosutils_callback_session(callback);
-
+   __luaosutils_callback_session::id_type sessionID = __luaosutils_callback_session::get_new_session_id();
+   
 #if OPERATING_SYSTEM == MAC_OS
    const OSSESSION_ptr os_session = __mac_download_url(urlString,
-          __download_callback([session](bool success, const std::string &urlResult) -> void
+          __download_callback([sessionID](bool success, const std::string &urlResult) -> void
          {
-            __call_lua_function(*session, success, urlResult);
+            __luaosutils_callback_session* session = __luaosutils_callback_session::get_session_for_id(sessionID);
+            if (session)
+            {
+               session->set_os_session(nullptr);
+               __call_lua_function(*session, success, urlResult);
+            }
          }));
 #endif
 
@@ -103,9 +108,9 @@ static int luaosutils_download_url (lua_State *L)
 
    if (os_session)
    {
+      __luaosutils_callback_session* session = new (lua_newuserdata(L, sizeof(__luaosutils_callback_session)))
+                                    __luaosutils_callback_session(callback, sessionID);
       session->set_os_session(os_session);
-      auto udata = (__luaosutils_callback_session*)lua_newuserdata(L, sizeof(__luaosutils_callback_session));
-      memcpy(udata, session, sizeof(__luaosutils_callback_session));
       // Create a metatable for the userdata through that object can be accessed with "__gc". That means we get called when Lua state closes.
       lua_newtable(L);
       lua_pushstring(L, "__gc");
@@ -120,7 +125,6 @@ static int luaosutils_download_url (lua_State *L)
       return 1;
    }
    
-   delete session;
    return 0;
 }
 
