@@ -6,8 +6,8 @@ Luaosutils is an ad-hoc collection of utility functions that access operating sy
 
 The `release` directory contains two files:
 
-- `luaosutils.dylib` (for macOS)
 - `luaosutils.dll` (for Windows)
+- `luaosutils.dylib` (for macOS)
 
 Choose the appropriate release for your operating system and place it in a folder where Lua can find it with `require`. For the _RGP Lua_ plugin running on Finale, a simple option is the same folder as the script that calls it.
 
@@ -18,6 +18,7 @@ If you are bundling this with a plugin suite for end users, you may need to buil
 ### download_url
 
 Downloads the contents of a url to a Lua string. The URL can be text or binary. The Lua string acts as a data buffer for the download and can be subsequently saved as a file (binary or text).
+The funciton uses the HTTPS protocol. On Windows, HTTPS protocal is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
 
 |Input Type|Description|
 |----------|-----------|
@@ -26,10 +27,12 @@ Downloads the contents of a url to a Lua string. The URL can be text or binary. 
 
 |Output Type|Description|
 |-----------|-----------|
-|boolean|If true, the callback function will be called. If false, there was an error and it will not be called.|
+|sesion|If non-nil, the callback function will be called. If nil, there was an error and it will not be called.|
 
 The call is an asynchronous call. You script could wait in a while loop for it to finish.
-But a better option would be to  return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true`. The completion function could then finish whatever needs to be done running in the background. (However, the completion function does not run in a separate thread, so be mindful of how long your script runs when running in the background.)
+But a better option would be to return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true`. The completion function could then finish whatever needs to be done running in the background. (However, the completion function does not run in a separate thread, so be mindful of how long your script runs when running in the background.)
+
+You must keep a reference to the session until the callback is called. It will be aborted if the session variable goes out of scope and is garbage-collected.
 
 The callback function has the following parameters.
 
@@ -46,13 +49,17 @@ local osutils = require('luaosutils')
 
 function callback(download_successful, urlcontents)
    if download_successful then
-   	   -- do something with the url contents in result here
+       local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.zip", "wb")
+       fileout:write(urlcontents)
+       fileout:close()
    end
+   finenv.RetainLuaState = false
 end
 
-local download_started = osutils.download_url("https://mysite.com/myfile.txt", callback)
+local session = osutils.download_url("https://mysite.com/myfile.zip", callback)
 
 finenv.RetainLuaState = true
 ```
 
+The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
 

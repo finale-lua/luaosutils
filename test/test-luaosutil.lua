@@ -23,6 +23,6 @@ function callback(download_successful, urlcontents)
 end
 
 local session = osutils.download_url("https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico", callback)
---local session = osutils.download_url("https://mysite.com/test.txt", callback)
+--local session = osutils.download_url("https://mysite.com/myfile.zip", callback)
 
---finenv.RetainLuaState = true
+finenv.RetainLuaState = true
