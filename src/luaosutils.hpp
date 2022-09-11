@@ -68,7 +68,7 @@ class __luaosutils_callback_session
    using active_sessions_type = std::set<id_type>;
    
    id_type m_ID;
-   luabridge::LuaRef m_luaRef; // to take up some space
+   luabridge::LuaRef m_luaRef;
    OSSESSION_ptr m_osSession;
 
    static active_sessions_type& _get_active_sessions()
