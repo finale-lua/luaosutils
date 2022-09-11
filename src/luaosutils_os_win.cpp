@@ -25,19 +25,15 @@ win_request_context::~win_request_context()
    if (hInternet) InternetCloseHandle(hInternet);
 }
 
-void win_request_context::SetRequest(HINTERNET request)
+void win_request_context::SetRequestLength()
 {
-   if (request)
-   {
-      assert(!this->hRequest);
-      DWORD length = 0;
-      DWORD sizeLength = sizeof(length);
-      if (!HttpQueryInfo(request, HTTP_QUERY_CONTENT_LENGTH, &length, &sizeLength, 0))
-         length = 16 * 1024; // if we can't get the length, requisition 16K for downloading.;
-      ib.lpvBuffer = new char[length];
-      ib.dwBufferLength = length;
-      this->hRequest = request;  
-   }
+   assert (this->hRequest);
+   DWORD length = 0;
+   DWORD sizeLength = sizeof(length);
+   if (!HttpQueryInfo(this->hRequest, HTTP_QUERY_CONTENT_LENGTH, &length, &sizeLength, 0))
+      length = 16 * 1024; // if we can't get the length, requisition 16K for downloading.;
+   ib.lpvBuffer = new char[length];
+   ib.dwBufferLength = length;
 }
 
 #if 0 //OPERATING_SYSTEM == WINDOWS
@@ -67,7 +63,23 @@ static VOID CALLBACK __CallBack(
    __in DWORD dwStatusInformationLength
 )
 {
+   win_request_context* session = (win_request_context*)dwContext;
 
+   switch(dwInternetStatus)
+   {
+      case INTERNET_STATUS_HANDLE_CREATED:
+      {
+         auto res = (INTERNET_ASYNC_RESULT*)lpvStatusInformation;
+         session->hRequest = (HINTERNET)(res->dwResult);
+         break;
+      }
+ 
+      case INTERNET_STATUS_REQUEST_COMPLETE:
+      {
+         session->SetRequestLength();
+         break;
+      }
+   }
 }
 
 OSSESSION_ptr __download_url (const std::string &urlString, __download_callback callback)
@@ -81,14 +93,16 @@ OSSESSION_ptr __download_url (const std::string &urlString, __download_callback 
    if (sessionCallback == INTERNET_INVALID_STATUS_CALLBACK)
       return nullptr;
 
-   session->SetRequest(InternetOpenUrlA(session->hInternet, urlString.c_str(), NULL, 0,
+   session->hRequest = InternetOpenUrlA(session->hInternet, urlString.c_str(), NULL, 0,
                                        INTERNET_FLAG_SECURE |
                                        INTERNET_FLAG_NO_CACHE_WRITE |
                                        INTERNET_FLAG_NO_AUTO_REDIRECT |
                                        INTERNET_FLAG_NO_COOKIES |
-                                       INTERNET_FLAG_NO_UI, (DWORD_PTR)session.get()));
+                                       INTERNET_FLAG_NO_UI, (DWORD_PTR)session.get());
 
-   if (!session->hRequest)
+   if (session->hRequest)
+      session->SetRequestLength();
+   else
    {
       if (GetLastError() != ERROR_IO_PENDING)
          return nullptr;
