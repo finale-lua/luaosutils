@@ -7,6 +7,10 @@ require('mobdebug').start() -- for ZeroBrane Studio debugging
 
 local osutils = require('luaosutils')
 
+for k, v in pairs(osutils) do
+    print(tostring(k), tostring(v))
+end
+
 function callback(download_successful, urlcontents)
    if download_successful then
    	   local fileout = io.open(finenv.RunningLuaFolderPath().."/gmail.ico", "wb")
@@ -20,4 +24,4 @@ end
 
 local session = osutils.download_url("https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico", callback)
 
---finenv.RetainLuaState = true
+finenv.RetainLuaState = true

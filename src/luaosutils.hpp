@@ -10,6 +10,8 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
+#define LUAOSUTILS_VERSION "Luaosutils 1.0.0"
+
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
 
@@ -47,7 +49,7 @@
 #endif
 
 #if OPERATING_SYSTEM == MAC_OS
-using OSSESSION_ptr = void*;
+using OSSESSION_ptr = void*; // We may not need this. We'll see with Windows.
 #endif //OPERATING_SYSTEM == MAC_OS
 
 #if OPERATING_SYSTEM == WINDOWS
@@ -55,10 +57,10 @@ using OSSESSION_ptr = void*;
 #endif //OPERATING_SYSTEM == WINDOWS
 
 #ifndef __OBJC__
-/** \brief this class is used to make guarantee that a Lua state is still active when a callback occurs.
- * A RefCountedPtr of it is returned to Lua and the session stays active as long as
+/** \brief this class is used to guarantee that a Lua state is still active when a callback occurs.
+ * A userdata of it is returned to Lua and the session stays active as long as
  * the Lua script maintains the returned value in scope. If the Lua state is closed,
- * the pointer goes out of scope, and the callback can no longer be called.
+ * the pointer is garbage collected, and the callback can no longer be called.
  */
 class __luaosutils_callback_session
 {

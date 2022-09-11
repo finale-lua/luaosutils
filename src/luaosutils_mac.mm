@@ -39,8 +39,3 @@ OSSESSION_ptr __mac_download_url (const std::string &urlString, __download_callb
    [sessionTask resume];
    return (__bridge void *)(sessionTask);
 }
-
-void __mac_cancel_http_request(OSSESSION_ptr session)
-{
-   [(__bridge NSURLSessionDataTask*)session cancel];
-}

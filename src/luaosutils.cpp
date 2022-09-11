@@ -49,7 +49,7 @@ __luaosutils_callback_session::~__luaosutils_callback_session()
    if (this->os_session())
    {
 #if OPERATING_SYSTEM == MAC_OS
-      __mac_cancel_http_request(this->os_session());
+      //__mac_cancel_http_request(this->os_session());
 #endif
    }
    _get_active_sessions().erase(m_ID);
@@ -130,10 +130,15 @@ static const luaL_Reg luaosutils[] = {
 };
 
 int luaopen_luaosutils (lua_State *L) {
+   /* export functions (and leave namespace table on top of stack) */
 #if LUA_VERSION_NUM <= 501
    luaL_openlib(L, "luaosutils", luaosutils, 0);
 #else
    luaL_newlib(L, luaosutils);
 #endif
+   /* make version string available to scripts */
+   lua_pushstring(L, "_VERSION");
+   lua_pushstring(L, LUAOSUTILS_VERSION);
+   lua_rawset(L, -3);
    return 1;
 }
