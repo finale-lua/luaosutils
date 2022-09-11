@@ -95,6 +95,7 @@ static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
          session->callbackFunction(false, "Download thread failed to download the file.");
       else
          session->callbackFunction(true, session->buffer);
+      // the callback function has destroyed our session, so do not reference it again.
    }
 }
 
@@ -127,6 +128,7 @@ OSSESSION_ptr __download_url (const std::string &urlString, __download_callback 
    return session;
 }
 
-void __cancel_session(OSSESSION_ptr session)
+void __cancel_session(OSSESSION_ptr)
 {
+   //Nothing to do in this function. Let luaosutils_callback_session dtor handle it.
 }
