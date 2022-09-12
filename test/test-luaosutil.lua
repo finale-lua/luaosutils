@@ -7,10 +7,10 @@ require('mobdebug').start() -- for ZeroBrane Studio debugging
 
 local osutils = require('luaosutils')
 
-local async_call = false
+local async_call = true
 
---local url = "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
-local url = "https://robertgpatterson.com/-fininfo/-downloads/-usenglish/Fin26Mac.zip"
+local url = "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
+--local url = "https://robertgpatterson.com/-fininfo/-downloads/-usenglish/Fin26Mac.zip"
 local filename = (function()
     local str = finale.FCString()
     str.LuaString = url
@@ -35,6 +35,6 @@ if async_call then
     g_session = osutils.download_url(url, callback)
     finenv.RetainLuaState = true
 else
-    local success, data = osutils.download_url_sync(url, 2.5)
+    local success, data = osutils.download_url_sync(url, 5)
     callback(success, data)
 end

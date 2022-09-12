@@ -99,7 +99,7 @@ static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
    }
 }
 
-OSSESSION_ptr __download_url (const std::string &urlString, __download_callback callback)
+OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __download_callback callback)
 {
    OSSESSION_ptr session = OSSESSION_ptr(new win_request_context(callback));
 
@@ -122,13 +122,31 @@ OSSESSION_ptr __download_url (const std::string &urlString, __download_callback 
    session->hThread = CreateThread(NULL, 0, &RunWindowsThread, session.get(), 0, NULL);
    if (!session->hThread) return nullptr;
 
-   session->SetTimerID(::SetTimer(NULL, 0, USER_TIMER_MINIMUM, &__TimerProc));
-   if (!session->TimerID()) return nullptr;
+   if (timeout >= 0)
+   {
+      DWORD result = WaitForSingleObject(session->hThread, lround(timeout*1000.0));
+      switch (result)
+      {
+         case WAIT_OBJECT_0:
+            session->callbackFunction(true, session->buffer);
+            break;
 
-   return session;
-}
+         case WAIT_TIMEOUT:
+            session->callbackFunction(false, "Request timed out.");
+            break;
 
-void __cancel_session(OSSESSION_ptr)
-{
-   //Nothing to do in this function. Let luaosutils_callback_session dtor handle it.
+         default:
+            // ToDo: deal with GetLastError here.
+            session->callbackFunction(false, "Unknown error.");
+            break;
+      }
+   }
+   else
+   {
+      session->SetTimerID(::SetTimer(NULL, 0, USER_TIMER_MINIMUM, &__TimerProc));
+      if (!session->TimerID()) return nullptr;
+      return session;
+   }
+
+   return nullptr;
 }

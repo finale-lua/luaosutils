@@ -15,7 +15,7 @@ If you are bundling this with a plugin suite for end users, you may need to buil
 
 # Functions
 
-### download_url
+### download\_url
 
 Downloads the contents of a url to a Lua string. The URL can be text or binary. The Lua string acts as a data buffer for the download and can be subsequently saved as a file (binary or text).
 The function uses the HTTPS protocol. On Windows, HTTPS protocol is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
@@ -62,9 +62,9 @@ finenv.RetainLuaState = true
 
 The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
 
-### download_url_sync
+### download\_url\_sync
 
-Downloads a url synchronously. You supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero.
+Downloads a url synchronously. You supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small files where you can limit the timeout to 1 or 2 seconds. Synchronous calls block Finale's user interface.
 
 |Input Type|Description|
 |----------|-----------|

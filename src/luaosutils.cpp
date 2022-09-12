@@ -89,7 +89,7 @@ static int luaosutils_download_url(lua_State *L)
    return 0;
 }
 
-/** \brief downloads the contents of a url into a string synchronously
+/** \brief downloads the contents of a url into a string synchronously (blocks the UI)
  *
  * stack position 1: the url to download
  * stack position 2: a timeout value
