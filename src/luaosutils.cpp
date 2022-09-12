@@ -47,7 +47,7 @@ static void __call_lua_function(luaosutils_callback_session &session, Args... ar
  * stack position 2: a reference to a lua function to call on completion
  * \return download session or nil
  */
-static int luaosutils_download_url (lua_State *L)
+static int luaosutils_download_url(lua_State *L)
 {
    std::string urlString = luabridge::Stack<std::string>::get(L, 1);
    luabridge::LuaRef callback = luabridge::Stack<luabridge::LuaRef>::get(L, 2);
@@ -56,7 +56,7 @@ static int luaosutils_download_url (lua_State *L)
 
    luaosutils_callback_session::id_type sessionID = luaosutils_callback_session::get_new_session_id();
    
-   const OSSESSION_ptr os_session = __download_url(urlString,
+   const OSSESSION_ptr os_session = __download_url(urlString, -1,
           __download_callback([sessionID](bool success, const std::string &urlResult) -> void
          {
             luaosutils_callback_session* session = luaosutils_callback_session::get_session_for_id(sessionID);
@@ -89,8 +89,36 @@ static int luaosutils_download_url (lua_State *L)
    return 0;
 }
 
+/** \brief downloads the contents of a url into a string synchronously
+ *
+ * stack position 1: the url to download
+ * stack position 2: a timeout value
+ * \return success
+ * \return data or error message
+ */
+static int luaosutils_download_url_sync(lua_State *L)
+{
+   std::string urlString = luabridge::Stack<std::string>::get(L, 1);
+   double timeout = (std::max)(0.0, luabridge::Stack<double>::get(L, 2));
+   
+   bool success = false;
+   std::string result;
+   
+   __download_url(urlString, timeout,
+          __download_callback([&success, &result](bool cbsuccess, const std::string &data) -> void
+         {
+            success = cbsuccess;
+            result = data;
+         }));
+   
+   luabridge::Stack<bool>::push(L, success);
+   luabridge::Stack<std::string>::push(L, result);
+   return 2;
+}
+
 static const luaL_Reg luaosutils[] = {
-   {"download_url",     luaosutils_download_url},
+   {"download_url",        luaosutils_download_url},
+   {"download_url_sync",   luaosutils_download_url_sync},
    {NULL, NULL} // sentinel
 };
 

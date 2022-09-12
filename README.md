@@ -27,10 +27,9 @@ The function uses the HTTPS protocol. On Windows, HTTPS protocol is explicitly r
 
 |Output Type|Description|
 |-----------|-----------|
-|sesion|If non-nil, the callback function will be called. If nil, there was an error and it will not be called.|
+|session|If non-nil, the callback function will be called. If nil, there was an error and it will not be called.|
 
-The call is an asynchronous call. You script could wait in a while loop for it to finish.
-But a better option would be to return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true`. The completion function could then finish whatever needs to be done running in the background. (However, the completion function does not run in a separate thread, so be mindful of how long your script runs when running in the background.)
+The call is an asynchronous call. With this function you return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true`. The completion function then finishes whatever needs to be done while running in the background. The completion function does not run in a separate thread, so you cannot wait on this function to complete within your script. Be mindful of how long your script runs when running in the background.
 
 You must keep a reference to the session until the callback is called. It will be aborted if the session variable goes out of scope and is garbage-collected.
 
@@ -39,7 +38,7 @@ The callback function has the following parameters.
 |Input Type|Description|
 |----------|-----------|
 |boolean|Success or failure|
-|string|The downloaded string if success. An error message or `nil` if failure.|
+|string|The downloaded data if success. An error message or `nil` if failure.|
 
 
 Example:
@@ -62,4 +61,33 @@ finenv.RetainLuaState = true
 ```
 
 The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
+
+### download_url_sync
+
+Downloads a url synchronously. You supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to download.|
+|number|The timeout value in seconds. (May be fractional.)|
+
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|Success or failure|
+|string|The downloaded data if success. An error message or `nil` if failure.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+
+local download_successful, urlcontents = osutils.download_url_sync("https://mysite.com/myfile.zip", 5)
+
+if download_successful then
+    local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.zip", "wb")
+    fileout:write(urlcontents)
+    fileout:close()
+end
+```
 
