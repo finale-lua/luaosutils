@@ -55,7 +55,8 @@ function callback(download_successful, urlcontents)
    finenv.RetainLuaState = false
 end
 
-local session = osutils.download_url("https://mysite.com/myfile.zip", callback)
+-- use a global to guarantee that it stays in scope in the callback
+g_session = osutils.download_url("https://mysite.com/myfile.zip", callback)
 
 finenv.RetainLuaState = true
 ```
