@@ -21,7 +21,7 @@ end)()
 
 function callback(download_successful, urlcontents)
    if download_successful then
-   	   local fileout = io.open(finenv.RunningLuaFolderPathAA().."/"..filename, "wb")
+   	   local fileout = io.open(finenv.RunningLuaFolderPath().."/"..filename, "wb")
        fileout:write(urlcontents)
        fileout:close()
        print("success")

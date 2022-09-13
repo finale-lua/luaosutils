@@ -66,28 +66,31 @@ inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = fal
                                           reinterpret_cast<LPSTR>(&ptr),
                                           0,
                                           NULL);
+
+   std::string retval;
    if (numChars > 0)
    {
       auto deleter = [](void *p) { ::LocalFree(p); };
       std::unique_ptr<CHAR, decltype(deleter)> ptrBuffer(ptr, deleter);
-      std::string retval(ptrBuffer.get(), numChars);
-      if (forWinInet && errorCode == ERROR_INTERNET_EXTENDED_ERROR)
-      {
-         DWORD numExtChars = 0;
-         DWORD extErrorCode = 0;
-         InternetGetLastResponseInfoA(&extErrorCode, NULL, &numExtChars);
-         if (numExtChars)
-         {
-            numExtChars++; // make room for trailing zero
-            std::string extString("", numExtChars);
-            InternetGetLastResponseInfoA(&extErrorCode, extString.data(), &numExtChars);
-            if (retval.size())
-               retval += " ";
-            retval += extString;
-         }
-      }
-      return retval;
+      retval = std::string(ptrBuffer.get(), numChars);
    }
+   if (forWinInet && errorCode == ERROR_INTERNET_EXTENDED_ERROR)
+   {
+      DWORD numExtChars = 0;
+      DWORD extErrorCode = 0;
+      InternetGetLastResponseInfoA(&extErrorCode, NULL, &numExtChars);
+      if (numExtChars)
+      {
+         numExtChars++; // make room for trailing zero
+         std::string extString("", numExtChars);
+         InternetGetLastResponseInfoA(&extErrorCode, extString.data(), &numExtChars);
+         if (retval.size())
+            retval += " ";
+         retval += extString;
+      }
+   }
+   if (retval.size())
+      return retval;
 
    return "No error message.";
 }
@@ -95,6 +98,16 @@ inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = fal
 static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
 {
    auto session = reinterpret_cast<win_request_context*>(lpParameter);
+
+   CHAR lengthAsText[256];
+   DWORD sizeLength = sizeof(lengthAsText);
+   if (HttpQueryInfoA(session->hRequest, HTTP_QUERY_CONTENT_LENGTH, lengthAsText, &sizeLength, 0))
+   {
+      lengthAsText[(std::min)((size_t)sizeLength, sizeof(lengthAsText) - 1)] = 0;
+      DWORD length = atoi(lengthAsText);
+      if (length)
+         session->buffer.reserve(length);
+   }
 
    DWORD numBytesRead = 0;
    char buffer[4096];
