@@ -9,7 +9,7 @@ local osutils = require('luaosutils')
 
 local async_call = true
 
-local url = "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
+local url = "https://ssl.gstatic111.com/ui/v1/icons/mail/rfr/gmail.ico"
 --local url = "https://robertgpatterson.com/-fininfo/-downloads/-usenglish/Fin26Mac.zip"
 local filename = (function()
     local str = finale.FCString()

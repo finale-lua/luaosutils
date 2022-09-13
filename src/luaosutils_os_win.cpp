@@ -42,15 +42,55 @@ win_request_context* win_request_context::get_context_from_timer(UINT_PTR timerI
 
 bool win_request_context::SetTimerID(UINT_PTR id)
 {
-   if (id)
-      getTimerMap().emplace(id, this);
-   else if (timerID)
+   if (timerID)
    {
       ::KillTimer(NULL, timerID);
       getTimerMap().erase(timerID);
    }
+   if (id)
+      getTimerMap().emplace(id, this);
    this->timerID = id;
    return (id != 0);
+}
+
+inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = false)
+{
+   LPSTR ptr = nullptr;
+   HMODULE module = forWinInet ? GetModuleHandle(TEXT("wininet.dll")) : NULL;
+   const DWORD reqFlag = module ? FORMAT_MESSAGE_FROM_HMODULE : FORMAT_MESSAGE_FROM_SYSTEM;
+   const DWORD numChars = FormatMessageA(reqFlag
+                                             | FORMAT_MESSAGE_IGNORE_INSERTS
+                                             | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+                                          module,
+                                          errorCode,
+                                          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                          reinterpret_cast<LPSTR>(&ptr),
+                                          0,
+                                          NULL);
+   if (numChars > 0)
+   {
+      auto deleter = [](void *p) { ::LocalFree(p); };
+      std::unique_ptr<CHAR, decltype(deleter)> ptrBuffer(ptr, deleter);
+      std::string retval(ptrBuffer.get(), numChars);
+      if (forWinInet && errorCode == ERROR_INTERNET_EXTENDED_ERROR)
+      {
+         DWORD numExtChars = 0;
+         DWORD extErrorCode = 0;
+         InternetGetLastResponseInfoA(&extErrorCode, NULL, &numExtChars);
+         if (numExtChars)
+         {
+            numExtChars++; // make room for trailing zero
+            std::string extString("", numExtChars);
+            InternetGetLastResponseInfoA(&extErrorCode, extString.data(), &numExtChars);
+            if (retval.size())
+               retval += " ";
+            retval += extString;
+         }
+      }
+      return retval;
+   }
+
+   return "No error message.";
 }
 
 static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
@@ -77,21 +117,16 @@ static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
 static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
 {
    win_request_context* session = win_request_context::get_context_from_timer(idEvent);
-   if (!session || !session->hThread)
-   {
-      if (session)
-      {
-         session->callbackFunction(false, "No timer exists or no download thread exists.");
-         session->SetTimerID(0); // kills the timer
-      }
-      return;
-   }
+   assert(session && session->hThread);
    DWORD result = WaitForSingleObject(session->hThread, 0);
    if (result == WAIT_OBJECT_0)
    {
       session->SetTimerID(0); // kills the timer
       DWORD threadResult = 0;
-      if (!GetExitCodeThread(session->hThread, &threadResult) || threadResult)
+      BOOL exitResult = GetExitCodeThread(session->hThread, &threadResult);
+      if (!exitResult)
+         session->callbackFunction(false, GetStringFromLastError(GetLastError()));
+      else if (threadResult)
          session->callbackFunction(false, "Download thread failed to download the file.");
       else
          session->callbackFunction(true, session->buffer);
@@ -104,7 +139,11 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
    OSSESSION_ptr session = OSSESSION_ptr(new win_request_context(callback));
 
    session->hInternet = InternetOpen(TEXT("Luaosutils WinInet Downloader"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-   if (!session->hInternet) return nullptr;
+   if (!session->hInternet)
+   {
+      callback(false, GetStringFromLastError(GetLastError(), true));
+      return nullptr;
+   }
 
    session->hRequest = InternetOpenUrlA(session->hInternet, urlString.c_str(), NULL, 0,
                                        INTERNET_FLAG_SECURE |
@@ -114,13 +153,16 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
                                        INTERNET_FLAG_NO_UI, NULL);
    if (!session->hRequest)
    {
-      //ToDo: return error message
-      DWORD errCode = GetLastError();
+      callback(false, GetStringFromLastError(GetLastError(), true));
       return nullptr;
    }
 
    session->hThread = CreateThread(NULL, 0, &RunWindowsThread, session.get(), 0, NULL);
-   if (!session->hThread) return nullptr;
+   if (!session->hThread)
+   {
+      callback(false, GetStringFromLastError(GetLastError()));
+      return nullptr;
+   }
 
    if (timeout >= 0)
    {
@@ -136,16 +178,19 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
             break;
 
          default:
-            // ToDo: deal with GetLastError here.
-            session->callbackFunction(false, "Unknown error.");
+            session->callbackFunction(false, GetStringFromLastError(GetLastError()));
             break;
       }
    }
    else
    {
-      session->SetTimerID(::SetTimer(NULL, 0, USER_TIMER_MINIMUM, &__TimerProc));
-      if (!session->TimerID()) return nullptr;
-      return session;
+      // Lua is not thread-safe, so we use a timer to check the thread,
+      // then call the callback from the main thread (where the timer runs).
+      UINT_PTR timerID = ::SetTimer(NULL, 0, USER_TIMER_MINIMUM, &__TimerProc);
+      if (!timerID)
+         callback(false, GetStringFromLastError(GetLastError()));
+      session->SetTimerID(timerID);
+      return session->TimerID() ? session : nullptr;
    }
 
    return nullptr;

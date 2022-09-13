@@ -29,7 +29,7 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
                callback(true, std::string(static_cast<const char *>([data bytes]), [data length]));
          };
          if (timeout < 0)
-            dispatch_async(dispatch_get_main_queue(), codeBlock);
+            dispatch_async(dispatch_get_main_queue(), codeBlock); // async calls must run on main thread because Lua is not thread-safe
          else
             codeBlock();
          inProgress = false;
