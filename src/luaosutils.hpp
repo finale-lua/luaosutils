@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 1.0.0"
+#define LUAOSUTILS_VERSION "Luaosutils 1.1.0"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */

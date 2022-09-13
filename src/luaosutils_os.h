@@ -50,7 +50,11 @@ private:
 using OSSESSION_ptr = std::shared_ptr<win_request_context>;
 #endif //OPERATING_SYSTEM == WINDOWS
 
-OSSESSION_ptr __download_url (const std::string &urlString, __download_callback callback);
+OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __download_callback callback);
+#if OPERATING_SYSTEM == MAC_OS
 void __cancel_session(OSSESSION_ptr session);
+#endif
+
+void __error_message_box(const std::string &msg);
 
 #endif /* luaosutils_os_h */
