@@ -9,7 +9,7 @@ local osutils = require('luaosutils')
 
 local async_call = true
 
-local url = "https://ssl.gstatic111.com/ui/v1/icons/mail/rfr/gmail.ico"
+local url = "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
 --local url = "https://robertgpatterson.com/-fininfo/-downloads/-usenglish/Fin26Mac.zip"
 local filename = (function()
     local str = finale.FCString()
@@ -21,7 +21,7 @@ end)()
 
 function callback(download_successful, urlcontents)
    if download_successful then
-   	   local fileout = io.open(finenv.RunningLuaFolderPath().."/"..filename, "wb")
+   	   local fileout = io.open(finenv.RunningLuaFolderPathAA().."/"..filename, "wb")
        fileout:write(urlcontents)
        fileout:close()
        print("success")

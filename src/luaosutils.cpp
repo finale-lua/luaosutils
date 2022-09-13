@@ -37,7 +37,12 @@ static void __call_lua_function(luaosutils_callback_session &session, Args... ar
    catch (luabridge::LuaException &e)
    {
       LuaRun_AppendLineToOutput(e.state(), e.what());
-      //ToDo: display any error message in a message box.
+#if defined(LUAOSUTILS_RGPLUA_AWARE)
+      luabridge::LuaRef finenv = luabridge::getGlobal(e.state(), "finenv");
+      if (finenv["RetainLuaState"].isBool())
+         finenv["RetainLuaState"] = false;
+#endif // defined(LUAOSUTILS_RGPLUA_AWARE)
+      __error_message_box(e.what());
    }
 }
 

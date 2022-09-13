@@ -203,3 +203,39 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
 
    return nullptr;
 }
+
+#include <utility>
+
+HWND __FindTopWindow()
+{
+   DWORD pid = GetCurrentProcessId();
+   std::pair<HWND, DWORD> params = { NULL, pid };
+
+   // Enumerate the windows using a lambda to process each window
+   BOOL bResult = EnumWindows([](HWND hwnd, LPARAM lParam) -> BOOL
+      {
+         auto pParams = (std::pair<HWND, DWORD>*)(lParam);
+
+         DWORD processId;
+         if (GetWindowThreadProcessId(hwnd, &processId) && processId == pParams->second && GetWindow(hwnd, GW_OWNER) == 0)
+         {
+            // Stop enumerating
+            SetLastError(-1);
+            pParams->first = hwnd;
+            return FALSE;
+         }
+
+         // Continue enumerating
+         return TRUE;
+      }, (LPARAM)&params);
+
+   if (!bResult && GetLastError() == -1)
+      return params.first;
+
+   return NULL;
+}
+
+void __error_message_box(const std::string& msg)
+{
+   MessageBoxA(__FindTopWindow(), msg.c_str(), "Error", MB_OK);
+}

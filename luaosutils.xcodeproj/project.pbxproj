@@ -11,6 +11,7 @@
 		B53F2F5D28CB68030096F6F8 /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */; };
 		B53F2F6C28CBB6690096F6F8 /* luaosutils_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */; };
 		B53F2F6E28CBB6BF0096F6F8 /* luaosutils_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */; };
+		B5A6773F28D0DB7200D9B74C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6773E28D0DB7200D9B74C /* Cocoa.framework */; };
 		B5AABB4E284E57ED00708D15 /* libLua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AABB4B284E57C900708D15 /* libLua.a */; };
 		B5EFCF2728634BBA003AC07F /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1D28634BB9003AC07F /* Vector.h */; };
 		B5EFCF2828634BBA003AC07F /* List.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1E28634BB9003AC07F /* List.h */; };
@@ -47,6 +48,7 @@
 		B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_os_mac.mm; sourceTree = "<group>"; };
 		B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_os.h; sourceTree = "<group>"; };
 		B55E2B362610CE9C003E0F63 /* luaosutils.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = luaosutils.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5A6773E28D0DB7200D9B74C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		B5AABB46284E57C900708D15 /* Lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Lua.xcodeproj; path = "lua-source/Lua.xcodeproj"; sourceTree = "<group>"; };
 		B5AABB52284E69DA00708D15 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		B5EFCF1D28634BB9003AC07F /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A6773F28D0DB7200D9B74C /* Cocoa.framework in Frameworks */,
 				B5AABB4E284E57ED00708D15 /* libLua.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,6 +79,7 @@
 		B50B920F26ED05D100DE877C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B5A6773E28D0DB7200D9B74C /* Cocoa.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

@@ -7,7 +7,7 @@
 //  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 #include "luaosutils.hpp"
 #include "luaosutils_os.h"
@@ -72,4 +72,35 @@ void __cancel_session(OSSESSION_ptr session)
    NSURLSessionDataTask* nssession = (__bridge NSURLSessionDataTask*)session;
    if (! [[nssession progress] isFinished])
       [nssession cancel];
+}
+
+static NSModalResponse __InternalRunAlertPanel(NSAlertStyle style, NSString *title, NSString *msgFormat, NSString *defaultButton, NSString *alternateButton, NSString *otherButton)
+{
+    NSModalResponse retVal = NSModalResponseAbort;
+    NSAlert * alert = [[NSAlert alloc] init];
+    @try
+    {
+        if (style >= 0) alert.alertStyle = style;
+        alert.informativeText = msgFormat;
+        alert.messageText = title;
+        [alert addButtonWithTitle: defaultButton];
+        if (alternateButton) [alert addButtonWithTitle: alternateButton];
+        if (otherButton) [alert addButtonWithTitle: otherButton];
+        retVal = [alert runModal];
+    }
+    @catch ( NSException *exc )
+    {
+       NSLog (@"%@ %@", [exc name], [exc reason]);
+    }
+#if ! __has_feature(objc_arc)
+    if (alert) [alert release];
+#endif
+    return retVal;
+}
+
+void __error_message_box(const std::string &msg)
+{
+   NSString* messagestring = [NSString stringWithUTF8String:msg.c_str()];
+   NSString* titlestring = @"Error";
+   __InternalRunAlertPanel(NSAlertStyleCritical, titlestring, messagestring, @"OK", nil, nil);
 }

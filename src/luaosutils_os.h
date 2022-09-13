@@ -55,4 +55,6 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
 void __cancel_session(OSSESSION_ptr session);
 #endif
 
+void __error_message_box(const std::string &msg);
+
 #endif /* luaosutils_os_h */
