@@ -19,9 +19,9 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
    NSURLSessionDataTask* sessionTask = [[NSURLSession sharedSession] dataTaskWithURL:url
       completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
       {
-         if (! inProgress) return;
          NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-         NSLog(@"response status code: %ld", (long)[httpResponse statusCode]);
+         NSLog(@"NSURLSessionDataTask response status code: %ld", (long)[httpResponse statusCode]);
+         if (! inProgress) return;
          auto codeBlock = ^{
             if (error)
                callback(false, [[error localizedDescription] UTF8String]);
@@ -36,12 +36,13 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
       }];
    if (! sessionTask)
    {
-      NSLog(@"Failed to create session for %@", [url absoluteString]);
+      callback(false, [[NSString stringWithFormat:@"Failed to create session for %@.", [url absoluteString]] UTF8String]);
       return nil;
    }
    if ([sessionTask error])
    {
-      NSLog(@"Failed to create session for %@: %@", [url absoluteString], [[sessionTask error] localizedDescription]);
+      callback(false, [[NSString stringWithFormat:@"Failed to create session for %@: %@",
+                           [url absoluteString], [[sessionTask error] localizedDescription]] UTF8String]);
       return nil;
    }
    [sessionTask resume];
