@@ -29,7 +29,7 @@ The function uses the HTTPS protocol. On Windows, HTTPS protocol is explicitly r
 |-----------|-----------|
 |session|If non-nil, the callback function will be called. If nil, there was an error and it will not be called.|
 
-The call is an asynchronous call. With this function you return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true`. The completion function then finishes whatever needs to be done while running in the background. The completion function does not run in a separate thread, so you cannot wait on this function to complete within your script. Be mindful of how long your script runs when running in the background.
+The call is an asynchronous call. With this function you return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true` or a dialog box. The completion function then finishes whatever needs to be done while running in the background. The completion function does not run in a separate thread, so you cannot wait on this function to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your script runs when running in the background.
 
 You must keep a reference to the session until the callback is called. It will be aborted if the session variable goes out of scope and is garbage-collected.
 
