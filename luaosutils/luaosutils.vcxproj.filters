@@ -19,6 +19,9 @@
     <Filter Include="LuaBridge\detail">
       <UniqueIdentifier>{5e80703c-6a0a-48af-8211-39a44981b056}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\menu">
+      <UniqueIdentifier>{900585f5-5cc6-4e67-9e2e-5c3e6cef448b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -111,6 +114,12 @@
     <ClInclude Include="..\src\luaosutils_os.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\menu\luaosutils_menu.hpp">
+      <Filter>Source Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
+      <Filter>Source Files\menu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -124,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="..\src\luaosutils_os_win.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\luaosutils_menu.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\luaosutils_menu_os_win.cpp">
+      <Filter>Source Files\menu</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

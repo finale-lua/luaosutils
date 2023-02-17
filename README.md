@@ -92,3 +92,38 @@ if download_successful then
 end
 ```
 
+## The 'menu' namespace
+
+The `menu` namespace provides os-independent functions for manipulating menu items. For Finale this is particularly useful in the Plug-Ins menu, since by default Finale places all the plugins in a flat menu structure.
+
+These function use a `menu_handle` which is an os-assigned value that refers to the menu. Lua scripts should only use it to pass to other menu functions in this library.
+
+### menu\.find\_enclosing
+
+Searches the currently running application's menu bar for text that matches the input text and returns the enclosing menu if it is found.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The text to search for encoded in utf8.|
+|(number)|Optional 0-based index that specifies the starting top-level menu from which to search. If omitted, the entire top-level menu is searched.|
+
+|Output Type|Description|
+|----------|-----------|
+|menu_handle|Userdata value that represents the menu or nil if not found.|
+|number|The 0-based index of the found item.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, rgp_lua_index = menu.find_enclosing("RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    -- rgp_lua_menu is the menu that contains the menu item for RGP Lua.
+end
+```
+

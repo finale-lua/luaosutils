@@ -13,6 +13,7 @@
 #include "luaosutils.hpp"
 #include "luaosutils_os.h"
 #include "luaosutils_callback_session.hpp"
+#include "menu/luaosutils_menu.hpp"
 
 static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 {
@@ -134,6 +135,8 @@ int luaopen_luaosutils (lua_State *L) {
 #else
    luaL_newlib(L, luaosutils);
 #endif
+   /* add menu utils */
+   luosutils_menu_create(L);
    /* make version string available to scripts */
    lua_pushstring(L, "_VERSION");
    lua_pushstring(L, LUAOSUTILS_VERSION);

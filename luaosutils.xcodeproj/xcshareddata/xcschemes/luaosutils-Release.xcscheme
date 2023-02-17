@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1340"
+   LastUpgradeVersion = "1420"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -60,6 +60,7 @@
       allowLocationSimulation = "YES">
       <PathRunnable
          runnableDebuggingMode = "0"
+         BundleIdentifier = "com.makemusic.Finale27"
          FilePath = "/Applications/Finale.app">
       </PathRunnable>
    </LaunchAction>
