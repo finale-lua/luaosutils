@@ -132,3 +132,23 @@ menu_handle __menu_get_top_level_menu(window_handle hWnd)
 {
 	return GetMenu(hWnd);
 }
+
+bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
+{
+	std::basic_string<WCHAR> newTextW = __utf8_to_WCHAR(newText.c_str());
+	MENUITEMINFOW menuItemInfo;
+	memset(&menuItemInfo, 0, sizeof(menuItemInfo));
+	menuItemInfo.cbSize = sizeof(menuItemInfo);
+	menuItemInfo.fMask = MIIM_STRING;
+	menuItemInfo.dwTypeData = (LPWSTR)newTextW.c_str();
+	return SetMenuItemInfoW(hMenu, index, MF_BYPOSITION, &menuItemInfo);
+}
+
+bool __menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText)
+{
+	int parentIndex = 0;
+	HMENU hParentMenu = __GetParentMenu(hMenu, __menu_get_top_level_menu(hWnd), &parentIndex);
+	if (hParentMenu)
+		return __menu_set_item_text(hParentMenu, parentIndex, newText);
+	return false;
+}

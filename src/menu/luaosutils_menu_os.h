@@ -25,5 +25,7 @@ int __menu_get_item_count(menu_handle hMenu);
 std::string __menu_get_item_text(menu_handle hMenu, int index);
 std::string __menu_get_title(menu_handle hMenu, window_handle hWnd);
 menu_handle __menu_get_top_level_menu(window_handle hWnd);
+bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText);
+bool __menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText);
 
 #endif /* luaosutils_menu_os_h */

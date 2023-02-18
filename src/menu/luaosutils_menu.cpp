@@ -69,12 +69,34 @@ static int luaosutils_menu_get_top_level_menu(lua_State *L)
    return 1;
 }
 
+static int luaosutils_menu_set_item_text(lua_State *L)
+{
+   menu_handle hMenu = reinterpret_cast<menu_handle>(lua_touserdata(L, 1));
+   int index = luabridge::Stack<int>::get(L, 2);
+   std::string newText = luabridge::Stack<std::string>::get(L, 3);
+   
+   luabridge::Stack<bool>::push(L, __menu_set_item_text(hMenu, index, newText));
+   return 1;
+}
+
+static int luaosutils_menu_set_title(lua_State *L)
+{
+   menu_handle hMenu = reinterpret_cast<menu_handle>(lua_touserdata(L, 1));
+   window_handle hWnd = reinterpret_cast<window_handle>(lua_touserdata(L, 2));
+   std::string newText = luabridge::Stack<std::string>::get(L, 3);
+
+   luabridge::Stack<bool>::push(L, __menu_set_title(hMenu, hWnd, newText));
+   return 1;
+}
+
 static const luaL_Reg menuutils[] = {
    {"find_item",           luaosutils_menu_find_item},
    {"get_item_count",      luaosutils_menu_get_item_count},
    {"get_item_text",       luaosutils_menu_get_item_text},
    {"get_title",           luaosutils_menu_get_title},
    {"get_top_level_menu",  luaosutils_menu_get_top_level_menu},
+   {"set_item_text",       luaosutils_menu_set_item_text},
+   {"set_title",           luaosutils_menu_set_title},
    {NULL, NULL} // sentinel
 };
 

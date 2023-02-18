@@ -192,7 +192,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.get\\_title
+### menu.get\_title
 
 Returns the title of the specified menu.
 
@@ -241,5 +241,66 @@ local osutils = require('luaosutils')
 local menu = osutils.menu
 
 local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+```
+
+### menu.set\_item\_text
+
+Changes the text of the specified menu item to the new value.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|number|The index of the menu item.|
+|string|The new text of menu item (UTF-8 encoding).|
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|True if the menu item text was changed.|
+
+On Windows, the text includes the `&` character if there is keyboard shortcut. 
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    local success = menu.set_item_text(rgp_lua_menu, index, "Lua on Finale...")
+end
+```
+
+### menu.set\_title
+
+Returns the title of the specified menu.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|window_handle|Handle to the window containing the menu (`nil` on macOS).|
+|string|The new title of menu (UTF-8 encoding).|
+
+|Output Type|Description|
+|----------|-----------|
+
+On Windows, the title includes the `&` character if it has keyboard shortcut. 
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    local success = menu.set_title(rgp_lua_menu, finenv.GetFinaleMainWindow(), "Lua on Finale...")
+end
 ```
 

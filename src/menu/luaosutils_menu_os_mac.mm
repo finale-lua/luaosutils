@@ -9,6 +9,22 @@
 
 #include "menu/luaosutils_menu_os.h"
 
+NSMenuItem* __GetEnclosingMenuItemForMenu(const NSMenu * const subMenu)
+{
+   NSMenu * superMenu = [subMenu supermenu];
+   if ( nil != superMenu )
+   {
+      const NSInteger count = [superMenu numberOfItems];
+      for ( int i = 0; i < count; i++ )
+      {
+         NSMenuItem * item = [superMenu itemAtIndex:i];
+         if ( item && [item hasSubmenu] && (subMenu == [item submenu]) )
+            return item;
+      }
+   }
+   return nil;
+}
+
 menu_handle __menu_find_item (window_handle hWnd, const std::string& item_text, int starting_index, int& itemindex)
 {
    // Search for the first menu item that starts with the input text
@@ -83,4 +99,38 @@ std::string __menu_get_title(menu_handle hMenu, window_handle)
 menu_handle __menu_get_top_level_menu(window_handle)
 {
    return (__bridge menu_handle)[[NSApplication sharedApplication] mainMenu];
+}
+
+bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
+{
+   NSMenu* menu = (__bridge NSMenu*)hMenu;
+   @try
+   {
+      NSMenuItem* menuItem = [menu itemAtIndex:index];
+      if (! menuItem) return false;
+      if ([menuItem isSeparatorItem]) return false;
+      [menuItem setTitle:[NSString stringWithUTF8String:newText.c_str()]];
+      return true;
+   } @catch (NSException *exception)
+   {
+      NSLog(@"Caught exception in __menu_get_item_text%@", exception);
+   }
+   return false;
+}
+
+bool __menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText)
+{
+   NSMenu* menu = (__bridge NSMenu*)hMenu;
+   @try
+   {
+      [menu setTitle:[NSString stringWithUTF8String:newText.c_str()]];
+      NSMenuItem *menuItem = __GetEnclosingMenuItemForMenu(menu);
+      if (menuItem)
+         [menuItem setTitle:[NSString stringWithUTF8String:newText.c_str()]];
+      return true;
+   } @catch (NSException *exception)
+   {
+      NSLog(@"Caught exception in __menu_get_text%@", exception);
+   }
+   return false;
 }

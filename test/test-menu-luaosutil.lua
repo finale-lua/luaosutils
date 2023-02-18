@@ -27,6 +27,9 @@ show_menu(menu.get_top_level_menu(main_window), 0)
 
 local my_menu, index = menu.find_item(main_window, "Keep Octave Transposition in Concert Pitch")
 
+menu.set_title(my_menu, main_window, menu.get_title(my_menu, main_window).." nya nya")
+menu.set_item_text(my_menu, index, menu.get_item_text(my_menu, index).." bthht")
+
 show_menu(my_menu, index)
 
 --finenv.UI():AlertInfo(tostring(my_menu).." "..index, "")
