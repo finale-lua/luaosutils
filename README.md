@@ -94,13 +94,20 @@ end
 
 ## The 'menu' namespace
 
-The `menu` namespace provides os-independent functions for manipulating menu items. For Finale this is particularly useful in the Plug-Ins menu, since by default Finale places all the plugins in a flat menu structure.
+The `menu` namespace provides os-independent functions for manipulating menu items. For Finale this is particularly useful in the Plug-Ins menu, since by default Finale places all the plugins in a flat menu structure. These functions allow a script (executing at startup) to rearrange the plugin menus into a more usable menu tree.
 
-These function use a `menu_handle` which is an os-assigned value that refers to the menu. Lua scripts should only use it to pass to other menu functions in this library.
+The Windows and macOS operating systems treat menus slightly differently. In macOS, the top-level menu is associated with the application, whereas in Windows any window can have a top-level menu. Finale for Windows runs in an MDI Client window, and for Lua on Finale it is recommended to use the function `finenv.GetFinaleMainWindow()` to get it. This function (available starting in RGP Lua 0.66) returns the MDI Client Window handle in Windows or `nil` in macOS.
 
-### menu\.find\_item
+These functions use the following os-specific types. These appear in Lua as opaque userdata items. Lua scripts should only use them to pass to other menu functions in this library.
 
-Searches the currently running application's menu bar for text that matches the input text and returns the enclosing menu if it is found.
+|Type|Description|
+|----|-----------|
+|menu_handle|os-assigned value that provides acces to the menu|
+|window_handle|handle (`HWND`) of a window containing a top-level menu (Windows) or `nil` (macOS)|
+
+### menu.find\_item
+
+Searches the currently running application's top-level menu for text that matches the input text and returns the enclosing menu if it is found.
 
 |Input Type|Description|
 |----------|-----------|
@@ -108,11 +115,9 @@ Searches the currently running application's menu bar for text that matches the 
 |string|The text to search for encoded in utf8.|
 |(number)|Optional 0-based index that specifies the starting top-level menu from which to search. If omitted, the entire top-level menu is searched.|
 
-Note that the `window_handle` is only needed for the Windows operating system. On macOS, the top-level menu is associated with the application rather than a window. That means for macOS you can simply pass `nil`. The `finenv.GetFinaleMainWindow` function handles this for you if you are running Lua on Finale.
-
 |Output Type|Description|
 |----------|-----------|
-|menu_handle|Userdata value that represents the menu or nil if not found.|
+|menu_handle|Handle to the menu or `nil` if not found.|
 |number|The 0-based index of the found item.|
 
 Example:
@@ -128,5 +133,83 @@ local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lu
 if rgp_lua_menu then
     -- rgp_lua_menu is the menu that contains the menu item for RGP Lua.
 end
+```
+
+### menu.get\_item\_count
+
+Returns the number of menu items in the specified menu. It includes divider items.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+
+|Output Type|Description|
+|----------|-----------|
+|number|The number of items in the menu.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    local number_of_items = menu.get_item_count(rgp_lua_menu)
+end
+```
+
+### menu.get\_item\_text
+
+Returns the number of menu items in the specified menu. It includes divider items.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|number|The index of the menu item.|
+
+|Output Type|Description|
+|----------|-----------|
+|string|The text of menu item.|
+
+On Windows, the text includes the `&` character if there is keyboard shortcut. 
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    local item_3_text = menu.get_item_text(rgp_lua_menu, 3)
+end
+```
+
+### menu.get\_top\_level\_menu
+
+Returns a handle to the top-level menu for the specified window (Windows) or the currently running application (macOS).
+
+|Input Type|Description|
+|----------|-----------|
+|window_handle|The window with the menu to search (Windows) or `nil` (macOS).|
+
+|Output Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the top-level menu or `nil` if not found.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
 ```
 

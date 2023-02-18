@@ -17,13 +17,12 @@ typedef HWND window_handle;
 typedef HMENU menu_handle;
 #else
 typedef void* window_handle;
-#ifdef __OBJC__
-#import <Cocoa/Cocoa.h>
-typedef NSMenu * menu_handle;
-#else
-typedef void * menu_handle;
-#endif
+typedef void* menu_handle;
 #endif
 
 menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemindex);
+int __menu_get_item_count(menu_handle hMenu);
+std::string __menu_get_item_text(menu_handle hMenu, int index);
+menu_handle __menu_get_top_level_menu(window_handle hWnd);
+
 #endif /* luaosutils_menu_os_h */
