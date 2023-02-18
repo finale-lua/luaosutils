@@ -286,6 +286,7 @@ Returns the title of the specified menu.
 
 |Output Type|Description|
 |----------|-----------|
+|boolean|True if the menu title was changed.|
 
 On Windows, the title includes the `&` character if it has keyboard shortcut. 
 
