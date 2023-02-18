@@ -10,13 +10,14 @@
 #include "menu/luaosutils_menu.hpp"
 #include "menu/luaosutils_menu_os.h"
 
-static int luaosutils_menu_find_enclosing(lua_State *L)
+static int luaosutils_menu_find_item(lua_State *L)
 {
-   std::string item_text = luabridge::Stack<std::string>::get(L, 1);
-   luabridge::LuaRef min_index = luabridge::Stack<luabridge::LuaRef>::get(L, 2);
+   window_handle hWnd = reinterpret_cast<window_handle>(lua_touserdata(L, 1));
+   std::string item_text = luabridge::Stack<std::string>::get(L, 2);
+   luabridge::LuaRef min_index = luabridge::Stack<luabridge::LuaRef>::get(L, 3);
 
    int item_index = 0;
-   menu_handle the_menu = __menu_findenclosing (item_text, min_index.isNumber() ? min_index.cast<int>() : 0, item_index);
+   menu_handle the_menu = __menu_find_item (hWnd, item_text, min_index.isNumber() ? min_index.cast<int>() : 0, item_index);
    if (! the_menu)
    {
       lua_pushnil(L);
@@ -29,7 +30,7 @@ static int luaosutils_menu_find_enclosing(lua_State *L)
 }
 
 static const luaL_Reg menuutils[] = {
-   {"find_enclosing", luaosutils_menu_find_enclosing},
+   {"find_item", luaosutils_menu_find_item},
    {NULL, NULL} // sentinel
 };
 

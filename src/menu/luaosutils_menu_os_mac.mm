@@ -9,7 +9,7 @@
 
 #include "menu/luaosutils_menu_os.h"
 
-menu_handle __menu_findenclosing (const std::string& item_text, int starting_index, int& itemindex)
+menu_handle __menu_find_item (window_handle, const std::string& item_text, int starting_index, int& itemindex)
 {
    // Search for the first menu item that starts with the input text
    NSInteger startingIndex = starting_index;
