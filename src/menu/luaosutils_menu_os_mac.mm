@@ -67,6 +67,19 @@ std::string __menu_get_item_text(menu_handle hMenu, int index)
    return "";
 }
 
+std::string __menu_get_title(menu_handle hMenu, window_handle)
+{
+   NSMenu* menu = (__bridge NSMenu*)hMenu;
+   @try
+   {
+      return [[menu title] UTF8String];
+   } @catch (NSException *exception)
+   {
+      NSLog(@"Caught exception in __menu_get_text%@", exception);
+   }
+   return "";
+}
+
 menu_handle __menu_get_top_level_menu(window_handle)
 {
    return (__bridge menu_handle)[[NSApplication sharedApplication] mainMenu];

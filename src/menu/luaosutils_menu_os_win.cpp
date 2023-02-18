@@ -39,6 +39,27 @@ static std::string __WCHAR_to_utf8(const WCHAR* inpstr)
 	return retval;
 }
 
+static HMENU __GetParentMenu(HMENU menu, HMENU origin, int* pos)
+{
+	if (!origin) return NULL;
+	if (origin == menu) return NULL;
+	for (int i = 0, n = GetMenuItemCount(origin); i < n; i++)
+	{
+		HMENU parent = GetSubMenu(origin, i);
+		if (parent == menu)
+		{
+			if (pos) *pos = i;
+			return origin;
+		}
+		else if (parent)
+		{
+			parent = __GetParentMenu(menu, parent, pos);
+			if (parent) return parent;
+		}
+	}
+	return NULL;
+}
+
 menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemindex)
 {
    // Search for the first menu item that starts with the input text
@@ -95,6 +116,16 @@ std::string __menu_get_item_text(menu_handle hMenu, int index)
 	GetMenuStringW(hMenu, index, menuText, DIM(menuText) - 1, MF_BYPOSITION);
 	menuText[DIM(menuText) - 1] = 0;
 	return __WCHAR_to_utf8(menuText);
+}
+
+std::string __menu_get_title(menu_handle hMenu, window_handle hWnd)
+{
+	int parentIndex = 0;
+	HMENU hParentMenu = __GetParentMenu(hMenu, __menu_get_top_level_menu(hWnd), &parentIndex);
+	if (hParentMenu)
+		return __menu_get_item_text(hParentMenu, parentIndex);
+
+	return "";
 }
 
 menu_handle __menu_get_top_level_menu(window_handle hWnd)

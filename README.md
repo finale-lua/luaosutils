@@ -164,7 +164,7 @@ end
 
 ### menu.get\_item\_text
 
-Returns the number of menu items in the specified menu. It includes divider items.
+Returns the text of the specified menu item.
 
 |Input Type|Description|
 |----------|-----------|
@@ -173,7 +173,7 @@ Returns the number of menu items in the specified menu. It includes divider item
 
 |Output Type|Description|
 |----------|-----------|
-|string|The text of menu item.|
+|string|The text of menu item (UTF-8 encoding).|
 
 On Windows, the text includes the `&` character if there is keyboard shortcut. 
 
@@ -189,6 +189,36 @@ local min_search_index = 6
 local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local item_3_text = menu.get_item_text(rgp_lua_menu, 3)
+end
+```
+
+### menu.get\\_title
+
+Returns the title of the specified menu.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|window_handle|Handle to the window containing the menu (may be omitted on macOS).|
+
+|Output Type|Description|
+|----------|-----------|
+|string|The title of menu (UTF-8 encoding).|
+
+On Windows, the title includes the `&` character if it has keyboard shortcut. 
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    local menu_title = menu.get_title(rgp_lua_menu, finenv.GetFinaleMainWindow())
 end
 ```
 

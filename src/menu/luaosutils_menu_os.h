@@ -23,6 +23,7 @@ typedef void* menu_handle;
 menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemindex);
 int __menu_get_item_count(menu_handle hMenu);
 std::string __menu_get_item_text(menu_handle hMenu, int index);
+std::string __menu_get_title(menu_handle hMenu, window_handle hWnd);
 menu_handle __menu_get_top_level_menu(window_handle hWnd);
 
 #endif /* luaosutils_menu_os_h */
