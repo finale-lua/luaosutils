@@ -9,9 +9,8 @@
 
 #include <windows.h>
 
+#include "luaosutils.hpp"
 #include "menu/luaosutils_menu_os.h"
-
-#define DIM(a) (sizeof(a)/sizeof(a[0]))
 
 static std::basic_string<WCHAR> __utf8_to_WCHAR(const char * inpstr)
 {
@@ -133,15 +132,48 @@ menu_handle __menu_get_top_level_menu(window_handle hWnd)
 	return GetMenu(hWnd);
 }
 
+bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex)
+{
+	MENUITEMINFOW menuInfo;
+	memset(&menuInfo, 0, sizeof(menuInfo));
+	menuInfo.cbSize = sizeof(menuInfo);
+	menuInfo.fMask = MIIM_ID | MIIM_STRING;
+	WCHAR menuText[1024];
+	menuInfo.dwTypeData = menuText;
+	menuInfo.cch = DIM(menuText);
+	if (GetMenuItemInfoW(fromMenu, fromIndex, true, &menuInfo) && (NULL == menuInfo.hSubMenu))
+	{
+		DeleteMenu(fromMenu, fromIndex, MF_BYPOSITION);
+		if (toIndex >= 0)
+			InsertMenuW(toMenu, toIndex, MF_BYPOSITION | MF_STRING, menuInfo.wID, menuText);
+		else
+			AppendMenuW(toMenu, MF_STRING, menuInfo.wID, menuText);
+		return true;
+	}
+	return false;
+}
+
 bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
 {
 	std::basic_string<WCHAR> newTextW = __utf8_to_WCHAR(newText.c_str());
-	MENUITEMINFOW menuItemInfo;
-	memset(&menuItemInfo, 0, sizeof(menuItemInfo));
-	menuItemInfo.cbSize = sizeof(menuItemInfo);
-	menuItemInfo.fMask = MIIM_STRING;
-	menuItemInfo.dwTypeData = (LPWSTR)newTextW.c_str();
-	return SetMenuItemInfoW(hMenu, index, MF_BYPOSITION, &menuItemInfo);
+	const int commandID = static_cast<int>(GetMenuItemID(hMenu, index));
+	if (commandID == -1)
+	{
+		MENUITEMINFOW menuItemInfo;
+		memset(&menuItemInfo, 0, sizeof(menuItemInfo));
+		menuItemInfo.cbSize = sizeof(menuItemInfo);
+		menuItemInfo.fMask = MIIM_STRING;
+		menuItemInfo.dwTypeData = (LPWSTR)newTextW.c_str();
+		return SetMenuItemInfoW(hMenu, index, MF_BYPOSITION, &menuItemInfo);
+	}
+	else
+	{
+		//for some reason, Finale does not recognize these changes (for non submenu items)
+		//if we use SetMenuItemInfoW. It may have to do with timing of the calls, but anyway this works.
+		DeleteMenu(hMenu, index, MF_BYPOSITION);
+		InsertMenuW(hMenu, index, MF_BYPOSITION | MF_STRING, commandID, (LPWSTR)newTextW.c_str());
+		return true;
+	}
 }
 
 bool __menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText)

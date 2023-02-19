@@ -13,7 +13,6 @@
 #include "luaosutils.hpp"
 #include "luaosutils_os.h"
 #include "luaosutils_callback_session.hpp"
-#include "menu/luaosutils_menu.hpp"
 
 static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 {

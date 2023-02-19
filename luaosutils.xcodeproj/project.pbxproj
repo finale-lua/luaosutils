@@ -23,7 +23,6 @@
 		B5EFCF2E28634BBA003AC07F /* Array.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2528634BB9003AC07F /* Array.h */; };
 		B5EFCF2F28634BBA003AC07F /* Optional.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2628634BB9003AC07F /* Optional.h */; };
 		B5FEB98F299FD4C100898ADA /* luaosutils_menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5FEB98D299FD4C100898ADA /* luaosutils_menu.cpp */; };
-		B5FEB990299FD4C100898ADA /* luaosutils_menu.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5FEB98E299FD4C100898ADA /* luaosutils_menu.hpp */; };
 		B5FEB996299FDD5200898ADA /* luaosutils_menu_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FEB995299FDD5200898ADA /* luaosutils_menu_os_mac.mm */; };
 /* End PBXBuildFile section */
 
@@ -65,7 +64,6 @@
 		B5EFCF2528634BB9003AC07F /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		B5EFCF2628634BB9003AC07F /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Optional.h; sourceTree = "<group>"; };
 		B5FEB98D299FD4C100898ADA /* luaosutils_menu.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_menu.cpp; sourceTree = "<group>"; };
-		B5FEB98E299FD4C100898ADA /* luaosutils_menu.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = luaosutils_menu.hpp; sourceTree = "<group>"; };
 		B5FEB993299FD7DE00898ADA /* luaosutils_menu_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_menu_os.h; sourceTree = "<group>"; };
 		B5FEB995299FDD5200898ADA /* luaosutils_menu_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_menu_os_mac.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -155,7 +153,6 @@
 			isa = PBXGroup;
 			children = (
 				B5FEB98D299FD4C100898ADA /* luaosutils_menu.cpp */,
-				B5FEB98E299FD4C100898ADA /* luaosutils_menu.hpp */,
 				B5FEB993299FD7DE00898ADA /* luaosutils_menu_os.h */,
 				B5FEB995299FDD5200898ADA /* luaosutils_menu_os_mac.mm */,
 			);
@@ -171,7 +168,6 @@
 			files = (
 				B5EFCF2E28634BBA003AC07F /* Array.h in Headers */,
 				B5EFCF2728634BBA003AC07F /* Vector.h in Headers */,
-				B5FEB990299FD4C100898ADA /* luaosutils_menu.hpp in Headers */,
 				B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */,
 				B5EFCF2928634BBA003AC07F /* RefCountedObject.h in Headers */,
 				B53F2F6E28CBB6BF0096F6F8 /* luaosutils_os.h in Headers */,

@@ -199,7 +199,7 @@ Returns the title of the specified menu.
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|window_handle|Handle to the window containing the menu (may be omitted on macOS).|
+|(window_handle)|Handle to the window containing the menu (may be omitted on macOS).|
 
 |Output Type|Description|
 |----------|-----------|
@@ -241,6 +241,40 @@ local osutils = require('luaosutils')
 local menu = osutils.menu
 
 local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+```
+
+### menu.move\_item
+
+Moves a menu item from one menu location to another.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the source menu.|
+|number|The index of the source menu item.|
+|menu_handle|Handle to the target menu.|
+|(number)|Optional index of the target menu item. If omitted, the item is appended to the end of the menu.|
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|True if the menu item was moved.|
+
+This function can only move base menu items. It cannot move submenus. If you pass in an item for a submenu it returns false. To move a submenu, create the new submenu and then move all the items for the submenu individually.
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+	 -- move the RGP Lua configuration menu option to the end of the Finale menu.
+    menu.move_item(rgp_lua_menu, index, finale_menu)
+end
 ```
 
 ### menu.set\_item\_text

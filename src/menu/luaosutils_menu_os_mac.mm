@@ -101,6 +101,29 @@ menu_handle __menu_get_top_level_menu(window_handle)
    return (__bridge menu_handle)[[NSApplication sharedApplication] mainMenu];
 }
 
+bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex)
+{
+   NSMenu* nsFromMenu = (__bridge NSMenu*)fromMenu;
+   NSMenu* nsToMenu = (__bridge NSMenu*)toMenu;
+   @try
+   {
+      NSMenuItem* fromItem = [nsFromMenu itemAtIndex:fromIndex];
+      if ([fromItem submenu]) return false;
+      NSMenuItem* newItem = [fromItem copy];
+      [newItem setMenu:nil];
+      if (toIndex < 0)
+         [nsToMenu addItem:newItem];
+      else
+         [nsToMenu insertItem:newItem atIndex:toIndex];
+      [nsFromMenu removeItem:fromItem];
+      return true;
+   } @catch (NSException *exception)
+   {
+      NSLog (@"Exception In MenuUtilities AppendMenuItem: %@", exception);
+   }
+   return false;
+}
+
 bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;

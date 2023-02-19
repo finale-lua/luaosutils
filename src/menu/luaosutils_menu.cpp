@@ -7,85 +7,105 @@
 //
 
 #include "luaosutils.hpp"
-#include "menu/luaosutils_menu.hpp"
 #include "menu/luaosutils_menu_os.h"
 
 static int luaosutils_menu_find_item(lua_State *L)
 {
-   window_handle hWnd = reinterpret_cast<window_handle>(lua_touserdata(L, 1));
-   std::string item_text = luabridge::Stack<std::string>::get(L, 2);
-   luabridge::LuaRef min_index = luabridge::Stack<luabridge::LuaRef>::get(L, 3);
+   window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
+   std::string itemText = __get_lua_parameter(L, 2, std::string());
+   int minIndex = __get_lua_parameter(L, 3, 0);
+   
+   if (itemText.size() <= 0)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
 
-   int item_index = 0;
-   menu_handle menu = __menu_find_item(hWnd, item_text, min_index.isNumber() ? min_index.cast<int>() : 0, item_index);
+   int itemIndex = 0;
+   menu_handle menu = __menu_find_item(hWnd, itemText, minIndex, itemIndex);
    if (! menu)
    {
       lua_pushnil(L);
       return 1;
    }
    
-   lua_pushlightuserdata(L, menu);
-   luabridge::Stack<int>::push(L, item_index);
+   __push_lua_return_value(L, menu);
+   __push_lua_return_value(L, itemIndex);
    return 2;
 }
 
 static int luaosutils_menu_get_item_count(lua_State *L)
 {
-   menu_handle hMenu = reinterpret_cast<menu_handle>(lua_touserdata(L, 1));
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
 
-   luabridge::Stack<int>::push(L, __menu_get_item_count(hMenu));
+   __push_lua_return_value(L, __menu_get_item_count(hMenu));
    return 1;
 }
 
 static int luaosutils_menu_get_item_text(lua_State *L)
 {
-   menu_handle hMenu = reinterpret_cast<menu_handle>(lua_touserdata(L, 1));
-   int index = luabridge::Stack<int>::get(L, 2);
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   int index = __get_lua_parameter(L, 2, -1);
    
-   luabridge::Stack<std::string>::push(L, __menu_get_item_text(hMenu, index));
+   __push_lua_return_value(L, __menu_get_item_text(hMenu, index));
    return 1;
 }
 
 static int luaosutils_menu_get_title(lua_State *L)
 {
-   menu_handle hMenu = reinterpret_cast<menu_handle>(lua_touserdata(L, 1));
-   window_handle hWnd = reinterpret_cast<window_handle>(lua_touserdata(L, 2));
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   window_handle hWnd = __get_lua_parameter<window_handle>(L, 2, nullptr);
 
-   luabridge::Stack<std::string>::push(L, __menu_get_title(hMenu, hWnd));
+   __push_lua_return_value(L, __menu_get_title(hMenu, hWnd));
    return 1;
 }
 
 static int luaosutils_menu_get_top_level_menu(lua_State *L)
 {
-   window_handle hWnd = reinterpret_cast<window_handle>(lua_touserdata(L, 1));
+   window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
 
-   menu_handle menu = __menu_get_top_level_menu(hWnd);
-
-   if (menu)
-      lua_pushlightuserdata(L, menu);
-   else
-      lua_pushnil(L);
-
+   __push_lua_return_value(L, __menu_get_top_level_menu(hWnd));
    return 1;
 }
 
+static int luaosutils_menu_move_item(lua_State *L)
+{
+   menu_handle fromMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   int fromIndex = __get_lua_parameter(L, 2, -1);
+   menu_handle toMenu = __get_lua_parameter<menu_handle>(L, 3, nullptr);
+   int toIndex = __get_lua_parameter(L, 4, -1);
+   
+   if (fromIndex < 0 || !fromMenu || !toMenu)
+      __push_lua_return_value(L, false);
+   else
+      __push_lua_return_value(L, __menu_move_item(fromMenu, fromIndex, toMenu, toIndex));
+   return 1;
+}
+
+
 static int luaosutils_menu_set_item_text(lua_State *L)
 {
-   menu_handle hMenu = reinterpret_cast<menu_handle>(lua_touserdata(L, 1));
-   int index = luabridge::Stack<int>::get(L, 2);
-   std::string newText = luabridge::Stack<std::string>::get(L, 3);
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   int index = __get_lua_parameter(L, 2, -1);
+   std::string newText = __get_lua_parameter(L, 3, std::string());
    
-   luabridge::Stack<bool>::push(L, __menu_set_item_text(hMenu, index, newText));
+   if (newText.size() <= 0 || index < 0)
+      __push_lua_return_value(L, false);
+   else
+      __push_lua_return_value(L, __menu_set_item_text(hMenu, index, newText));
    return 1;
 }
 
 static int luaosutils_menu_set_title(lua_State *L)
 {
-   menu_handle hMenu = reinterpret_cast<menu_handle>(lua_touserdata(L, 1));
-   window_handle hWnd = reinterpret_cast<window_handle>(lua_touserdata(L, 2));
-   std::string newText = luabridge::Stack<std::string>::get(L, 3);
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   window_handle hWnd = __get_lua_parameter<window_handle>(L, 2, nullptr);
+   std::string newText = __get_lua_parameter(L, 3, std::string());
 
-   luabridge::Stack<bool>::push(L, __menu_set_title(hMenu, hWnd, newText));
+   if (newText.size() <= 0)
+      __push_lua_return_value(L, false);
+   else
+      __push_lua_return_value(L, __menu_set_title(hMenu, hWnd, newText));
    return 1;
 }
 
@@ -95,6 +115,7 @@ static const luaL_Reg menuutils[] = {
    {"get_item_text",       luaosutils_menu_get_item_text},
    {"get_title",           luaosutils_menu_get_title},
    {"get_top_level_menu",  luaosutils_menu_get_top_level_menu},
+   {"move_item",           luaosutils_menu_move_item},
    {"set_item_text",       luaosutils_menu_set_item_text},
    {"set_title",           luaosutils_menu_set_title},
    {NULL, NULL} // sentinel

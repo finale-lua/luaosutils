@@ -114,9 +114,6 @@
     <ClInclude Include="..\src\luaosutils_os.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\menu\luaosutils_menu.hpp">
-      <Filter>Source Files\menu</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
       <Filter>Source Files\menu</Filter>
     </ClInclude>
