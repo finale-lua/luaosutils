@@ -98,27 +98,44 @@ The `menu` namespace provides os-independent functions for manipulating menu ite
 
 The Windows and macOS operating systems treat menus slightly differently. In macOS, the top-level menu is associated with the application, whereas in Windows any window can have a top-level menu. Finale for Windows runs in an MDI Client window, and for Lua on Finale it is recommended to use the function `finenv.GetFinaleMainWindow()` to get it. This function (available starting in RGP Lua 0.66) returns the MDI Client Window handle in Windows or `nil` in macOS.
 
-These functions use the following os-specific types. These appear in Lua as opaque userdata items. Lua scripts should only use them to pass to other menu functions in this library.
+These functions use the following os-specific types. They appear in Lua as opaque userdata items. Lua scripts should only use them to pass to the menu functions in this library.
 
 |Type|Description|
 |----|-----------|
 |menu_handle|os-assigned value that provides acces to the menu|
 |window_handle|handle (`HWND`) of a window containing a top-level menu (Windows) or `nil` (macOS)|
 
-### menu.find\_item
+Here is an example script that uses the menu functions to move Finale's Music Spacing options to a top-level menu called "Spacing". (See `test/test-menubuild-luaosutil.lua` in this repository.)
 
-Searches the currently running application's top-level menu for text that matches the input text and returns the enclosing menu if it is found.
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+local main_window = finenv.GetFinaleMainWindow()
+local spacing_menu, spacing_index = menu.find_item(main_window, "Apply Note Spacing to")
+local new_spacing_menu = menu.insert_submenu("Spacing",  menu.get_top_level_menu(main_window), 4)
+for i = 0, menu.get_item_count(spacing_menu)-1 do
+    local move_result = menu.move_item(spacing_menu, 0, new_spacing_menu)
+    print(move_result)
+end
+local del_result = menu.delete_submenu(spacing_menu, main_window)
+print(del_result)
+```
+
+### menu.get\_title
+
+Returns the title of the specified menu.
 
 |Input Type|Description|
 |----------|-----------|
-|window_handle|The window with the menu to search (Windows) or `nil` (macOS).|
-|string|The text to search for encoded in utf8.|
-|(number)|Optional 0-based index that specifies the starting top-level menu from which to search. If omitted, the entire top-level menu is searched.|
+|menu_handle|Handle to the menu.|
+|(window_handle)|Handle to the window containing the menu (may be omitted on macOS).|
 
 |Output Type|Description|
 |----------|-----------|
-|menu_handle|Handle to the menu or `nil` if not found.|
-|number|The 0-based index of the found item.|
+|string|The title of menu (UTF-8 encoding).|
+
+On Windows, the title includes the `&` character if it has keyboard shortcut. 
 
 Example:
 
@@ -131,8 +148,38 @@ local min_search_index = 6
 
 local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
 if rgp_lua_menu then
-    -- rgp_lua_menu is the menu that contains the menu item for RGP Lua.
+    local menu_title = menu.get_title(rgp_lua_menu, finenv.GetFinaleMainWindow())
 end
+```
+
+### menu.delete\_submenu
+
+Deletes the specified submenu item from its parent menu. The submenu must contain zero menu items or it will not be deleted.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle of the submenu to be deleted.|
+|window_handle|The window with the menu to search (Windows) or `nil` (macOS).|
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|True if the submenu was deleted.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+
+-- add code the moves all items out of rgp_lua_menu
+
+-- now delete the submenu that contained "RGP Lua..." if it no longer contains items
+menu.delete_submenu(rgp_lua_menu, finenv.GetFinaleMainWindow())
 ```
 
 ### menu.get\_item\_count
@@ -243,6 +290,64 @@ local menu = osutils.menu
 local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
 ```
 
+### menu.insert\_separator
+
+Inserts a menu separator at the specified index.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|(number)|The index where to insert the separator. If omitted, the separator is appended at the end.|
+
+|Output Type|Description|
+|----------|-----------|
+|number|The 0-based index of the new separator or `nil` if error.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    local submenu, submenu_index = menu.insert_submenu("Articulations", rgp_lua_menu, 3)
+end
+```
+
+### menu.insert\_submenu
+
+Inserts a new submenu at the specified index.
+
+|Input Type|Description|
+|----------|-----------|
+|string|Title of the new submenu encoded UTF-8.|
+|menu_handle|Handle of the menu in which to insert the new submenu.|
+|(number)|The index where to insert the new submenu. If omitted, the submenu is appended at the end.|
+
+|Output Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the new submenu or `nil` if not found.|
+|number|The 0-based index of the new submenu.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    local submenu, submenu_index = menu.insert_submenu("Articulations", rgp_lua_menu, 3)
+end
+```
+
 ### menu.move\_item
 
 Moves a menu item from one menu location to another.
@@ -257,6 +362,7 @@ Moves a menu item from one menu location to another.
 |Output Type|Description|
 |----------|-----------|
 |boolean|True if the menu item was moved.|
+|number|The new 0-based index of the item in the target menu.|
 
 This function can only move base menu items. It cannot move submenus. If you pass in an item for a submenu it returns false. To move a submenu, create the new submenu and then move all the items for the submenu individually.
 
@@ -275,6 +381,29 @@ if rgp_lua_menu then
 	 -- move the RGP Lua configuration menu option to the end of the Finale menu.
     menu.move_item(rgp_lua_menu, index, finale_menu)
 end
+```
+
+### menu.redraw
+
+Redraws the menu bar. This function does nothing on macOS.
+
+|Input Type|Description|
+|----------|-----------|
+|window_handle|Handle to the window containing the menu (`nil` on macOS).|
+
+|Output Type|Description|
+|----------|-----------|
+|none||
+
+Always call this function after modifying the menus, especially if you have modified the top menu. It it is sometimes not necessary, especially when running at startup, but it does not hurt anything.
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+menu.redraw(finenv.GetFinaleMainWindow())
 ```
 
 ### menu.set\_item\_text

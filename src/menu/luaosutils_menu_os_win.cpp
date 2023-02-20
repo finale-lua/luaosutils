@@ -59,13 +59,28 @@ static HMENU __GetParentMenu(HMENU menu, HMENU origin, int* pos)
 	return NULL;
 }
 
-menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemindex)
+bool __menu_delete_submenu(menu_handle hMenu, window_handle hWnd)
+{
+	if (0 == GetMenuItemCount(hMenu))
+	{
+		int superIndex = 0;
+		HMENU superMenu = __GetParentMenu(hMenu, __menu_get_top_level_menu(hWnd), &superIndex);
+		if (superMenu)
+		{
+			DeleteMenu(superMenu, superIndex, MF_BYPOSITION);
+			return true;
+		}
+	}
+	return false;
+}
+
+menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
 	std::basic_string<WCHAR> itemText = __utf8_to_WCHAR(item_text.c_str());
    HMENU topMenu = __menu_get_top_level_menu(hWnd);
 
-   auto searchSubmenus = [&itemindex, itemText](HMENU hMenu, int startIndex, auto&& searchSubmenus) -> HMENU
+   auto searchSubmenus = [&itemIndex, itemText](HMENU hMenu, int startIndex, auto&& searchSubmenus) -> HMENU
    {
 		const int maxItems = __menu_get_item_count(hMenu);
 		
@@ -94,7 +109,7 @@ menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, i
 			}
 			if (gotIt)
 			{
-				itemindex = i;
+				itemIndex = i;
 				return hMenu;
 			}
 		}
@@ -112,7 +127,8 @@ int __menu_get_item_count(menu_handle hMenu)
 std::string __menu_get_item_text(menu_handle hMenu, int index)
 {
 	WCHAR menuText[1024];
-	GetMenuStringW(hMenu, index, menuText, DIM(menuText) - 1, MF_BYPOSITION);
+	if (!GetMenuStringW(hMenu, index, menuText, DIM(menuText) - 1, MF_BYPOSITION))
+		return "";
 	menuText[DIM(menuText) - 1] = 0;
 	return __WCHAR_to_utf8(menuText);
 }
@@ -123,7 +139,6 @@ std::string __menu_get_title(menu_handle hMenu, window_handle hWnd)
 	HMENU hParentMenu = __GetParentMenu(hMenu, __menu_get_top_level_menu(hWnd), &parentIndex);
 	if (hParentMenu)
 		return __menu_get_item_text(hParentMenu, parentIndex);
-
 	return "";
 }
 
@@ -132,7 +147,46 @@ menu_handle __menu_get_top_level_menu(window_handle hWnd)
 	return GetMenu(hWnd);
 }
 
-bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex)
+int __menu_insert_separator(menu_handle hMenu, int insertIndex)
+{
+	int retval = -1;
+	if (insertIndex < 0)
+	{
+		retval = GetMenuItemCount(hMenu);
+		if (!AppendMenuW(hMenu, MF_SEPARATOR, NULL, NULL))
+			return -1;
+	}
+	else
+	{
+		retval = (std::min)(insertIndex, GetMenuItemCount(hMenu));
+		if (!InsertMenuW(hMenu, retval, MF_BYPOSITION | MF_SEPARATOR, NULL, NULL))
+			return -1;
+	}
+	return retval;
+}	
+
+menu_handle __menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex)
+{
+	HMENU newSubMenu = CreatePopupMenu();
+	if (!newSubMenu)
+		return NULL;
+	std::basic_string<WCHAR> itemTextW = __utf8_to_WCHAR(itemText.c_str());
+	if (insertIndex < 0)
+	{
+		itemIndex = GetMenuItemCount(hMenu);
+		if (!AppendMenuW(hMenu, MF_STRING | MF_POPUP | MF_ENABLED, (UINT_PTR)newSubMenu, itemTextW.c_str()))
+			return nullptr;
+	}
+	else
+	{
+		itemIndex = (std::min)(insertIndex, GetMenuItemCount(hMenu));
+		if (!InsertMenuW(hMenu, itemIndex, MF_BYPOSITION | MF_STRING | MF_POPUP | MF_ENABLED, (UINT_PTR)newSubMenu, itemTextW.c_str()))
+			return nullptr;
+	}
+	return newSubMenu;
+}
+
+bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex)
 {
 	MENUITEMINFOW menuInfo;
 	memset(&menuInfo, 0, sizeof(menuInfo));
@@ -145,9 +199,15 @@ bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, i
 	{
 		DeleteMenu(fromMenu, fromIndex, MF_BYPOSITION);
 		if (toIndex >= 0)
-			InsertMenuW(toMenu, toIndex, MF_BYPOSITION | MF_STRING, menuInfo.wID, menuText);
+		{
+			itemIndex = (std::min)(toIndex, GetMenuItemCount(toMenu));
+			InsertMenuW(toMenu, itemIndex, MF_BYPOSITION | MF_STRING, menuInfo.wID, menuText);
+		}
 		else
+		{
+			itemIndex = GetMenuItemCount(toMenu);
 			AppendMenuW(toMenu, MF_STRING, menuInfo.wID, menuText);
+		}
 		return true;
 	}
 	return false;

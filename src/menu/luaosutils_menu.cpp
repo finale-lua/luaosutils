@@ -9,6 +9,18 @@
 #include "luaosutils.hpp"
 #include "menu/luaosutils_menu_os.h"
 
+static int luaosutils_menu_delete_submenu(lua_State *L)
+{
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   window_handle hWnd = __get_lua_parameter<window_handle>(L, 2, nullptr);
+   
+   if (__menu_get_item_count(hMenu) > 0)
+      __push_lua_return_value(L, false);
+   else
+      __push_lua_return_value(L, __menu_delete_submenu(hMenu, hWnd));
+   return 1;
+}
+
 static int luaosutils_menu_find_item(lua_State *L)
 {
    window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
@@ -68,6 +80,51 @@ static int luaosutils_menu_get_top_level_menu(lua_State *L)
    return 1;
 }
 
+static int luaosutils_menu_insert_separator(lua_State *L)
+{
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   int insertIndex = __get_lua_parameter(L, 2, -1);
+   
+   if (!hMenu)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
+
+   int itemIndex = __menu_insert_separator(hMenu, insertIndex);
+
+   if (itemIndex < 0)
+      lua_pushnil(L);
+   else
+      __push_lua_return_value(L, itemIndex);
+   return 1;
+}
+
+static int luaosutils_menu_insert_submenu(lua_State *L)
+{
+   std::string itemText = __get_lua_parameter(L, 1, std::string());
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 2, nullptr);
+   int insertIndex = __get_lua_parameter(L, 3, -1);
+   
+   if (itemText.size() <= 0 || !hMenu)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
+
+   int itemIndex = 0;
+   menu_handle submenu = __menu_insert_submenu(itemText, hMenu, insertIndex, itemIndex);
+   if (! submenu)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
+   
+   __push_lua_return_value(L, submenu);
+   __push_lua_return_value(L, itemIndex);
+   return 2;
+}
+
 static int luaosutils_menu_move_item(lua_State *L)
 {
    menu_handle fromMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
@@ -75,13 +132,31 @@ static int luaosutils_menu_move_item(lua_State *L)
    menu_handle toMenu = __get_lua_parameter<menu_handle>(L, 3, nullptr);
    int toIndex = __get_lua_parameter(L, 4, -1);
    
-   if (fromIndex < 0 || !fromMenu || !toMenu)
+   if (fromIndex < 0 || !fromMenu || fromIndex >= __menu_get_item_count(fromMenu) || !toMenu)
+   {
       __push_lua_return_value(L, false);
-   else
-      __push_lua_return_value(L, __menu_move_item(fromMenu, fromIndex, toMenu, toIndex));
-   return 1;
+      return 1;
+   }
+   
+   int itemIndex = 0;
+   bool result = __menu_move_item(fromMenu, fromIndex, toMenu, toIndex, itemIndex);
+   
+   __push_lua_return_value(L, result);
+   if (! result)
+      return 1;
+   __push_lua_return_value(L, itemIndex);
+   return 2;
 }
 
+static int luaosutils_menu_redraw([[maybe_unused]]lua_State* L)
+{
+#ifdef _MSC_VER
+   window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
+   if (hWnd) DrawMenuBar(hWnd);
+#endif
+
+   return 0;
+}
 
 static int luaosutils_menu_set_item_text(lua_State *L)
 {
@@ -89,7 +164,7 @@ static int luaosutils_menu_set_item_text(lua_State *L)
    int index = __get_lua_parameter(L, 2, -1);
    std::string newText = __get_lua_parameter(L, 3, std::string());
    
-   if (newText.size() <= 0 || index < 0)
+   if (newText.size() <= 0 || index < 0 || index >= __menu_get_item_count(hMenu))
       __push_lua_return_value(L, false);
    else
       __push_lua_return_value(L, __menu_set_item_text(hMenu, index, newText));
@@ -110,12 +185,16 @@ static int luaosutils_menu_set_title(lua_State *L)
 }
 
 static const luaL_Reg menuutils[] = {
+   {"delete_submenu",      luaosutils_menu_delete_submenu},
    {"find_item",           luaosutils_menu_find_item},
    {"get_item_count",      luaosutils_menu_get_item_count},
    {"get_item_text",       luaosutils_menu_get_item_text},
    {"get_title",           luaosutils_menu_get_title},
    {"get_top_level_menu",  luaosutils_menu_get_top_level_menu},
+   {"insert_separator",    luaosutils_menu_insert_separator},
+   {"insert_submenu",      luaosutils_menu_insert_submenu},
    {"move_item",           luaosutils_menu_move_item},
+   {"redraw",              luaosutils_menu_redraw},
    {"set_item_text",       luaosutils_menu_set_item_text},
    {"set_title",           luaosutils_menu_set_title},
    {NULL, NULL} // sentinel

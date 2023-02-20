@@ -83,7 +83,6 @@ void __push_lua_return_value(lua_State* L, T retval)
    }
    else
       luabridge::Stack<T>::push(L, retval);
-
 }
 #endif
 
