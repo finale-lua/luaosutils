@@ -152,6 +152,36 @@ local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lu
 menu.delete_submenu(rgp_lua_menu, finenv.GetFinaleMainWindow())
 ```
 
+### menu.find\_item
+
+Searches the currently running application's top-level menu for text that matches the input text and returns the enclosing menu if it is found.
+
+|Input Type|Description|
+|----------|-----------|
+|window_handle|The window with the menu to search (Windows) or `nil` (macOS).|
+|string|The text to search for encoded in utf8.|
+|(number)|Optional 0-based index that specifies the starting top-level menu from which to search. If omitted, the entire top-level menu is searched.|
+
+|Output Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu or `nil` if not found.|
+|number|The 0-based index of the found item.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+ -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
+local min_search_index = 6
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+if rgp_lua_menu then
+    -- rgp_lua_menu is the menu that contains the menu item for RGP Lua.
+end
+```
+
 ### menu.get\_item\_count
 
 Returns the number of menu items in the specified menu. It includes divider items.
