@@ -13,6 +13,8 @@
 		B53F2F6E28CBB6BF0096F6F8 /* luaosutils_internet_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F6D28CBB6BF0096F6F8 /* luaosutils_internet_os.h */; };
 		B5A6773F28D0DB7200D9B74C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6773E28D0DB7200D9B74C /* Cocoa.framework */; };
 		B5AABB4E284E57ED00708D15 /* libLua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AABB4B284E57C900708D15 /* libLua.a */; };
+		B5B9D6F329A5270400D2174E /* luaosutils_process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5B9D6F229A5270400D2174E /* luaosutils_process.cpp */; };
+		B5B9D6F629A52B2E00D2174E /* luaosutils_process_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5B9D6F529A52B2E00D2174E /* luaosutils_process_os_mac.mm */; };
 		B5DEB60329A506460076472B /* luaosutils_internet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5DEB60229A506460076472B /* luaosutils_internet.cpp */; };
 		B5EFCF2728634BBA003AC07F /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1D28634BB9003AC07F /* Vector.h */; };
 		B5EFCF2828634BBA003AC07F /* List.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1E28634BB9003AC07F /* List.h */; };
@@ -54,6 +56,9 @@
 		B5A6773E28D0DB7200D9B74C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		B5AABB46284E57C900708D15 /* Lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Lua.xcodeproj; path = "lua-source/Lua.xcodeproj"; sourceTree = "<group>"; };
 		B5AABB52284E69DA00708D15 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		B5B9D6F229A5270400D2174E /* luaosutils_process.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_process.cpp; sourceTree = "<group>"; };
+		B5B9D6F429A5275800D2174E /* luaosutils_process_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_process_os.h; sourceTree = "<group>"; };
+		B5B9D6F529A52B2E00D2174E /* luaosutils_process_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_process_os_mac.mm; sourceTree = "<group>"; };
 		B5DEB60229A506460076472B /* luaosutils_internet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_internet.cpp; sourceTree = "<group>"; };
 		B5EFCF1D28634BB9003AC07F /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
 		B5EFCF1E28634BB9003AC07F /* List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = List.h; sourceTree = "<group>"; };
@@ -114,6 +119,7 @@
 		B5AABB41284E569300708D15 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				B5B9D6F129A526CD00D2174E /* process */,
 				B5DEB60129A505730076472B /* internet */,
 				B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */,
 				B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */,
@@ -129,6 +135,16 @@
 				B5AABB4B284E57C900708D15 /* libLua.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B5B9D6F129A526CD00D2174E /* process */ = {
+			isa = PBXGroup;
+			children = (
+				B5B9D6F229A5270400D2174E /* luaosutils_process.cpp */,
+				B5B9D6F429A5275800D2174E /* luaosutils_process_os.h */,
+				B5B9D6F529A52B2E00D2174E /* luaosutils_process_os_mac.mm */,
+			);
+			path = process;
 			sourceTree = "<group>";
 		};
 		B5DEB60129A505730076472B /* internet */ = {
@@ -265,6 +281,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5B9D6F329A5270400D2174E /* luaosutils_process.cpp in Sources */,
+				B5B9D6F629A52B2E00D2174E /* luaosutils_process_os_mac.mm in Sources */,
 				B53F2F6C28CBB6690096F6F8 /* luaosutils_internet_os_mac.mm in Sources */,
 				B5FEB996299FDD5200898ADA /* luaosutils_menu_os_mac.mm in Sources */,
 				B53F2F5C28CB68030096F6F8 /* luaosutils.cpp in Sources */,
