@@ -1,11 +1,12 @@
 function plugindef()
     finaleplugin.RequireDocument = false
-    return "aaa - luautils test"
+    return "aaa - luautils internet test"
 end
     
 require('mobdebug').start() -- for ZeroBrane Studio debugging
 
 local osutils = require('luaosutils')
+local internet = osutils.internet
 
 local async_call = true
 
@@ -32,9 +33,9 @@ function callback(download_successful, urlcontents)
 end
 
 if async_call then
-    g_session = osutils.download_url(url, callback)
+    g_session = internet.download_url(url, callback)
     finenv.RetainLuaState = true
 else
-    local success, data = osutils.download_url_sync(url, 5)
+    local success, data = internet.download_url_sync(url, 5)
     callback(success, data)
 end

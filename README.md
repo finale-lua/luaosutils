@@ -15,7 +15,9 @@ If you are bundling this with a plugin suite for end users, you may need to buil
 
 # Functions
 
-### download\_url
+## The 'internet' namespace
+
+### internet.download\_url
 
 Downloads the contents of a url to a Lua string. The URL can be text or binary. The Lua string acts as a data buffer for the download and can be subsequently saved as a file (binary or text).
 The function uses the HTTPS protocol. On Windows, HTTPS protocol is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
@@ -45,6 +47,7 @@ Example:
 
 ```lua
 local osutils = require('luaosutils')
+local internet = osutils.internet
 
 function callback(download_successful, urlcontents)
    if download_successful then
@@ -56,14 +59,14 @@ function callback(download_successful, urlcontents)
 end
 
 -- use a global to guarantee that it stays in scope in the callback
-g_session = osutils.download_url("https://mysite.com/myfile.zip", callback)
+g_session = internet.download_url("https://mysite.com/myfile.zip", callback)
 
 finenv.RetainLuaState = true
 ```
 
 The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
 
-### download\_url\_sync
+### internet.download\_url\_sync
 
 Downloads a url synchronously. You supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small files where you can limit the timeout to 1 or 2 seconds. Synchronous calls block Finale's user interface.
 
@@ -82,8 +85,9 @@ Example:
 
 ```lua
 local osutils = require('luaosutils')
+local internet = osutils.internet
 
-local download_successful, urlcontents = osutils.download_url_sync("https://mysite.com/myfile.zip", 5)
+local download_successful, urlcontents = internet.download_url_sync("https://mysite.com/myfile.zip", 5)
 
 if download_successful then
     local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.zip", "wb")

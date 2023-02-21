@@ -217,7 +217,7 @@ static const std::map<std::string, MENUITEM_TYPES> __constants =
    {"ITEMTYPE_SEPARATOR",     MENUITEM_TYPES::ITEMTYPE_SEPARATOR}
 };
 
-static const luaL_Reg menuutils[] = {
+static const luaL_Reg menu_utils[] = {
    {"delete_submenu",      luaosutils_menu_delete_submenu},
    {"find_item",           luaosutils_menu_find_item},
    {"get_item_count",      luaosutils_menu_get_item_count},
@@ -242,7 +242,7 @@ void luosutils_menu_create(lua_State *L)
    for (auto constant : __constants)
       __add_constant(L, constant.first.c_str(), static_cast<int>(constant.second), -3);
    
-   luaL_setfuncs(L, menuutils, 0);  // add file methods to new metatable
+   luaL_setfuncs(L, menu_utils, 0);  // add file methods to new metatable
    lua_setfield(L, -2, "menu");     // add the nested table to the parent table with the name
 }
 

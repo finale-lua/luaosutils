@@ -13,7 +13,7 @@
 #include <map>
 
 #include "luaosutils.hpp"
-#include "luaosutils_os.h"
+#include "internet/luaosutils_internet_os.h"
 
 /** \brief This class is used to guarantee that a Lua state is still active when a callback occurs.
  * A userdata of it is returned to Lua and the session stays active as long as
