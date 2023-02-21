@@ -3,7 +3,8 @@
 //  luaosutils
 //
 //  Created by Robert Patterson on 2/17/23.
-//  Copyright � 2023 Robert Patterson. All rights reserved.
+//  Copyright © 2023 Robert Patterson. All rights reserved.
+//  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
 #include <vector>
 
@@ -11,32 +12,7 @@
 
 #include "luaosutils.hpp"
 #include "menu/luaosutils_menu_os.h"
-
-static std::basic_string<WCHAR> __utf8_to_WCHAR(const char * inpstr)
-{
-	std::basic_string<WCHAR> retval;
-
-	const int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
-	if (size > 0)
-	{
-		retval.resize(size);
-		MultiByteToWideChar(CP_UTF8, 0, inpstr, -1, retval.data(), size);
-	}
-	return retval;
-}
-
-static std::string __WCHAR_to_utf8(const WCHAR* inpstr)
-{
-	std::string retval;
-
-	int size = WideCharToMultiByte(CP_UTF8, 0, inpstr, -1, NULL, 0, NULL, NULL) - 1; // remove null-terminator
-	if (size > 0)
-	{
-		retval.resize(size);
-		WideCharToMultiByte(CP_UTF8, 0, inpstr, -1, retval.data(), size, NULL, NULL);
-	}
-	return retval;
-}
+#include "winutils/luaosutils_winutils.h"
 
 static HMENU __GetParentMenu(HMENU menu, HMENU origin, int* pos)
 {

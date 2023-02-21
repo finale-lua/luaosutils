@@ -4,6 +4,7 @@
 //
 //  Created by Robert Patterson on 2/17/23.
 //  Copyright © 2023 Robert Patterson. All rights reserved.
+//  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
 
 #ifndef luaosutils_menu_os_h

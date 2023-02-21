@@ -22,6 +22,9 @@
     <Filter Include="Source Files\menu">
       <UniqueIdentifier>{900585f5-5cc6-4e67-9e2e-5c3e6cef448b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\winutils">
+      <UniqueIdentifier>{f877adc6-e00a-4a72-a643-aca9aea2c3fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -116,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
       <Filter>Source Files\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\winutils\luaosutils_winutils.h">
+      <Filter>Source Files\winutils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

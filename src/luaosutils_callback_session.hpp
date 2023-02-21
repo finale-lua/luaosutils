@@ -4,6 +4,7 @@
 //
 //  Created by Robert Patterson on 9/11/22.
 //  Copyright © 2022 Robert Patterson. All rights reserved.
+//  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
 
 #ifndef luaosutils_callback_session_hpp

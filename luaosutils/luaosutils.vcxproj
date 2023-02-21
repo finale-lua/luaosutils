@@ -116,6 +116,7 @@
     <ClInclude Include="..\src\luaosutils_callback_session.hpp" />
     <ClInclude Include="..\src\luaosutils_os.h" />
     <ClInclude Include="..\src\menu\luaosutils_menu_os.h" />
+    <ClInclude Include="..\src\winutils\luaosutils_winutils.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
