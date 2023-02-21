@@ -10,6 +10,10 @@ require('mobdebug').start() -- for ZeroBrane Studio debugging
 local osutils = require('luaosutils')
 local menu = osutils.menu
 
+for k, v in pairsbykeys(osutils) do
+    print(tostring(k), tostring(v))
+end
+
 local main_window = finenv.GetFinaleMainWindow()
 
 local show_menu_tree

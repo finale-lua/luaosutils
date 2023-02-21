@@ -10,7 +10,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "luaosutils.hpp"
-#include "luaosutils_os.h"
+#include "internet/luaosutils_internet_os.h"
 
 OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __download_callback callback)
 {

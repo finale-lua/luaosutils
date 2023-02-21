@@ -93,6 +93,7 @@ inline void __add_constant(lua_State *L, const char* const_name, int value, int 
    lua_rawset(L, table_index);
 }
 
+void luosutils_internet_create(lua_State *L);
 void luosutils_menu_create(lua_State *L);
 
 #ifdef __cplusplus

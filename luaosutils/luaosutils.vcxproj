@@ -112,17 +112,18 @@
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\RefCountedPtr.h" />
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\UnorderedMap.h" />
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\Vector.h" />
+    <ClInclude Include="..\src\internet\luaosutils_callback_session.hpp" />
+    <ClInclude Include="..\src\internet\luaosutils_internet_os.h" />
     <ClInclude Include="..\src\luaosutils.hpp" />
-    <ClInclude Include="..\src\luaosutils_callback_session.hpp" />
-    <ClInclude Include="..\src\luaosutils_os.h" />
     <ClInclude Include="..\src\menu\luaosutils_menu_os.h" />
     <ClInclude Include="..\src\winutils\luaosutils_winutils.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\internet\luaosutils_internet.cpp" />
+    <ClCompile Include="..\src\internet\luaosutils_internet_os_win.cpp" />
     <ClCompile Include="..\src\luaosutils.cpp" />
-    <ClCompile Include="..\src\luaosutils_os_win.cpp" />
     <ClCompile Include="..\src\menu\luaosutils_menu.cpp" />
     <ClCompile Include="..\src\menu\luaosutils_menu_os_win.cpp" />
     <ClCompile Include="dllmain.cpp" />

@@ -25,6 +25,9 @@
     <Filter Include="Source Files\winutils">
       <UniqueIdentifier>{f877adc6-e00a-4a72-a643-aca9aea2c3fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\internet">
+      <UniqueIdentifier>{2c12d929-0cda-4b48-85aa-292c5d6ccb0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -111,17 +114,17 @@
     <ClInclude Include="..\src\luaosutils.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\luaosutils_callback_session.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\luaosutils_os.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
       <Filter>Source Files\menu</Filter>
     </ClInclude>
     <ClInclude Include="..\src\winutils\luaosutils_winutils.h">
       <Filter>Source Files\winutils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internet\luaosutils_callback_session.hpp">
+      <Filter>Source Files\internet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internet\luaosutils_internet_os.h">
+      <Filter>Source Files\internet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -134,14 +137,17 @@
     <ClCompile Include="..\src\luaosutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\luaosutils_os_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\menu\luaosutils_menu.cpp">
       <Filter>Source Files\menu</Filter>
     </ClCompile>
     <ClCompile Include="..\src\menu\luaosutils_menu_os_win.cpp">
       <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\internet\luaosutils_internet.cpp">
+      <Filter>Source Files\internet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\internet\luaosutils_internet_os_win.cpp">
+      <Filter>Source Files\internet</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

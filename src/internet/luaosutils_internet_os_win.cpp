@@ -11,7 +11,7 @@
 #include <wininet.h>
 
 #include "luaosutils.hpp"
-#include "luaosutils_os.h"
+#include "internet/luaosutils_internet_os.h"
 
 win_request_context::win_request_context(__download_callback callback) :
             callbackFunction(callback),
