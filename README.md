@@ -539,3 +539,17 @@ if rgp_lua_menu then
 end
 ```
 
+## Version history
+
+2.1.0
+
+- Refactored url download functions into `internet` namespace.
+- Added `menu` namespace with APIs for rearranging menu options.
+
+1.1.1
+
+- Better windows error handling
+
+1.1.0
+
+- original release
