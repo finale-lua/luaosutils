@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 1.1.1"
+#define LUAOSUTILS_VERSION "Luaosutils 2.1.0"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
@@ -46,7 +46,54 @@
 #define DLLEXPORT
 #endif
 
+//ToDo: __download_callback should be in url/luaosutils_url.cpp
 using __download_callback = std::function<void (bool, const std::string&)>;
+
+//utility functions
+
+#define DIM(a) (sizeof(a)/sizeof(a[0]))
+
+#ifndef __OBJC__
+template<typename T>
+T __get_lua_parameter(lua_State* L, int paramNum, T defaultValue)
+{
+   if constexpr (std::is_convertible<T, void*>::value)
+   {
+      T ptr = reinterpret_cast<T>(lua_touserdata(L, paramNum));
+      if (!ptr) return defaultValue;
+      return ptr;
+   }
+   else
+   {
+      luabridge::LuaRef ref = luabridge::Stack<luabridge::LuaRef>::get(L, paramNum);
+      if (ref.isNil()) return defaultValue;
+      return ref.cast<T>();
+   }
+}
+
+template<typename T>
+void __push_lua_return_value(lua_State* L, T retval)
+{
+   if constexpr (std::is_convertible<T, void*>::value)
+   {
+      if (! retval)
+         lua_pushnil(L);
+      else
+         lua_pushlightuserdata(L, retval);
+   }
+   else
+      luabridge::Stack<T>::push(L, retval);
+}
+#endif
+
+inline void __add_constant(lua_State *L, const char* const_name, int value, int table_index)
+{
+   lua_pushstring(L, const_name);
+   lua_pushinteger(L, value);
+   lua_rawset(L, table_index);
+}
+
+void luosutils_menu_create(lua_State *L);
 
 #ifdef __cplusplus
 extern "C" {

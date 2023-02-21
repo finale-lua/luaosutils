@@ -134,6 +134,8 @@ int luaopen_luaosutils (lua_State *L) {
 #else
    luaL_newlib(L, luaosutils);
 #endif
+   /* add menu utils */
+   luosutils_menu_create(L);
    /* make version string available to scripts */
    lua_pushstring(L, "_VERSION");
    lua_pushstring(L, LUAOSUTILS_VERSION);

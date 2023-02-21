@@ -22,6 +22,8 @@
 		B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2428634BB9003AC07F /* UnorderedMap.h */; };
 		B5EFCF2E28634BBA003AC07F /* Array.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2528634BB9003AC07F /* Array.h */; };
 		B5EFCF2F28634BBA003AC07F /* Optional.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2628634BB9003AC07F /* Optional.h */; };
+		B5FEB98F299FD4C100898ADA /* luaosutils_menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5FEB98D299FD4C100898ADA /* luaosutils_menu.cpp */; };
+		B5FEB996299FDD5200898ADA /* luaosutils_menu_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5FEB995299FDD5200898ADA /* luaosutils_menu_os_mac.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +63,9 @@
 		B5EFCF2428634BB9003AC07F /* UnorderedMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnorderedMap.h; sourceTree = "<group>"; };
 		B5EFCF2528634BB9003AC07F /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		B5EFCF2628634BB9003AC07F /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Optional.h; sourceTree = "<group>"; };
+		B5FEB98D299FD4C100898ADA /* luaosutils_menu.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_menu.cpp; sourceTree = "<group>"; };
+		B5FEB993299FD7DE00898ADA /* luaosutils_menu_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_menu_os.h; sourceTree = "<group>"; };
+		B5FEB995299FDD5200898ADA /* luaosutils_menu_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_menu_os_mac.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +117,7 @@
 				B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */,
 				B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */,
 				B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */,
+				B5FEB991299FD4CA00898ADA /* menu */,
 			);
 			name = Source;
 			path = src;
@@ -142,6 +148,16 @@
 			name = LuaBridge;
 			path = LuaBridge/Source/LuaBridge;
 			sourceTree = SOURCE_ROOT;
+		};
+		B5FEB991299FD4CA00898ADA /* menu */ = {
+			isa = PBXGroup;
+			children = (
+				B5FEB98D299FD4C100898ADA /* luaosutils_menu.cpp */,
+				B5FEB993299FD7DE00898ADA /* luaosutils_menu_os.h */,
+				B5FEB995299FDD5200898ADA /* luaosutils_menu_os_mac.mm */,
+			);
+			path = menu;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -191,7 +207,7 @@
 		B55E2B2E2610CE9C003E0F63 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = "Robert Patterson";
 				TargetAttributes = {
 					B55E2B352610CE9C003E0F63 = {
@@ -239,7 +255,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B53F2F6C28CBB6690096F6F8 /* luaosutils_os_mac.mm in Sources */,
+				B5FEB996299FDD5200898ADA /* luaosutils_menu_os_mac.mm in Sources */,
 				B53F2F5C28CB68030096F6F8 /* luaosutils.cpp in Sources */,
+				B5FEB98F299FD4C100898ADA /* luaosutils_menu.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
