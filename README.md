@@ -167,6 +167,8 @@ Searches the currently running application's top-level menu for text that matche
 |menu_handle|Handle to the menu or `nil` if not found.|
 |number|The 0-based index of the found item.|
 
+The Windows version of this function skips "&" characters in the menu item text when doing comparisons. This allows you to supply the same text on either Windows or macOS platforms and find the menu options and ignore the "&" characters that designate keyboard shortcuts on Windows.
+
 Example:
 
 ```lua
