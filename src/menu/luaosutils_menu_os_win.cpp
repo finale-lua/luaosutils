@@ -124,6 +124,11 @@ int __menu_get_item_count(menu_handle hMenu)
 	return hMenu ? GetMenuItemCount(hMenu) : 0;
 }
 
+menu_handle __menu_get_item_submenu(menu_handle hMenu, int index)
+{
+	return GetSubMenu(hMenu, index);
+}
+
 std::string __menu_get_item_text(menu_handle hMenu, int index)
 {
 	WCHAR menuText[1024];
@@ -131,6 +136,15 @@ std::string __menu_get_item_text(menu_handle hMenu, int index)
 		return "";
 	menuText[DIM(menuText) - 1] = 0;
 	return __WCHAR_to_utf8(menuText);
+}
+
+MENUITEM_TYPES __menu_get_item_type(menu_handle hMenu, int index)
+{
+	if (GetSubMenu(hMenu, index))
+		return MENUITEM_TYPES::ITEMTYPE_SUBMENU;
+	if (GetMenuState(hMenu, index, MF_BYPOSITION) & MF_SEPARATOR)
+		return MENUITEM_TYPES::ITEMTYPE_SEPARATOR;
+	return MENUITEM_TYPES::ITEMTYPE_COMMAND;
 }
 
 std::string __menu_get_title(menu_handle hMenu, window_handle hWnd)

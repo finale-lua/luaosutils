@@ -54,12 +54,36 @@ static int luaosutils_menu_get_item_count(lua_State *L)
    return 1;
 }
 
+static int luaosutils_menu_get_item_submenu(lua_State *L)
+{
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   int index = __get_lua_parameter(L, 2, -1);
+
+   if (index < 0 || !hMenu || index >= __menu_get_item_count(hMenu))
+      lua_pushnil(L);
+   else
+      __push_lua_return_value(L, __menu_get_item_submenu(hMenu, index));
+   return 1;
+}
+
 static int luaosutils_menu_get_item_text(lua_State *L)
 {
    menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
    int index = __get_lua_parameter(L, 2, -1);
    
    __push_lua_return_value(L, __menu_get_item_text(hMenu, index));
+   return 1;
+}
+
+static int luaosutils_get_item_type(lua_State *L)
+{
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   int index = __get_lua_parameter(L, 2, -1);
+
+   if (index < 0 || !hMenu || index >= __menu_get_item_count(hMenu))
+      __push_lua_return_value(L, static_cast<int>(MENUITEM_TYPES::ITEMTYPE_INVALID));
+   else
+      __push_lua_return_value(L, static_cast<int>(__menu_get_item_type(hMenu, index)));
    return 1;
 }
 
@@ -184,11 +208,21 @@ static int luaosutils_menu_set_title(lua_State *L)
    return 1;
 }
 
+static const std::map<std::string, MENUITEM_TYPES> __constants =
+{
+   {"ITEMTYPE_INVALID",       MENUITEM_TYPES::ITEMTYPE_INVALID},
+   {"ITEMTYPE_COMMAND",       MENUITEM_TYPES::ITEMTYPE_COMMAND},
+   {"ITEMTYPE_SUBMENU",       MENUITEM_TYPES::ITEMTYPE_SUBMENU},
+   {"ITEMTYPE_SEPARATOR",     MENUITEM_TYPES::ITEMTYPE_SEPARATOR}
+};
+
 static const luaL_Reg menuutils[] = {
    {"delete_submenu",      luaosutils_menu_delete_submenu},
    {"find_item",           luaosutils_menu_find_item},
    {"get_item_count",      luaosutils_menu_get_item_count},
+   {"get_item_submenu",    luaosutils_menu_get_item_submenu},
    {"get_item_text",       luaosutils_menu_get_item_text},
+   {"get_item_type",       luaosutils_get_item_type},
    {"get_title",           luaosutils_menu_get_title},
    {"get_top_level_menu",  luaosutils_menu_get_top_level_menu},
    {"insert_separator",    luaosutils_menu_insert_separator},
@@ -202,8 +236,12 @@ static const luaL_Reg menuutils[] = {
 
 void luosutils_menu_create(lua_State *L)
 {
-   lua_newtable(L);  /* create metatable for file handles */
-   luaL_setfuncs(L, menuutils, 0);  /* add file methods to new metatable */
-   lua_setfield(L, -2, "menu");
+   lua_newtable(L);  // create nested table
+   
+   for (auto constant : __constants)
+      __add_constant(L, constant.first.c_str(), static_cast<int>(constant.second), -3);
+   
+   luaL_setfuncs(L, menuutils, 0);  // add file methods to new metatable
+   lua_setfield(L, -2, "menu");     // add the nested table to the parent table with the name
 }
 

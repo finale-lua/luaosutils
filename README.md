@@ -122,36 +122,6 @@ local del_result = menu.delete_submenu(spacing_menu, main_window)
 print(del_result)
 ```
 
-### menu.get\_title
-
-Returns the title of the specified menu.
-
-|Input Type|Description|
-|----------|-----------|
-|menu_handle|Handle to the menu.|
-|(window_handle)|Handle to the window containing the menu (may be omitted on macOS).|
-
-|Output Type|Description|
-|----------|-----------|
-|string|The title of menu (UTF-8 encoding).|
-
-On Windows, the title includes the `&` character if it has keyboard shortcut. 
-
-Example:
-
-```lua
-local osutils = require('luaosutils')
-local menu = osutils.menu
-
- -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
-local min_search_index = 6
-
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
-if rgp_lua_menu then
-    local menu_title = menu.get_title(rgp_lua_menu, finenv.GetFinaleMainWindow())
-end
-```
-
 ### menu.delete\_submenu
 
 Deletes the specified submenu item from its parent menu. The submenu must contain zero menu items or it will not be deleted.
@@ -209,6 +179,31 @@ if rgp_lua_menu then
 end
 ```
 
+### menu.get\_item\_submenu
+
+Returns the text of the specified menu item.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|number|The index of the submenu item.|
+
+|Output Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the submenu or `nil` if none.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+local main_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "Plug-ins")
+if main_menu then
+    local plugins_menu = menu.get_item_submenu(main_menu, index)
+end
+```
+
 ### menu.get\_item\_text
 
 Returns the text of the specified menu item.
@@ -236,6 +231,46 @@ local min_search_index = 6
 local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local item_3_text = menu.get_item_text(rgp_lua_menu, 3)
+end
+```
+
+### menu.get\_item\_type
+
+Returns the text of the specified menu item.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|number|The index of the submenu item.|
+
+|Output Type|Description|
+|----------|-----------|
+|number|A value representing the menu item type (see table of values)|
+
+The following are the possible values returned by this function.
+
+|Constant Name|Value|Description|
+|-------------|-----|-----------|
+|ITEMTYPE_INVALID|-1|The input was not a valid menu type.|
+|ITEMTYPE_COMMAND|0|Regular menu command item. This is the default if no others are applicable.|
+|ITEMTYPE_SUBMENU|1|Submenu item.|
+|ITEMTYPE_SEPARATOR|2|Separator item.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+local main_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "Plug-ins")
+if main_menu then
+    local plugins_menu = menu.get_item_submenu(main_menu, index)
+    for item = 0, menu.get_item_count(plugins_menu)-1 do
+        local item_type = menu.get_item_type(plugins_menu, item)
+        if item_type == menu.ITEMTYPE_SUBMENU then
+            -- do something with submenu
+        end
+    end
 end
 ```
 

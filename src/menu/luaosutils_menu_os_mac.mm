@@ -85,6 +85,22 @@ int __menu_get_item_count(menu_handle hMenu)
    return 0;
 }
 
+menu_handle __menu_get_item_submenu(menu_handle hMenu, int index)
+{
+   NSMenu* menu = (__bridge NSMenu*)hMenu;
+   @try
+   {
+      NSMenuItem* item = [menu itemAtIndex:index];
+      if (item && [item hasSubmenu])
+         return (__bridge menu_handle)[item submenu];
+   } @catch (NSException *exception)
+   {
+      NSLog(@"Caught exception in __menu_get_item_type: %@", exception);
+   }
+   return nullptr;
+
+}
+
 std::string __menu_get_item_text(menu_handle hMenu, int index)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
@@ -101,11 +117,33 @@ std::string __menu_get_item_text(menu_handle hMenu, int index)
    return "";
 }
 
+MENUITEM_TYPES __menu_get_item_type(menu_handle hMenu, int index)
+{
+   NSMenu* menu = (__bridge NSMenu*)hMenu;
+   @try
+   {
+      NSMenuItem* item = [menu itemAtIndex:index];
+      if (item)
+      {
+         if ([item hasSubmenu]) return MENUITEM_TYPES::ITEMTYPE_SUBMENU;
+         if ([item isSeparatorItem]) return MENUITEM_TYPES::ITEMTYPE_SEPARATOR;
+         return MENUITEM_TYPES::ITEMTYPE_COMMAND;
+      }
+   } @catch (NSException *exception)
+   {
+      NSLog(@"Caught exception in __menu_get_item_type: %@", exception);
+   }
+   return MENUITEM_TYPES::ITEMTYPE_INVALID;
+}
+
 std::string __menu_get_title(menu_handle hMenu, window_handle)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
    {
+      NSMenuItem* item = __GetEnclosingMenuItemForMenu(menu);
+      if (item)
+         return [[item title] UTF8String];
       return [[menu title] UTF8String];
    } @catch (NSException *exception)
    {

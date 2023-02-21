@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 1.1.1"
+#define LUAOSUTILS_VERSION "Luaosutils 2.1.0"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
@@ -85,6 +85,13 @@ void __push_lua_return_value(lua_State* L, T retval)
       luabridge::Stack<T>::push(L, retval);
 }
 #endif
+
+inline void __add_constant(lua_State *L, const char* const_name, int value, int table_index)
+{
+   lua_pushstring(L, const_name);
+   lua_pushinteger(L, value);
+   lua_rawset(L, table_index);
+}
 
 void luosutils_menu_create(lua_State *L);
 
