@@ -10,6 +10,8 @@ require('mobdebug').start() -- for ZeroBrane Studio debugging
 local osutils = require('luaosutils')
 local process = osutils.process
 
+print(osutils._VERSION)
+
 if finenv.UI():IsOnMac() then
     --local result = process.launch("open /Applications/Safari.app")
     --print("launch result", result)
