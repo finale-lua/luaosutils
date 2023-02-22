@@ -28,6 +28,9 @@
     <Filter Include="Source Files\internet">
       <UniqueIdentifier>{2c12d929-0cda-4b48-85aa-292c5d6ccb0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\process">
+      <UniqueIdentifier>{74697255-96c2-4169-81ba-440c5158b3a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -126,6 +129,9 @@
     <ClInclude Include="..\src\internet\luaosutils_internet_os.h">
       <Filter>Source Files\internet</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\process\luaosutils_process_os.h">
+      <Filter>Source Files\process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -148,6 +154,12 @@
     </ClCompile>
     <ClCompile Include="..\src\internet\luaosutils_internet_os_win.cpp">
       <Filter>Source Files\internet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\process\luaosutils_process.cpp">
+      <Filter>Source Files\process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\process\luaosutils_process_os_win.cpp">
+      <Filter>Source Files\process</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

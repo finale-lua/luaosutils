@@ -539,12 +539,67 @@ if rgp_lua_menu then
 end
 ```
 
-## Version history
+## The 'process' namespace
+
+The `process` namespace offers functions to launch a separate process. The advantage of these APIs over the standard Lua APIs is that the process is launched *silently*. No console window appears on either macOS or Windows.
+
+### process.execute
+
+Executes a process with the input command line and waits for it to complete. It captures any text the process sends to `stdio` and returns it in a string.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The command line to execute.|
+
+
+|Output Type|Description|
+|----------|-----------|
+|string|Output from the executed process or `nil` if there was an error.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local process = osutils.process
+
+if finenv.UI():IsOnWindows() then
+    local listing = process.execute('cmd /c dir "C:/Program Files"')
+    -- listing is now a string containing the directory listing of C:/Program Files.
+end
+```
+
+### process.launch
+
+Launches a process with the input command line and returns immediately.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The command line to execute.|
+
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|True if process was successfully launched.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local process = osutils.process
+
+if finenv.UI():IsOnMac() then
+    -- launch Safari and return immediately
+    local success = process.launch("open /Applications/Safari.app")
+end
+```
+
+# Version history
 
 2.1.0
 
 - Refactored url download functions into `internet` namespace.
 - Added `menu` namespace with APIs for rearranging menu options.
+- Added `process` namespace with APIs for silent process launching and execution.
 
 1.1.1
 

@@ -96,6 +96,7 @@ x64
 Debug
 
 *.ico
+*.zip
 
 !release/luaosutils.dll
 !release/luaosutils.dylib

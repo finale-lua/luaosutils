@@ -235,7 +235,7 @@ static const luaL_Reg menu_utils[] = {
    {NULL, NULL} // sentinel
 };
 
-void luosutils_menu_create(lua_State *L)
+void luaosutils_menu_create(lua_State *L)
 {
    lua_newtable(L);  // create nested table
    

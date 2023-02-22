@@ -18,11 +18,31 @@ inline std::basic_string<WCHAR> __utf8_to_WCHAR(const char* inpstr)
 {
 	std::basic_string<WCHAR> retval;
 
-	const int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
+	const int size = MultiByteToWideChar(CP_UTF8, 0, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
 	if (size > 0)
 	{
 		retval.resize(size);
 		MultiByteToWideChar(CP_UTF8, 0, inpstr, -1, retval.data(), size);
+	}
+	return retval;
+}
+
+// this function tries to handle the most common cases of Windows encoding.
+inline std::basic_string<WCHAR> __char_to_WCHAR(const char* inpstr)
+{
+	std::basic_string<WCHAR> retval;
+
+	int encoding = CP_UTF8;
+	int size = MultiByteToWideChar(encoding, MB_ERR_INVALID_CHARS, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
+	if (size <= 0)
+	{
+		encoding = CP_ACP;
+		size = MultiByteToWideChar(encoding, 0, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
+	}
+	if (size > 0)
+	{
+		retval.resize(size);
+		MultiByteToWideChar(encoding, 0, inpstr, -1, retval.data(), size);
 	}
 	return retval;
 }

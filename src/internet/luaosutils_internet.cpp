@@ -126,7 +126,7 @@ static const luaL_Reg internet_utils[] = {
    {NULL, NULL} // sentinel
 };
 
-void luosutils_internet_create(lua_State *L)
+void luaosutils_internet_create(lua_State *L)
 {
    lua_newtable(L);  // create nested table
    

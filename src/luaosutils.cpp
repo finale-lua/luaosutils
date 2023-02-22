@@ -22,8 +22,9 @@ int luaopen_luaosutils (lua_State *L) {
    luaL_newlib(L, funcs);
 #endif
    /* add nested tables */
-   luosutils_internet_create(L);
-   luosutils_menu_create(L);
+   luaosutils_internet_create(L);
+   luaosutils_menu_create(L);
+   luaosutils_process_create(L);
    /* make version string available to scripts */
    lua_pushstring(L, "_VERSION");
    lua_pushstring(L, LUAOSUTILS_VERSION);
