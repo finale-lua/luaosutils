@@ -43,7 +43,7 @@
 #ifdef _MSC_VER
 #define DLLEXPORT __declspec(dllexport)
 #else
-#define DLLEXPORT __attribute__((visibility("default")))
+#define DLLEXPORT
 #endif
 
 //ToDo: __download_callback should be in url/luaosutils_url.cpp

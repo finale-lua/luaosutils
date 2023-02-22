@@ -19,18 +19,6 @@
     <Filter Include="LuaBridge\detail">
       <UniqueIdentifier>{5e80703c-6a0a-48af-8211-39a44981b056}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\menu">
-      <UniqueIdentifier>{900585f5-5cc6-4e67-9e2e-5c3e6cef448b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\winutils">
-      <UniqueIdentifier>{f877adc6-e00a-4a72-a643-aca9aea2c3fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\internet">
-      <UniqueIdentifier>{2c12d929-0cda-4b48-85aa-292c5d6ccb0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\process">
-      <UniqueIdentifier>{74697255-96c2-4169-81ba-440c5158b3a4}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -114,24 +102,6 @@
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Userdata.h">
       <Filter>LuaBridge\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\luaosutils.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
-      <Filter>Source Files\menu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\winutils\luaosutils_winutils.h">
-      <Filter>Source Files\winutils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internet\luaosutils_callback_session.hpp">
-      <Filter>Source Files\internet</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internet\luaosutils_internet_os.h">
-      <Filter>Source Files\internet</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\process\luaosutils_process_os.h">
-      <Filter>Source Files\process</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -140,26 +110,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\luaosutils.cpp">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="luaosutils.def">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\menu\luaosutils_menu.cpp">
-      <Filter>Source Files\menu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\menu\luaosutils_menu_os_win.cpp">
-      <Filter>Source Files\menu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internet\luaosutils_internet.cpp">
-      <Filter>Source Files\internet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internet\luaosutils_internet_os_win.cpp">
-      <Filter>Source Files\internet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\process\luaosutils_process.cpp">
-      <Filter>Source Files\process</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\process\luaosutils_process_os_win.cpp">
-      <Filter>Source Files\process</Filter>
-    </ClCompile>
+    </None>
   </ItemGroup>
 </Project>

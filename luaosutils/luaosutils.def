@@ -1,0 +1,5 @@
+LIBRARY luaosutils.dll
+
+EXPORTS
+luaopen_luaosutils
+
