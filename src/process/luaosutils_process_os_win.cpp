@@ -42,6 +42,7 @@ bool __process_execute(const std::string& cmd, std::string& processOutput)
 
    const std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
 
+   // We have to cast away const here because the API doesn't specify const. But it also does not modify the string.
    if (!CreateProcessW(NULL, const_cast<LPWSTR>(wCmd.c_str()), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
    {
       //std::cerr << "Error: Unable to create process" << std::endl;
@@ -95,6 +96,7 @@ bool __process_launch(const std::string& cmd)
 
    const std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
 
+   // We have to cast away const here because the API doesn't specify const. But it also does not modify the string.
    if (!CreateProcessW(NULL, const_cast<LPWSTR>(wCmd.c_str()), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
    {
       CloseHandle(pi.hProcess);
