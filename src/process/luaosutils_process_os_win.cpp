@@ -13,6 +13,24 @@
 #include "process/luaosutils_process_os.h"
 #include "winutils/luaosutils_winutils.h"
 
+/*
+static bool _GetCmdExeFullPath(std::basic_string<WCHAR>& result)
+{
+   WCHAR sysDir[MAX_PATH];
+
+   // Get the system directory
+   if (GetSystemDirectoryW(sysDir, MAX_PATH) == 0) {
+      // Handle error
+      return false;
+   }
+
+   result = sysDir;
+   result += L"\\cmd.exe";
+
+   return true;
+}
+*/
+
 bool __process_execute(const std::string& cmd, std::string& processOutput)
 {
    SECURITY_ATTRIBUTES saAttr;
@@ -40,11 +58,12 @@ bool __process_execute(const std::string& cmd, std::string& processOutput)
 
    ZeroMemory(&pi, sizeof(pi));
 
-   const std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
+   std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
 
    // We have to cast away const here because the API doesn't specify const. But it also does not modify the string.
-   if (!CreateProcessW(NULL, const_cast<LPWSTR>(wCmd.c_str()), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+   if (!CreateProcessW(NULL, wCmd.data(), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
    {
+      DWORD error = GetLastError();
       //std::cerr << "Error: Unable to create process" << std::endl;
       CloseHandle(hRead);
       CloseHandle(hWrite);
@@ -94,10 +113,10 @@ bool __process_launch(const std::string& cmd)
 
    ZeroMemory(&pi, sizeof(pi));
 
-   const std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
+   std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
 
    // We have to cast away const here because the API doesn't specify const. But it also does not modify the string.
-   if (!CreateProcessW(NULL, const_cast<LPWSTR>(wCmd.c_str()), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+   if (!CreateProcessW(NULL, wCmd.data(), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
    {
       CloseHandle(pi.hProcess);
       CloseHandle(pi.hThread);

@@ -24,8 +24,8 @@ if finenv.UI():IsOnMac() then
 end
 
 if finenv.UI():IsOnWindows() then
-    --local result = process.launch("\"C:/Program Files/Mozilla Firefox/firefox.exe\"")
-    --print("launch result", result)
+    local result = process.launch("\"C:/Program Files/Mozilla Firefox/firefox.exe\"")
+    print("launch result", result)
     --os.execute('dir "C:/Program Files"')
     if true then
         local listing = process.execute('cmd /c dir "C:/Program Files"')
