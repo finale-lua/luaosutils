@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B5A031DE29A6A5F50085ED88 /* luaosutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031D929A6A5F50085ED88 /* luaosutils.cpp */; };
-		B5A031DF29A6A5F50085ED88 /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5A031DB29A6A5F50085ED88 /* luaosutils.hpp */; };
 		B5A031E629A6A65E0085ED88 /* luaosutils_internet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */; };
 		B5A031E729A6A65E0085ED88 /* luaosutils_internet_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */; };
 		B5A031E829A6A65E0085ED88 /* luaosutils_internet_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */; };
@@ -19,13 +17,13 @@
 		B5A031F529A6A69A0085ED88 /* luaosutils_process_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031F229A6A69A0085ED88 /* luaosutils_process_os_mac.mm */; };
 		B5A031F629A6A69A0085ED88 /* luaosutils_process_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031F329A6A69A0085ED88 /* luaosutils_process_os.h */; };
 		B5A031F729A6A69A0085ED88 /* luaosutils_process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031F429A6A69A0085ED88 /* luaosutils_process.cpp */; };
+		B5F5262029A6C30300002B79 /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5F5261E29A6C30300002B79 /* luaosutils.hpp */; };
+		B5F5262129A6C30300002B79 /* luaosutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F5261F29A6C30300002B79 /* luaosutils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libluaosutils-static.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A031D629A6A55D0085ED88 /* Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
-		B5A031D929A6A5F50085ED88 /* luaosutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils.cpp; sourceTree = "<group>"; };
-		B5A031DB29A6A5F50085ED88 /* luaosutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = luaosutils.hpp; sourceTree = "<group>"; };
 		B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_internet.cpp; sourceTree = "<group>"; };
 		B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaosutils_internet_os.h; sourceTree = "<group>"; };
 		B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_internet_os_mac.mm; sourceTree = "<group>"; };
@@ -36,6 +34,8 @@
 		B5A031F229A6A69A0085ED88 /* luaosutils_process_os_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_process_os_mac.mm; sourceTree = "<group>"; };
 		B5A031F329A6A69A0085ED88 /* luaosutils_process_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaosutils_process_os.h; sourceTree = "<group>"; };
 		B5A031F429A6A69A0085ED88 /* luaosutils_process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_process.cpp; sourceTree = "<group>"; };
+		B5F5261E29A6C30300002B79 /* luaosutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = luaosutils.hpp; sourceTree = "<group>"; };
+		B5F5261F29A6C30300002B79 /* luaosutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,8 +80,8 @@
 				B5A031F129A6A6840085ED88 /* process */,
 				B5A031EA29A6A6650085ED88 /* menu */,
 				B5A031E129A6A64A0085ED88 /* internet */,
-				B5A031D929A6A5F50085ED88 /* luaosutils.cpp */,
-				B5A031DB29A6A5F50085ED88 /* luaosutils.hpp */,
+				B5F5261F29A6C30300002B79 /* luaosutils.cpp */,
+				B5F5261E29A6C30300002B79 /* luaosutils.hpp */,
 			);
 			name = Source;
 			path = src;
@@ -127,8 +127,8 @@
 			files = (
 				B5A031EE29A6A6760085ED88 /* luaosutils_menu_os.h in Headers */,
 				B5A031E729A6A65E0085ED88 /* luaosutils_internet_os.h in Headers */,
-				B5A031DF29A6A5F50085ED88 /* luaosutils.hpp in Headers */,
 				B5A031E929A6A65E0085ED88 /* luaosutils_callback_session.hpp in Headers */,
+				B5F5262029A6C30300002B79 /* luaosutils.hpp in Headers */,
 				B5A031F629A6A69A0085ED88 /* luaosutils_process_os.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,11 +190,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5A031DE29A6A5F50085ED88 /* luaosutils.cpp in Sources */,
 				B5A031EF29A6A6760085ED88 /* luaosutils_menu.cpp in Sources */,
 				B5A031F529A6A69A0085ED88 /* luaosutils_process_os_mac.mm in Sources */,
 				B5A031E629A6A65E0085ED88 /* luaosutils_internet.cpp in Sources */,
 				B5A031F729A6A69A0085ED88 /* luaosutils_process.cpp in Sources */,
+				B5F5262129A6C30300002B79 /* luaosutils.cpp in Sources */,
 				B5A031E829A6A65E0085ED88 /* luaosutils_internet_os_mac.mm in Sources */,
 				B5A031F029A6A6760085ED88 /* luaosutils_menu_os_mac.mm in Sources */,
 			);
@@ -252,7 +252,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -304,7 +303,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;

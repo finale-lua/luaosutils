@@ -19,6 +19,7 @@
 		B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2428634BB9003AC07F /* UnorderedMap.h */; };
 		B5EFCF2E28634BBA003AC07F /* Array.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2528634BB9003AC07F /* Array.h */; };
 		B5EFCF2F28634BBA003AC07F /* Optional.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2628634BB9003AC07F /* Optional.h */; };
+		B5F5262329A6C52800002B79 /* libosutils_dylibmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,7 @@
 		B5EFCF2428634BB9003AC07F /* UnorderedMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnorderedMap.h; sourceTree = "<group>"; };
 		B5EFCF2528634BB9003AC07F /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		B5EFCF2628634BB9003AC07F /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Optional.h; sourceTree = "<group>"; };
+		B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = libosutils_dylibmain.cpp; path = src/libosutils_dylibmain.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 		B55E2B2D2610CE9C003E0F63 = {
 			isa = PBXGroup;
 			children = (
+				B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */,
 				B5AABB52284E69DA00708D15 /* Shared.xcconfig */,
 				B5EFCF1C28634B7F003AC07F /* LuaBridge */,
 				B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */,
@@ -251,6 +254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5F5262329A6C52800002B79 /* libosutils_dylibmain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,14 +299,14 @@
 		B55E2B3B2610CE9C003E0F63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				OTHER_LDFLAGS = "-llibluaosutils-static";
+				OTHER_LDFLAGS = "-dynamiclib";
 			};
 			name = Debug;
 		};
 		B55E2B3C2610CE9C003E0F63 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				OTHER_LDFLAGS = "-llibluaosutils-static";
+				OTHER_LDFLAGS = "-dynamiclib";
 			};
 			name = Release;
 		};
