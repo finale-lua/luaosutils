@@ -6,7 +6,7 @@ end
     
 require('mobdebug').start() -- for ZeroBrane Studio debugging
 
-
+print("luaosutils is "..tostring(luaosutils))
 local osutils = require('luaosutils')
 local process = osutils.process
 

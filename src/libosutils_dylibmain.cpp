@@ -9,7 +9,7 @@
 //  This file exists only to force XCode to link together the static libraries into a dylib.
 //  It should not be included in the static library or when embedding in another program such as RGP Lua.
 
-#include "luaosutils.hpp"
+#include "luaosutils_export.h"
 
 int dummy_func(lua_State *L);
 int dummy_func(lua_State *L)

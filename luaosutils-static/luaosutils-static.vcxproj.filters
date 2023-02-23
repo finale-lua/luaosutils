@@ -48,6 +48,9 @@
     <ClInclude Include="..\src\process\luaosutils_process_os.h">
       <Filter>Source Files\process</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\luaosutils_export.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

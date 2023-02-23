@@ -22,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B551DF9029A7B6E0009AAAB8 /* luaosutils_export.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = luaosutils_export.h; path = src/luaosutils_export.h; sourceTree = SOURCE_ROOT; };
 		B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libluaosutils-static.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A031D629A6A55D0085ED88 /* Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_internet.cpp; sourceTree = "<group>"; };
@@ -82,6 +83,7 @@
 				B5A031E129A6A64A0085ED88 /* internet */,
 				B5F5261F29A6C30300002B79 /* luaosutils.cpp */,
 				B5F5261E29A6C30300002B79 /* luaosutils.hpp */,
+				B551DF9029A7B6E0009AAAB8 /* luaosutils_export.h */,
 			);
 			name = Source;
 			path = src;
