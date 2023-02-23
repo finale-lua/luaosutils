@@ -7,8 +7,14 @@
 #ifndef PCH_H
 #define PCH_H
 
+#include <string>
+#include <functional>
+
 // add headers that you want to pre-compile here
 #include "windows.h"
 #include "wininet.h"
+
+#include "lua.hpp"
+#include "LuaBridge/LuaBridge.h"
 
 #endif //PCH_H
