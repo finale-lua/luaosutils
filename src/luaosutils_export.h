@@ -13,16 +13,16 @@
 #include "lua.hpp"
 
 #ifdef _MSC_VER
-#define DLLEXPORT __declspec(dllexport)
+#define LUAOSUTILS_EXPORT __declspec(dllexport)
 #else
-#define DLLEXPORT
+#define LUAOSUTILS_EXPORT
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-DLLEXPORT int luaopen_luaosutils(lua_State* L);
+LUAOSUTILS_EXPORT int luaopen_luaosutils(lua_State* L);
 
 #ifdef __cplusplus
 }
