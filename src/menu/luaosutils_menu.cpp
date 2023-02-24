@@ -22,6 +22,30 @@ static int luaosutils_menu_delete_submenu(lua_State *L)
    return 1;
 }
 
+static int luaosutils_menu_find_item_in_menu(lua_State *L)
+{
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   std::string itemText = __get_lua_parameter(L, 2, std::string());
+   
+   if (itemText.size() <= 0)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
+
+   int itemIndex = 0;
+   menu_handle menu = __menu_find_item_in_menu(hMenu, itemText, 0, itemIndex);
+   if (! menu)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
+   
+   __push_lua_return_value(L, menu);
+   __push_lua_return_value(L, itemIndex);
+   return 2;
+}
+
 static int luaosutils_menu_find_item(lua_State *L)
 {
    window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
@@ -220,6 +244,7 @@ static const std::map<std::string, MENUITEM_TYPES> __constants =
 static const luaL_Reg menu_utils[] = {
    {"delete_submenu",      luaosutils_menu_delete_submenu},
    {"find_item",           luaosutils_menu_find_item},
+   {"find_item_in_menu",   luaosutils_menu_find_item_in_menu},
    {"get_item_count",      luaosutils_menu_get_item_count},
    {"get_item_submenu",    luaosutils_menu_get_item_submenu},
    {"get_item_text",       luaosutils_menu_get_item_text},

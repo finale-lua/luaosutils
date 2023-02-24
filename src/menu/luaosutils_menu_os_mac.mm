@@ -44,7 +44,7 @@ bool __menu_delete_submenu(menu_handle hMenu, window_handle)
    return false;
 }
 
-menu_handle __menu_find_item (window_handle hWnd, const std::string& item_text, int starting_index, int& itemIndex)
+menu_handle __menu_find_item_in_menu(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
    NSInteger startingIndex = starting_index;
@@ -70,7 +70,12 @@ menu_handle __menu_find_item (window_handle hWnd, const std::string& item_text, 
       return nil;
    };
    
-   return searchSubmenus(__menu_get_top_level_menu(hWnd), startingIndex, searchSubmenus);
+   return searchSubmenus(hMenu, startingIndex, searchSubmenus);
+}
+
+menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemIndex)
+{
+   return __menu_find_item_in_menu(__menu_get_top_level_menu(hWnd), item_text, starting_index, itemIndex);
 }
 
 int __menu_get_item_count(menu_handle hMenu)
