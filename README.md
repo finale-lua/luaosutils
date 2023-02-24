@@ -158,17 +158,17 @@ menu.delete_submenu(rgp_lua_menu, finenv.GetFinaleMainWindow())
 
 ### menu.find\_item
 
-Searches the currently running application's top-level menu for text that matches the input text and returns the enclosing menu if it is found.
+Searches a menu for an item whose text matches the input text and returns the enclosing menu if it is found. The function searches any submenus as well. To search all menus, pass in the value returned by `menu.get_top_level_menu`.
 
 |Input Type|Description|
 |----------|-----------|
-|window_handle|The window with the menu to search (Windows) or `nil` (macOS).|
+|menu_handle|The menu from which to start searching.|
 |string|The text to search for encoded in utf8.|
 |(number)|Optional 0-based index that specifies the starting top-level menu from which to search. If omitted, the entire top-level menu is searched.|
 
 |Output Type|Description|
 |----------|-----------|
-|menu_handle|Handle to the menu or `nil` if not found.|
+|menu_handle|Handle to the menu that contains the item or `nil` if not found.|
 |number|The 0-based index of the found item.|
 
 The Windows version of this function skips "&" characters in the menu item text when doing comparisons. This allows you to supply the same text on either Windows or macOS platforms and find the menu options and ignore the "&" characters that designate keyboard shortcuts on Windows.
