@@ -84,6 +84,7 @@
     <ClInclude Include="..\src\internet\luaosutils_internet_os.h" />
     <ClInclude Include="..\src\luaosutils.hpp" />
     <ClInclude Include="..\src\luaosutils_export.h" />
+    <ClInclude Include="..\src\menu\luaosutils_menu_os.h" />
     <ClInclude Include="..\src\process\luaosutils_process_os.h" />
     <ClInclude Include="..\src\winutils\luaosutils_winutils.h" />
     <ClInclude Include="framework.h" />
@@ -101,9 +102,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\menu\luaosutils_menu_os_mac.mm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

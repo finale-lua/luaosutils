@@ -51,6 +51,9 @@
     <ClInclude Include="..\src\luaosutils_export.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
+      <Filter>Source Files\menu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -77,10 +80,5 @@
     <ClCompile Include="..\src\process\luaosutils_process_os_win.cpp">
       <Filter>Source Files\process</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\menu\luaosutils_menu_os_mac.mm">
-      <Filter>Source Files\menu</Filter>
-    </None>
   </ItemGroup>
 </Project>
