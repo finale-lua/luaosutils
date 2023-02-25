@@ -44,7 +44,7 @@ bool __menu_delete_submenu(menu_handle hMenu, window_handle)
    return false;
 }
 
-menu_handle __menu_find_item_in_menu(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
+menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
    NSInteger startingIndex = starting_index;
@@ -73,9 +73,19 @@ menu_handle __menu_find_item_in_menu(menu_handle hMenu, const std::string& item_
    return searchSubmenus(hMenu, startingIndex, searchSubmenus);
 }
 
-menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemIndex)
+long __menu_get_item_command_id(menu_handle hMenu, int index)
 {
-   return __menu_find_item_in_menu(__menu_get_top_level_menu(hWnd), item_text, starting_index, itemIndex);
+   NSMenu* menu = (__bridge NSMenu*)hMenu;
+   @try
+   {
+      NSMenuItem* menuItem = [menu itemAtIndex:index];
+      if (! menuItem) return -1;
+      return [menuItem tag];
+   } @catch (NSException *exception)
+   {
+      NSLog(@"Caught exception in __menu_get_item_command_id: %@", exception);
+   }
+   return -1;
 }
 
 int __menu_get_item_count(menu_handle hMenu)
