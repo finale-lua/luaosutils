@@ -188,6 +188,33 @@ if rgp_lua_menu then
 end
 ```
 
+### menu.get\_item\_command\_id
+
+Returns the command-id of the specified menu item or `nil` if none.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|number|The index of the submenu item.|
+
+|Output Type|Description|
+|----------|-----------|
+|number|Command-id of the submenu or `nil` if none.|
+
+On Windows this function returns the command-id. On macOS it returns the menu item's tag value. Finale uses the tag value to mimic the behavior of the Windows command-id. This function may be less useful if `luaosutils` is running on macOS in an environment other than Lua on Finale.
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua")
+if main_menu then
+    local command_id = menu.get_item_command_id(rgp_lua_menu, index)
+end
+```
+
 ### menu.get\_item\_count
 
 Returns the number of menu items in the specified menu. It includes divider items.

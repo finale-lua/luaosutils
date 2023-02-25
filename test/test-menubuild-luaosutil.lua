@@ -1,5 +1,6 @@
 function plugindef()
     finaleplugin.RequireDocument = false
+    finaleplugin.LoadLuaOSUtils = true
     return "aaa - luautils build menu test"
 end
 
