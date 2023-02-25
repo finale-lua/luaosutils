@@ -94,6 +94,11 @@ menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, in
    return searchSubmenus(hMenu, starting_index, searchSubmenus);
 }
 
+long __menu_get_item_command_id(menu_handle hMenu, int index)
+{
+	return hMenu ? GetMenuItemID(hMenu, index) : -1;
+}
+
 int __menu_get_item_count(menu_handle hMenu)
 {
 	return hMenu ? GetMenuItemCount(hMenu) : 0;
