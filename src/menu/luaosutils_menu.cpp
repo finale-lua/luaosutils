@@ -192,7 +192,7 @@ static int luaosutils_menu_move_item(lua_State *L)
 
 static int luaosutils_menu_redraw([[maybe_unused]]lua_State* L)
 {
-#ifdef _MSC_VER
+#if OPERATING_SYSTEM == WINDOWS
    window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
    if (hWnd) DrawMenuBar(hWnd);
 #endif

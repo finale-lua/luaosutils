@@ -14,13 +14,26 @@
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
+#define UNKNOWN_OS   -1
 
 #if defined(__GNUC__)
 #define OPERATING_SYSTEM MAC_OS
 #elif defined(_MSC_VER)
 #define OPERATING_SYSTEM WINDOWS
 #else
-#define OPERATING_SYSTEM UNKNOWN
+#define OPERATING_SYSTEM UNKNOWN_OS
+#endif
+
+#if OPERATING_SYSTEM == WINDOWS
+#define WINCODE(X) (X)
+#else
+#define WINCODE(X)
+#endif
+
+#if OPERATING_SYSTEM == MAC_OS
+#define MACCODE(X) (X)
+#else
+#define MACCODE(X)
 #endif
 
 #include <string>
@@ -89,5 +102,6 @@ inline void __add_constant(lua_State *L, const char* const_name, int value, int 
 void luaosutils_internet_create(lua_State *L);
 void luaosutils_menu_create(lua_State *L);
 void luaosutils_process_create(lua_State *L);
+void luaosutils_text_create(lua_State *L);
 
 #endif // luaosutils_hpp

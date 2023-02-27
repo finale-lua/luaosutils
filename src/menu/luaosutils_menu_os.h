@@ -12,7 +12,9 @@
 
 #include <string>
 
-#ifdef _MSC_VER
+#include "luaosutils.hpp"
+
+#if OPERATING_SYSTEM == WINDOWS
 #include <windows.h>
 typedef HWND window_handle;
 typedef HMENU menu_handle;
