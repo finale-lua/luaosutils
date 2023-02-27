@@ -570,6 +570,8 @@ end
 
 The `process` namespace offers functions to launch a separate process. The advantage of these APIs over the standard Lua APIs is that the process is launched *silently*. No console window appears on either macOS or Windows.
 
+The optional folder path for the working directory must be a fully qualified path name. Do not enclose this string in outer quote marks even if the path name contains spaces. If you do, Windows will not recognize it as a path name, and the function will fail. On macOS the functions do not fail, but the outer quote marks are not necessary either. For example, you can directly pass `finenv.RunningLuaFolderPath()` directly on either operating system. Do not enclose it in quotes, even if the running lua path contains spaces.
+
 ### process.execute
 
 Executes a process with the input command line and waits for it to complete. It captures any text the process sends to `stdio` and returns it in a string.
