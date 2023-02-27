@@ -97,6 +97,7 @@ Debug
 
 *.ico
 *.zip
+listing.txt
 
 !release/luaosutils.dll
 !release/luaosutils.dylib

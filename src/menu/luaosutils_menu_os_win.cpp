@@ -50,11 +50,10 @@ bool __menu_delete_submenu(menu_handle hMenu, window_handle hWnd)
 	return false;
 }
 
-menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemIndex)
+menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
 	std::basic_string<WCHAR> itemText = __utf8_to_WCHAR(item_text.c_str());
-   HMENU topMenu = __menu_get_top_level_menu(hWnd);
 
    auto searchSubmenus = [&itemIndex, itemText](HMENU hMenu, int startIndex, auto&& searchSubmenus) -> HMENU
    {
@@ -92,7 +91,12 @@ menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, i
       return nullptr;
    };
 
-   return searchSubmenus(topMenu, starting_index, searchSubmenus);
+   return searchSubmenus(hMenu, starting_index, searchSubmenus);
+}
+
+long __menu_get_item_command_id(menu_handle hMenu, int index)
+{
+	return hMenu ? GetMenuItemID(hMenu, index) : -1;
 }
 
 int __menu_get_item_count(menu_handle hMenu)

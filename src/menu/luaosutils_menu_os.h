@@ -30,7 +30,8 @@ enum class MENUITEM_TYPES
 };
 
 bool __menu_delete_submenu(menu_handle hMenu, window_handle hWnd);
-menu_handle __menu_find_item(window_handle hWnd, const std::string& item_text, int starting_index, int& itemIndex);
+menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex);
+long __menu_get_item_command_id(menu_handle hMenu, int index);
 int __menu_get_item_count(menu_handle hMenu);
 menu_handle __menu_get_item_submenu(menu_handle hMenu, int index);
 std::string __menu_get_item_text(menu_handle hMenu, int index);

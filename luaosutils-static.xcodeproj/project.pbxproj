@@ -1,0 +1,360 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B5A031E629A6A65E0085ED88 /* luaosutils_internet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */; };
+		B5A031E729A6A65E0085ED88 /* luaosutils_internet_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */; };
+		B5A031E829A6A65E0085ED88 /* luaosutils_internet_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */; };
+		B5A031E929A6A65E0085ED88 /* luaosutils_callback_session.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5A031E529A6A65E0085ED88 /* luaosutils_callback_session.hpp */; };
+		B5A031EE29A6A6760085ED88 /* luaosutils_menu_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031EB29A6A6760085ED88 /* luaosutils_menu_os.h */; };
+		B5A031EF29A6A6760085ED88 /* luaosutils_menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031EC29A6A6760085ED88 /* luaosutils_menu.cpp */; };
+		B5A031F029A6A6760085ED88 /* luaosutils_menu_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031ED29A6A6760085ED88 /* luaosutils_menu_os_mac.mm */; };
+		B5A031F529A6A69A0085ED88 /* luaosutils_process_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031F229A6A69A0085ED88 /* luaosutils_process_os_mac.mm */; };
+		B5A031F629A6A69A0085ED88 /* luaosutils_process_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031F329A6A69A0085ED88 /* luaosutils_process_os.h */; };
+		B5A031F729A6A69A0085ED88 /* luaosutils_process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031F429A6A69A0085ED88 /* luaosutils_process.cpp */; };
+		B5F5262029A6C30300002B79 /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5F5261E29A6C30300002B79 /* luaosutils.hpp */; };
+		B5F5262129A6C30300002B79 /* luaosutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F5261F29A6C30300002B79 /* luaosutils.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B551DF9029A7B6E0009AAAB8 /* luaosutils_export.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = luaosutils_export.h; path = src/luaosutils_export.h; sourceTree = SOURCE_ROOT; };
+		B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libluaosutils-static.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5A031D629A6A55D0085ED88 /* Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_internet.cpp; sourceTree = "<group>"; };
+		B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaosutils_internet_os.h; sourceTree = "<group>"; };
+		B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_internet_os_mac.mm; sourceTree = "<group>"; };
+		B5A031E529A6A65E0085ED88 /* luaosutils_callback_session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = luaosutils_callback_session.hpp; sourceTree = "<group>"; };
+		B5A031EB29A6A6760085ED88 /* luaosutils_menu_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaosutils_menu_os.h; sourceTree = "<group>"; };
+		B5A031EC29A6A6760085ED88 /* luaosutils_menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_menu.cpp; sourceTree = "<group>"; };
+		B5A031ED29A6A6760085ED88 /* luaosutils_menu_os_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_menu_os_mac.mm; sourceTree = "<group>"; };
+		B5A031F229A6A69A0085ED88 /* luaosutils_process_os_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_process_os_mac.mm; sourceTree = "<group>"; };
+		B5A031F329A6A69A0085ED88 /* luaosutils_process_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaosutils_process_os.h; sourceTree = "<group>"; };
+		B5A031F429A6A69A0085ED88 /* luaosutils_process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_process.cpp; sourceTree = "<group>"; };
+		B5F5261E29A6C30300002B79 /* luaosutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = luaosutils.hpp; sourceTree = "<group>"; };
+		B5F5261F29A6C30300002B79 /* luaosutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B5A031CC29A6A4FC0085ED88 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B5A031C529A6A4FC0085ED88 = {
+			isa = PBXGroup;
+			children = (
+				B5A031D529A6A51E0085ED88 /* Config */,
+				B5A031D729A6A5C20085ED88 /* Source */,
+				B5A031CF29A6A4FC0085ED88 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B5A031CF29A6A4FC0085ED88 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B5A031D529A6A51E0085ED88 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B5A031D629A6A55D0085ED88 /* Shared.xcconfig */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		B5A031D729A6A5C20085ED88 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B5A031F129A6A6840085ED88 /* process */,
+				B5A031EA29A6A6650085ED88 /* menu */,
+				B5A031E129A6A64A0085ED88 /* internet */,
+				B5F5261F29A6C30300002B79 /* luaosutils.cpp */,
+				B5F5261E29A6C30300002B79 /* luaosutils.hpp */,
+				B551DF9029A7B6E0009AAAB8 /* luaosutils_export.h */,
+			);
+			name = Source;
+			path = src;
+			sourceTree = "<group>";
+		};
+		B5A031E129A6A64A0085ED88 /* internet */ = {
+			isa = PBXGroup;
+			children = (
+				B5A031E529A6A65E0085ED88 /* luaosutils_callback_session.hpp */,
+				B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */,
+				B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */,
+				B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */,
+			);
+			path = internet;
+			sourceTree = "<group>";
+		};
+		B5A031EA29A6A6650085ED88 /* menu */ = {
+			isa = PBXGroup;
+			children = (
+				B5A031ED29A6A6760085ED88 /* luaosutils_menu_os_mac.mm */,
+				B5A031EB29A6A6760085ED88 /* luaosutils_menu_os.h */,
+				B5A031EC29A6A6760085ED88 /* luaosutils_menu.cpp */,
+			);
+			path = menu;
+			sourceTree = "<group>";
+		};
+		B5A031F129A6A6840085ED88 /* process */ = {
+			isa = PBXGroup;
+			children = (
+				B5A031F229A6A69A0085ED88 /* luaosutils_process_os_mac.mm */,
+				B5A031F329A6A69A0085ED88 /* luaosutils_process_os.h */,
+				B5A031F429A6A69A0085ED88 /* luaosutils_process.cpp */,
+			);
+			path = process;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B5A031CA29A6A4FC0085ED88 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5A031EE29A6A6760085ED88 /* luaosutils_menu_os.h in Headers */,
+				B5A031E729A6A65E0085ED88 /* luaosutils_internet_os.h in Headers */,
+				B5A031E929A6A65E0085ED88 /* luaosutils_callback_session.hpp in Headers */,
+				B5F5262029A6C30300002B79 /* luaosutils.hpp in Headers */,
+				B5A031F629A6A69A0085ED88 /* luaosutils_process_os.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B5A031CD29A6A4FC0085ED88 /* luaosutils-static */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B5A031D229A6A4FC0085ED88 /* Build configuration list for PBXNativeTarget "luaosutils-static" */;
+			buildPhases = (
+				B5A031CA29A6A4FC0085ED88 /* Headers */,
+				B5A031CB29A6A4FC0085ED88 /* Sources */,
+				B5A031CC29A6A4FC0085ED88 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "luaosutils-static";
+			productName = "luaosutils-static";
+			productReference = B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B5A031C629A6A4FC0085ED88 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					B5A031CD29A6A4FC0085ED88 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+				};
+			};
+			buildConfigurationList = B5A031C929A6A4FC0085ED88 /* Build configuration list for PBXProject "luaosutils-static" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B5A031C529A6A4FC0085ED88;
+			productRefGroup = B5A031CF29A6A4FC0085ED88 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B5A031CD29A6A4FC0085ED88 /* luaosutils-static */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B5A031CB29A6A4FC0085ED88 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5A031EF29A6A6760085ED88 /* luaosutils_menu.cpp in Sources */,
+				B5A031F529A6A69A0085ED88 /* luaosutils_process_os_mac.mm in Sources */,
+				B5A031E629A6A65E0085ED88 /* luaosutils_internet.cpp in Sources */,
+				B5A031F729A6A69A0085ED88 /* luaosutils_process.cpp in Sources */,
+				B5F5262129A6C30300002B79 /* luaosutils.cpp in Sources */,
+				B5A031E829A6A65E0085ED88 /* luaosutils_internet_os_mac.mm in Sources */,
+				B5A031F029A6A6760085ED88 /* luaosutils_menu_os_mac.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B5A031D029A6A4FC0085ED88 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5A031D629A6A55D0085ED88 /* Shared.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B5A031D129A6A4FC0085ED88 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5A031D629A6A55D0085ED88 /* Shared.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B5A031D329A6A4FC0085ED88 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P54J8A2VK7;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B5A031D429A6A4FC0085ED88 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P54J8A2VK7;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B5A031C929A6A4FC0085ED88 /* Build configuration list for PBXProject "luaosutils-static" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5A031D029A6A4FC0085ED88 /* Debug */,
+				B5A031D129A6A4FC0085ED88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B5A031D229A6A4FC0085ED88 /* Build configuration list for PBXNativeTarget "luaosutils-static" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5A031D329A6A4FC0085ED88 /* Debug */,
+				B5A031D429A6A4FC0085ED88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B5A031C629A6A4FC0085ED88 /* Project object */;
+}

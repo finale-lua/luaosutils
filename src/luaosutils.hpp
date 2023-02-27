@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 2.1.0"
+#define LUAOSUTILS_VERSION "Luaosutils 2.1.0.b2"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
@@ -26,7 +26,7 @@
 #include <string>
 #include <functional>
 
-#include "lua.hpp"
+#include "luaosutils_export.h"
 
 #ifndef __OBJC__
 #if defined(__GNUC__)
@@ -34,17 +34,10 @@
 #pragma GCC diagnostic ignored "-Wdocumentation"
 #endif // __GNUC__
 #include "LuaBridge/LuaBridge.h"
-#include "LuaBridge/RefCountedObject.h"
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif // __GNUC__
 #endif // __OBJC__
-
-#ifdef _MSC_VER
-#define DLLEXPORT __declspec(dllexport)
-#else
-#define DLLEXPORT
-#endif
 
 //ToDo: __download_callback should be in url/luaosutils_url.cpp
 using __download_callback = std::function<void (bool, const std::string&)>;
@@ -96,15 +89,5 @@ inline void __add_constant(lua_State *L, const char* const_name, int value, int 
 void luaosutils_internet_create(lua_State *L);
 void luaosutils_menu_create(lua_State *L);
 void luaosutils_process_create(lua_State *L);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-DLLEXPORT int luaopen_luaosutils(lua_State* L);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // luaosutils_hpp

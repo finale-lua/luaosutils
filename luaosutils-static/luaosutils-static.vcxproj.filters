@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\internet">
+      <UniqueIdentifier>{6c40acb6-14fc-4b99-bfd2-a4dca3cc20ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\menu">
+      <UniqueIdentifier>{dca5c97f-0ae4-4626-a625-06d2ef95b43d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\process">
+      <UniqueIdentifier>{e61487a3-a958-441e-aab4-e687340b79a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\winutils">
+      <UniqueIdentifier>{4a89725f-4ad6-429a-8bac-271b4425d80f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\luaosutils.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internet\luaosutils_callback_session.hpp">
+      <Filter>Source Files\internet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internet\luaosutils_internet_os.h">
+      <Filter>Source Files\internet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\winutils\luaosutils_winutils.h">
+      <Filter>Source Files\winutils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\process\luaosutils_process_os.h">
+      <Filter>Source Files\process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\luaosutils_export.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
+      <Filter>Source Files\menu</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\luaosutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\internet\luaosutils_internet.cpp">
+      <Filter>Source Files\internet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\internet\luaosutils_internet_os_win.cpp">
+      <Filter>Source Files\internet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\luaosutils_menu.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menu\luaosutils_menu_os_win.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\process\luaosutils_process.cpp">
+      <Filter>Source Files\process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\process\luaosutils_process_os_win.cpp">
+      <Filter>Source Files\process</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

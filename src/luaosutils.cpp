@@ -10,7 +10,7 @@
 #include "luaosutils.hpp"
 
 static const luaL_Reg funcs[] = {
-   // current no top-level functions
+   // currently no top-level functions
    {NULL, NULL} // sentinel
 };
 

@@ -158,17 +158,17 @@ menu.delete_submenu(rgp_lua_menu, finenv.GetFinaleMainWindow())
 
 ### menu.find\_item
 
-Searches the currently running application's top-level menu for text that matches the input text and returns the enclosing menu if it is found.
+Searches a menu for an item whose text matches the input text and returns the enclosing menu if it is found. The function searches any submenus as well. To search all menus, pass in the value returned by `menu.get_top_level_menu`.
 
 |Input Type|Description|
 |----------|-----------|
-|window_handle|The window with the menu to search (Windows) or `nil` (macOS).|
+|menu_handle|The menu from which to start searching.|
 |string|The text to search for encoded in utf8.|
 |(number)|Optional 0-based index that specifies the starting top-level menu from which to search. If omitted, the entire top-level menu is searched.|
 
 |Output Type|Description|
 |----------|-----------|
-|menu_handle|Handle to the menu or `nil` if not found.|
+|menu_handle|Handle to the menu that contains the item or `nil` if not found.|
 |number|The 0-based index of the found item.|
 
 The Windows version of this function skips "&" characters in the menu item text when doing comparisons. This allows you to supply the same text on either Windows or macOS platforms and find the menu options and ignore the "&" characters that designate keyboard shortcuts on Windows.
@@ -185,6 +185,33 @@ local min_search_index = 6
 local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     -- rgp_lua_menu is the menu that contains the menu item for RGP Lua.
+end
+```
+
+### menu.get\_item\_command\_id
+
+Returns the command-id of the specified menu item or `nil` if none.
+
+|Input Type|Description|
+|----------|-----------|
+|menu_handle|Handle to the menu.|
+|number|The index of the submenu item.|
+
+|Output Type|Description|
+|----------|-----------|
+|number|Command-id of the submenu or `nil` if none.|
+
+On Windows this function returns the command-id. On macOS it returns the menu item's tag value. Finale uses the tag value to mimic the behavior of the Windows command-id. This function may be less useful if `luaosutils` is running on macOS in an environment other than Lua on Finale.
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua")
+if main_menu then
+    local command_id = menu.get_item_command_id(rgp_lua_menu, index)
 end
 ```
 
@@ -543,18 +570,24 @@ end
 
 The `process` namespace offers functions to launch a separate process. The advantage of these APIs over the standard Lua APIs is that the process is launched *silently*. No console window appears on either macOS or Windows.
 
+The optional folder path for the working directory must be a fully qualified path name. Do not enclose this string in outer quote marks even if the path name contains spaces. If you do, Windows will not recognize it as a path name, and the function will fail. On macOS the functions do not fail, but the outer quote marks are not necessary either. For example, you can directly pass `finenv.RunningLuaFolderPath()` directly on either operating system. Do not enclose it in quotes, even if the running lua path contains spaces.
+
 ### process.execute
 
 Executes a process with the input command line and waits for it to complete. It captures any text the process sends to `stdio` and returns it in a string.
 
 |Input Type|Description|
 |----------|-----------|
-|string|The command line to execute.|
-
+|string|The command line to execute encoded in UTF-8.|
+|(string)|Optional folder path to set as the working directory for the process (also UTF-8).|
 
 |Output Type|Description|
 |----------|-----------|
 |string|Output from the executed process or `nil` if there was an error.|
+
+On macOS the returned string is encoded in UTF-8.
+
+On Windows, the string is returned unmodified from the output of the process. Lua scripts must handle any character encoding themselves. It may be helpful to use the `&` pipe character to prepend your command with a call to `chcp 65001`. That sets the active code page to UTF-8. As long as the program you run emits text in the active code page, your returned text will be encoded UTF-8.
 
 Example:
 
@@ -563,8 +596,8 @@ local osutils = require('luaosutils')
 local process = osutils.process
 
 if finenv.UI():IsOnWindows() then
-    local listing = process.execute('cmd /c dir "C:/Program Files"')
-    -- listing is now a string containing the directory listing of C:/Program Files.
+    local listing = process.execute('cmd /c chcp 65001 & REG QUERY \"HKLM\\Software\\Microsoft\" /reg:32')
+    -- listing is now a string containing a listing of the specified registry key.
 end
 ```
 
@@ -574,12 +607,14 @@ Launches a process with the input command line and returns immediately.
 
 |Input Type|Description|
 |----------|-----------|
-|string|The command line to execute.|
-
+|string|The command line to execute encoded in UTF-8.|
+|(string)|Optional folder path to set as the working directory for the process (also UTF-8).|
 
 |Output Type|Description|
 |----------|-----------|
 |boolean|True if process was successfully launched.|
+
+Note that successfully launching the process does not mean that the command line pointed to a valid program. If your program does not exist, `process.launch` may still return `true`, because it does not wait to see what the result of running the process is.
 
 Example:
 
@@ -608,3 +643,4 @@ end
 1.1.0
 
 - original release
+	

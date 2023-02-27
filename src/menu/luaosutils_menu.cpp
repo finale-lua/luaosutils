@@ -24,9 +24,8 @@ static int luaosutils_menu_delete_submenu(lua_State *L)
 
 static int luaosutils_menu_find_item(lua_State *L)
 {
-   window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
    std::string itemText = __get_lua_parameter(L, 2, std::string());
-   int minIndex = __get_lua_parameter(L, 3, 0);
    
    if (itemText.size() <= 0)
    {
@@ -35,7 +34,7 @@ static int luaosutils_menu_find_item(lua_State *L)
    }
 
    int itemIndex = 0;
-   menu_handle menu = __menu_find_item(hWnd, itemText, minIndex, itemIndex);
+   menu_handle menu = __menu_find_item(hMenu, itemText, 0, itemIndex);
    if (! menu)
    {
       lua_pushnil(L);
@@ -45,6 +44,24 @@ static int luaosutils_menu_find_item(lua_State *L)
    __push_lua_return_value(L, menu);
    __push_lua_return_value(L, itemIndex);
    return 2;
+}
+
+static int luaosutils_menu_get_item_command_id(lua_State *L)
+{
+   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   int index = __get_lua_parameter(L, 2, -1);
+
+   if (index < 0 || !hMenu || index >= __menu_get_item_count(hMenu))
+      lua_pushnil(L);
+   else
+   {
+      long retval = __menu_get_item_command_id(hMenu, index);
+      if (retval > 0)
+         __push_lua_return_value(L, retval);
+      else
+         lua_pushnil(L);
+   }
+   return 1;
 }
 
 static int luaosutils_menu_get_item_count(lua_State *L)
@@ -220,6 +237,7 @@ static const std::map<std::string, MENUITEM_TYPES> __constants =
 static const luaL_Reg menu_utils[] = {
    {"delete_submenu",      luaosutils_menu_delete_submenu},
    {"find_item",           luaosutils_menu_find_item},
+   {"get_item_command_id", luaosutils_menu_get_item_command_id},
    {"get_item_count",      luaosutils_menu_get_item_count},
    {"get_item_submenu",    luaosutils_menu_get_item_submenu},
    {"get_item_text",       luaosutils_menu_get_item_text},

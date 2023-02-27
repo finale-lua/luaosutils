@@ -60,6 +60,7 @@
       allowLocationSimulation = "YES">
       <PathRunnable
          runnableDebuggingMode = "0"
+         BundleIdentifier = "com.makemusic.Finale27"
          FilePath = "/Applications/Finale.app">
       </PathRunnable>
    </LaunchAction>
