@@ -75,7 +75,7 @@ bool __process_execute(const std::string& cmd, std::string& processOutput)
    DWORD bytesRead;
    const int bufferSize = 4096;
    char buffer[bufferSize];
-   std::string output = "";
+   processOutput = "";
 
    while (true)
    {
@@ -85,7 +85,7 @@ bool __process_execute(const std::string& cmd, std::string& processOutput)
       }
 
       buffer[bytesRead] = '\0';
-      output += buffer;
+      processOutput += buffer;
    }
 
    CloseHandle(hRead);
@@ -94,9 +94,6 @@ bool __process_execute(const std::string& cmd, std::string& processOutput)
 
    CloseHandle(pi.hThread);
    CloseHandle(pi.hProcess);
-
-   std::basic_string<WCHAR> wOutput = __char_to_WCHAR(output.c_str());
-   processOutput = __WCHAR_to_utf8(wOutput.c_str());
 
    return true;
 }
