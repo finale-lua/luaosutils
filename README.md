@@ -576,12 +576,16 @@ Executes a process with the input command line and waits for it to complete. It 
 
 |Input Type|Description|
 |----------|-----------|
-|string|The command line to execute.|
-
+|string|The command line to execute encoded in UTF-8.|
+|(string)|Optional folder path to set as the working directory for the process (also UTF-8).|
 
 |Output Type|Description|
 |----------|-----------|
 |string|Output from the executed process or `nil` if there was an error.|
+
+On macOS the returned string is encoded in UTF-8.
+
+On Windows, the string is returned unmodified from the output of the process. Lua scripts must handle any character encoding themselves. It may be helpful to use the `&` pipe character to prepend your command with a call to `chcp 65001`. That sets the active code page to UTF-8. As long as the program you run emits text in the active code page, your returned text will be encoded UTF-8.
 
 Example:
 
@@ -590,8 +594,8 @@ local osutils = require('luaosutils')
 local process = osutils.process
 
 if finenv.UI():IsOnWindows() then
-    local listing = process.execute('cmd /c dir "C:/Program Files"')
-    -- listing is now a string containing the directory listing of C:/Program Files.
+    local listing = process.execute('cmd /c chcp 65001 & REG QUERY \"HKLM\\Software\\Microsoft\" /reg:32')
+    -- listing is now a string containing a listing of the specified registry key.
 end
 ```
 
@@ -601,12 +605,14 @@ Launches a process with the input command line and returns immediately.
 
 |Input Type|Description|
 |----------|-----------|
-|string|The command line to execute.|
-
+|string|The command line to execute encoded in UTF-8.|
+|(string)|Optional folder path to set as the working directory for the process (also UTF-8).|
 
 |Output Type|Description|
 |----------|-----------|
 |boolean|True if process was successfully launched.|
+
+Note that successfully launching the process does not mean that the command line pointed to a valid program. If your program does not exist, `process.launch` may still return `true`, because it does not wait to see what the result of running the process is.
 
 Example:
 

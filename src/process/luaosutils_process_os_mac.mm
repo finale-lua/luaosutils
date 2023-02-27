@@ -21,13 +21,18 @@ static NSString* __GetUserShellPath()
    return [NSString stringWithUTF8String:shell]; // Convert the path to an NSString
 }
 
-bool __process_execute(const std::string& cmd, std::string& processOutput)
+bool __process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput)
 {
    @try {
       NSString* nsCmd = [NSString stringWithUTF8String:cmd.c_str()];
       NSTask *task = [[NSTask alloc] init];
       [task setLaunchPath:__GetUserShellPath()];
       [task setArguments:@[@"-c", nsCmd]];
+      if (dir.size())
+      {
+         NSString* dirPath = [NSString stringWithUTF8String:dir.c_str()];
+         [task setCurrentDirectoryURL:[NSURL fileURLWithPath:dirPath]];
+      }
       
       NSPipe *pipe = [NSPipe pipe];
       [task setStandardOutput:pipe];
@@ -55,13 +60,19 @@ bool __process_execute(const std::string& cmd, std::string& processOutput)
    return false;
 }
 
-bool __process_launch(const std::string& cmd)
+bool __process_launch(const std::string& cmd, const std::string& dir)
 {
    @try {
       NSString* nsCmd = [NSString stringWithUTF8String:cmd.c_str()];
       NSTask *task = [[NSTask alloc] init];
       [task setLaunchPath:__GetUserShellPath()];
       [task setArguments:@[@"-c", nsCmd]];
+      if (dir.size())
+      {
+         NSString* dirPath = [NSString stringWithUTF8String:dir.c_str()];
+         [task setCurrentDirectoryURL:[NSURL fileURLWithPath:dirPath]];
+      }
+
       [task setStandardOutput:[NSPipe pipe]];
       [task setStandardError:[NSPipe pipe]];
       NSError* error = nil;
