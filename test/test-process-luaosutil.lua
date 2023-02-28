@@ -37,7 +37,7 @@ if finenv.UI():IsOnWindows() then
         local listing = process.execute('cmd /c chcp & echo "∫üåé"')
         print(listing)
         if listing then
-            local fileout = io.open(finenv.RunningLuaFolderPath().."/".."listing.txt", "w")
+            local fileout = io.open(finenv.RunningLuaFolderPath().."/".."listing.txt", "wb")
             fileout:write(listing)
             fileout:close()
         else

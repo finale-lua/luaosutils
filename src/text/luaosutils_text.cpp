@@ -6,18 +6,20 @@
 //  Copyright © 2023 Robert Patterson. All rights reserved.
 //  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
-#if OPERATING_SYSTEM == WINDOWS
-#include <windows.h>
-#endif
-
 #include "luaosutils.hpp"
 #include "text/luaosutils_text_os.h"
 
-static int luaosutils_text_encode(lua_State *L)
+#if OPERATING_SYSTEM == WINDOWS
+#include <windows.h>
+#else
+#define CP_UTF8 65001
+#endif
+
+static int luaosutils_text_convert_encoding(lua_State *L)
 {
    std::string text = __get_lua_parameter(L, 1, std::string());
    unsigned int fromCodepage = __get_lua_parameter(L, 2, 0u);
-   unsigned int toCodepage = __get_lua_parameter(L, 3, WINCODE(CP_UTF8) MACCODE(65001));
+   unsigned int toCodepage = __get_lua_parameter(L, 3, CP_UTF8);
 
    if (!text.size())
    {
@@ -30,7 +32,7 @@ static int luaosutils_text_encode(lua_State *L)
    if (fromCodepage && toCodepage)
    {
       std::string output;
-      const bool result = __text_encode(text, fromCodepage, output, toCodepage);
+      const bool result = __text_convert_encoding(text, fromCodepage, output, toCodepage);
       if (result)
          __push_lua_return_value(L, output);
       else
@@ -43,7 +45,7 @@ static int luaosutils_text_encode(lua_State *L)
 }
 
 static const luaL_Reg text_utils[] = {
-   {"encode",              luaosutils_text_encode},
+   {"convert_encoding",       luaosutils_text_convert_encoding},
    {NULL, NULL} // sentinel
 };
 

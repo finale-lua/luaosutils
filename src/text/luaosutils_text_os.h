@@ -10,7 +10,7 @@
 #ifndef luaosutils_text_os_h
 #define luaosutils_text_os_h
 
-bool __text_encode(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage);
+bool __text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage);
 
 
 #endif /* luaosutils_text_os_h */
