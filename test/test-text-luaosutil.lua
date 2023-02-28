@@ -30,3 +30,5 @@ local str1_ShiftJS = text.convert_encoding(str1, 65001, 932)
 print(str1_ShiftJS) -- prints the string encoded in Shift_JIS
 local str1_utf8 = text.convert_encoding(str1_ShiftJS, 932)
 print(str1_utf8)
+local try_ShiftJS = text.convert_encoding(listing, 932, 932)
+print(try_ShiftJS)

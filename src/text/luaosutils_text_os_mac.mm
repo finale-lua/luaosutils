@@ -24,15 +24,17 @@ bool __text_convert_encoding(const std::string& text, unsigned int fromCodepage,
       NSData* data = [NSData dataWithBytesNoCopy:(void *)text.data() length:text.size() freeWhenDone:NO];
       NSString* theString = nil;
       BOOL usedLossyConversion = NO;
-      [NSString stringEncodingForData:data
+      [[maybe_unused]]BOOL determinedEncoding = [NSString stringEncodingForData:data
                                 encodingOptions:@{NSStringEncodingDetectionSuggestedEncodingsKey: @[@(nsFromEncoding)],
                                                   NSStringEncodingDetectionUseOnlySuggestedEncodingsKey: @YES}
                                 convertedString:&theString
                             usedLossyConversion:&usedLossyConversion];
       
-      /* Decide whether to do anything with `usedLossyConversion` and `determinedEncoding. */
+      /* Decide whether to do anything with `usedLossyConversion` and `determinedEncoding`. */
       if (! theString) return false;
-      output = [theString cStringUsingEncoding:nsToEncoding];
+      const char* pOutput = [theString cStringUsingEncoding:nsToEncoding];
+      if (!pOutput) return false;
+      output = pOutput;
       return true;
    } @catch (NSException *exception)
    {
