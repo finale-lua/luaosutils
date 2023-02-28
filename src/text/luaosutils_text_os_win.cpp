@@ -13,7 +13,7 @@
 #include "text/luaosutils_text_os.h"
 #include "winutils/luaosutils_winutils.h"
 
-bool __text_reencode(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
+bool __text_encode(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
 {
 	const int inpSize = MultiByteToWideChar(fromCodepage, MB_ERR_INVALID_CHARS, text.c_str(), -1, nullptr, 0) - 1; // remove null-terminator
 	if (inpSize <= 0)

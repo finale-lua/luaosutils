@@ -13,7 +13,7 @@
 #include "luaosutils.hpp"
 #include "text/luaosutils_text_os.h"
 
-static int luaosutils_text_reencode(lua_State *L)
+static int luaosutils_text_encode(lua_State *L)
 {
    std::string text = __get_lua_parameter(L, 1, std::string());
    unsigned int fromCodepage = __get_lua_parameter(L, 2, 0u);
@@ -25,12 +25,12 @@ static int luaosutils_text_reencode(lua_State *L)
       return 1;
    }
 
-   // Re-encode even when fromCodepage == toCodepage
+   // Encode even when fromCodepage == toCodepage
    // This allows a script to find out if fromCodepage is a valid encoding for the string.
    if (fromCodepage && toCodepage)
    {
       std::string output;
-      const bool result = __text_reencode(text, fromCodepage, output, toCodepage);
+      const bool result = __text_encode(text, fromCodepage, output, toCodepage);
       if (result)
          __push_lua_return_value(L, output);
       else
@@ -43,7 +43,7 @@ static int luaosutils_text_reencode(lua_State *L)
 }
 
 static const luaL_Reg text_utils[] = {
-   {"reencode",            luaosutils_text_reencode},
+   {"encode",              luaosutils_text_encode},
    {NULL, NULL} // sentinel
 };
 
