@@ -6,6 +6,9 @@
 //  Copyright © 2023 Robert Patterson. All rights reserved.
 //  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
+#if OPERATING_SYSTEM == WINDOWS
+#include <windows.h>
+#endif
 
 #include "luaosutils.hpp"
 #include "text/luaosutils_text_os.h"
@@ -14,8 +17,16 @@ static int luaosutils_text_reencode(lua_State *L)
 {
    std::string text = __get_lua_parameter(L, 1, std::string());
    unsigned int fromCodepage = __get_lua_parameter(L, 2, 0u);
-   unsigned int toCodepage = __get_lua_parameter(L, 3, 0u);
+   unsigned int toCodepage = __get_lua_parameter(L, 3, WINCODE(CP_UTF8) MACCODE(65001));
 
+   if (!text.size())
+   {
+      __push_lua_return_value(L, text);
+      return 1;
+   }
+
+   // Re-encode even when fromCodepage == toCodepage
+   // This allows a script to find out if fromCodepage is a valid encoding for the string.
    if (fromCodepage && toCodepage)
    {
       std::string output;

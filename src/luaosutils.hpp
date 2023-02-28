@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 2.1.0.b2"
+#define LUAOSUTILS_VERSION "Luaosutils 2.1.0.b3"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
@@ -25,13 +25,13 @@
 #endif
 
 #if OPERATING_SYSTEM == WINDOWS
-#define WINCODE(X) (X)
+#define WINCODE(X) X
 #else
 #define WINCODE(X)
 #endif
 
 #if OPERATING_SYSTEM == MAC_OS
-#define MACCODE(X) (X)
+#define MACCODE(X) X
 #else
 #define MACCODE(X)
 #endif
