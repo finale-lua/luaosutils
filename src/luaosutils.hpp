@@ -26,18 +26,23 @@
 
 #if OPERATING_SYSTEM == WINDOWS
 #define WINCODE(X) X
+#define WIN_PARM(X) , X
 #else
 #define WINCODE(X)
+#define WIN_PARM(X)
 #endif
 
 #if OPERATING_SYSTEM == MAC_OS
 #define MACCODE(X) X
+#define MAC_PARM(X) , X
 #else
 #define MACCODE(X)
+#define MAC_PARM(X)
 #endif
 
 #include <string>
 #include <functional>
+#include <optional>
 
 #include "luaosutils_export.h"
 
@@ -61,18 +66,34 @@ using __download_callback = std::function<void (bool, const std::string&)>;
 
 #ifndef __OBJC__
 template<typename T>
-T __get_lua_parameter(lua_State* L, int paramNum, T defaultValue)
+T __get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt)
 {
-   if constexpr (std::is_convertible<T, void*>::value)
+   const int type = lua_type(L, param_number);
+   const bool is_nil = (type == LUA_TNIL || type == LUA_TNONE);
+   if (type != expected_type && (!default_value.has_value() || !is_nil))
    {
-      T ptr = reinterpret_cast<T>(lua_touserdata(L, paramNum));
-      if (!ptr) return defaultValue;
+      const char* expected_type_name = lua_typename(L, expected_type);
+      const char* actual_type_name = lua_typename(L, type);
+      luaL_error(L, "param %d expected %s, got %s", param_number, expected_type_name, actual_type_name);
+   }
+   if (is_nil)
+   {
+      if (default_value.has_value())
+         return default_value.value();
+      luaL_error(L, "param %d must supply default value for nil", param_number);
+   }
+   if constexpr(std::is_same<T, luabridge::LuaRef>::value)
+   {
+      return luabridge::Stack<luabridge::LuaRef>::get(L, param_number);
+   }
+   else if constexpr (std::is_convertible<T, void*>::value)
+   {
+      T ptr = reinterpret_cast<T>(lua_touserdata(L, param_number));
       return ptr;
    }
    else
    {
-      luabridge::LuaRef ref = luabridge::Stack<luabridge::LuaRef>::get(L, paramNum);
-      if (ref.isNil()) return defaultValue;
+      luabridge::LuaRef ref = luabridge::Stack<luabridge::LuaRef>::get(L, param_number);
       return ref.cast<T>();
    }
 }

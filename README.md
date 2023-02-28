@@ -344,7 +344,7 @@ Returns the title of the specified menu.
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|(window_handle)|Handle to the window containing the menu (may be omitted on macOS).|
+|window_handle|Handle to the window containing the menu (`nil` on macOS).|
 
 |Output Type|Description|
 |----------|-----------|
