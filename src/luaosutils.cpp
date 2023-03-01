@@ -25,6 +25,7 @@ int luaopen_luaosutils (lua_State *L) {
    luaosutils_internet_create(L);
    luaosutils_menu_create(L);
    luaosutils_process_create(L);
+   luaosutils_text_create(L);
    /* make version string available to scripts */
    lua_pushstring(L, "_VERSION");
    lua_pushstring(L, LUAOSUTILS_VERSION);

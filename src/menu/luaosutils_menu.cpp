@@ -12,8 +12,8 @@
 
 static int luaosutils_menu_delete_submenu(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   window_handle hWnd = __get_lua_parameter<window_handle>(L, 2, nullptr);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA, nullptr);
+   auto hWnd = __get_lua_parameter<window_handle>(L, 2, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
    
    if (__menu_get_item_count(hMenu) > 0)
       __push_lua_return_value(L, false);
@@ -24,8 +24,9 @@ static int luaosutils_menu_delete_submenu(lua_State *L)
 
 static int luaosutils_menu_find_item(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   std::string itemText = __get_lua_parameter(L, 2, std::string());
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto itemText = __get_lua_parameter<std::string>(L, 2, LUA_TSTRING);
+   auto startIndex = __get_lua_parameter<int>(L, 3, LUA_TNUMBER, 0);
    
    if (itemText.size() <= 0)
    {
@@ -34,7 +35,7 @@ static int luaosutils_menu_find_item(lua_State *L)
    }
 
    int itemIndex = 0;
-   menu_handle menu = __menu_find_item(hMenu, itemText, 0, itemIndex);
+   menu_handle menu = __menu_find_item(hMenu, itemText, startIndex, itemIndex);
    if (! menu)
    {
       lua_pushnil(L);
@@ -48,8 +49,8 @@ static int luaosutils_menu_find_item(lua_State *L)
 
 static int luaosutils_menu_get_item_command_id(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   int index = __get_lua_parameter(L, 2, -1);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto index = __get_lua_parameter<int>(L, 2, LUA_TNUMBER);
 
    if (index < 0 || !hMenu || index >= __menu_get_item_count(hMenu))
       lua_pushnil(L);
@@ -66,7 +67,7 @@ static int luaosutils_menu_get_item_command_id(lua_State *L)
 
 static int luaosutils_menu_get_item_count(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
 
    __push_lua_return_value(L, __menu_get_item_count(hMenu));
    return 1;
@@ -74,8 +75,8 @@ static int luaosutils_menu_get_item_count(lua_State *L)
 
 static int luaosutils_menu_get_item_submenu(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   int index = __get_lua_parameter(L, 2, -1);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto index = __get_lua_parameter<int>(L, 2, LUA_TNUMBER);
 
    if (index < 0 || !hMenu || index >= __menu_get_item_count(hMenu))
       lua_pushnil(L);
@@ -86,8 +87,8 @@ static int luaosutils_menu_get_item_submenu(lua_State *L)
 
 static int luaosutils_menu_get_item_text(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   int index = __get_lua_parameter(L, 2, -1);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto index = __get_lua_parameter<int>(L, 2, LUA_TNUMBER);
    
    __push_lua_return_value(L, __menu_get_item_text(hMenu, index));
    return 1;
@@ -95,8 +96,8 @@ static int luaosutils_menu_get_item_text(lua_State *L)
 
 static int luaosutils_get_item_type(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   int index = __get_lua_parameter(L, 2, -1);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto index = __get_lua_parameter<int>(L, 2, LUA_TNUMBER);
 
    if (index < 0 || !hMenu || index >= __menu_get_item_count(hMenu))
       __push_lua_return_value(L, static_cast<int>(MENUITEM_TYPES::ITEMTYPE_INVALID));
@@ -107,8 +108,8 @@ static int luaosutils_get_item_type(lua_State *L)
 
 static int luaosutils_menu_get_title(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   window_handle hWnd = __get_lua_parameter<window_handle>(L, 2, nullptr);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto hWnd = __get_lua_parameter<window_handle>(L, 2, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
 
    __push_lua_return_value(L, __menu_get_title(hMenu, hWnd));
    return 1;
@@ -116,7 +117,7 @@ static int luaosutils_menu_get_title(lua_State *L)
 
 static int luaosutils_menu_get_top_level_menu(lua_State *L)
 {
-   window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
+   auto hWnd = __get_lua_parameter<window_handle>(L, 1, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
 
    __push_lua_return_value(L, __menu_get_top_level_menu(hWnd));
    return 1;
@@ -124,8 +125,8 @@ static int luaosutils_menu_get_top_level_menu(lua_State *L)
 
 static int luaosutils_menu_insert_separator(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   int insertIndex = __get_lua_parameter(L, 2, -1);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto insertIndex = __get_lua_parameter<int>(L, 2, LUA_TNUMBER, -1);
    
    if (!hMenu)
    {
@@ -144,9 +145,9 @@ static int luaosutils_menu_insert_separator(lua_State *L)
 
 static int luaosutils_menu_insert_submenu(lua_State *L)
 {
-   std::string itemText = __get_lua_parameter(L, 1, std::string());
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 2, nullptr);
-   int insertIndex = __get_lua_parameter(L, 3, -1);
+   auto itemText = __get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 2, LUA_TLIGHTUSERDATA);
+   auto insertIndex = __get_lua_parameter<int>(L, 3, LUA_TNUMBER, -1);
    
    if (itemText.size() <= 0 || !hMenu)
    {
@@ -169,10 +170,10 @@ static int luaosutils_menu_insert_submenu(lua_State *L)
 
 static int luaosutils_menu_move_item(lua_State *L)
 {
-   menu_handle fromMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   int fromIndex = __get_lua_parameter(L, 2, -1);
-   menu_handle toMenu = __get_lua_parameter<menu_handle>(L, 3, nullptr);
-   int toIndex = __get_lua_parameter(L, 4, -1);
+   auto fromMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto fromIndex = __get_lua_parameter<int>(L, 2, LUA_TNUMBER);
+   auto toMenu = __get_lua_parameter<menu_handle>(L, 3, LUA_TLIGHTUSERDATA);
+   auto toIndex = __get_lua_parameter<int>(L, 4, LUA_TNUMBER, -1);
    
    if (fromIndex < 0 || !fromMenu || fromIndex >= __menu_get_item_count(fromMenu) || !toMenu)
    {
@@ -192,8 +193,8 @@ static int luaosutils_menu_move_item(lua_State *L)
 
 static int luaosutils_menu_redraw([[maybe_unused]]lua_State* L)
 {
-#ifdef _MSC_VER
-   window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, nullptr);
+#if OPERATING_SYSTEM == WINDOWS
+   window_handle hWnd = __get_lua_parameter<window_handle>(L, 1, LUA_TLIGHTUSERDATA, nullptr);
    if (hWnd) DrawMenuBar(hWnd);
 #endif
 
@@ -202,9 +203,9 @@ static int luaosutils_menu_redraw([[maybe_unused]]lua_State* L)
 
 static int luaosutils_menu_set_item_text(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   int index = __get_lua_parameter(L, 2, -1);
-   std::string newText = __get_lua_parameter(L, 3, std::string());
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto index = __get_lua_parameter<int>(L, 2, LUA_TNUMBER);
+   auto newText = __get_lua_parameter<std::string>(L, 3, LUA_TSTRING);
    
    if (newText.size() <= 0 || index < 0 || index >= __menu_get_item_count(hMenu))
       __push_lua_return_value(L, false);
@@ -215,9 +216,9 @@ static int luaosutils_menu_set_item_text(lua_State *L)
 
 static int luaosutils_menu_set_title(lua_State *L)
 {
-   menu_handle hMenu = __get_lua_parameter<menu_handle>(L, 1, nullptr);
-   window_handle hWnd = __get_lua_parameter<window_handle>(L, 2, nullptr);
-   std::string newText = __get_lua_parameter(L, 3, std::string());
+   auto hMenu = __get_lua_parameter<menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
+   auto hWnd = __get_lua_parameter<window_handle>(L, 2, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
+   auto newText = __get_lua_parameter<std::string>(L, 3, LUA_TSTRING);
 
    if (newText.size() <= 0)
       __push_lua_return_value(L, false);

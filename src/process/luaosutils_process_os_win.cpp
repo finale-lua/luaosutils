@@ -60,7 +60,7 @@ bool __process_execute(const std::string& cmd, const std::string& dir, std::stri
 
    std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
    std::basic_string<WCHAR> wDir = __utf8_to_WCHAR(dir.c_str());
-   const WCHAR * pDir = dir.size() ? wDir.c_str() : NULL;
+   const WCHAR* pDir = dir.size() ? wDir.c_str() : NULL;
 
    // We have to cast away const here because the API doesn't specify const. But it also does not modify the string.
    if (!CreateProcessW(NULL, wCmd.data(), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, pDir, &si, &pi))

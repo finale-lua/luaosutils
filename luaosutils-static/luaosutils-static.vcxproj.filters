@@ -25,6 +25,9 @@
     <Filter Include="Source Files\winutils">
       <UniqueIdentifier>{4a89725f-4ad6-429a-8bac-271b4425d80f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\text">
+      <UniqueIdentifier>{ac22bf54-154c-44dc-aaf7-50cfec5604f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,6 +57,9 @@
     <ClInclude Include="..\src\menu\luaosutils_menu_os.h">
       <Filter>Source Files\menu</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\text\luaosutils_text_os.h">
+      <Filter>Source Files\text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -79,6 +85,12 @@
     </ClCompile>
     <ClCompile Include="..\src\process\luaosutils_process_os_win.cpp">
       <Filter>Source Files\process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\text\luaosutils_text.cpp">
+      <Filter>Source Files\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\text\luaosutils_text_os_win.cpp">
+      <Filter>Source Files\text</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

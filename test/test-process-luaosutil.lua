@@ -33,10 +33,11 @@ if finenv.UI():IsOnWindows() then
     if true then
         -- local listing = process.execute('cmd /c chcp 65001 & /c REG QUERY \"HKLM\\Software\\Microsoft\" /reg:32')
         --local listing = process.execute('cmd /c chcp 65001 & REG QUERY \"HKCU\\SOFTWARE\\RGP\\Finale Plugin Prefs\" /reg:32')
-        local listing = process.execute('cmd /c dir', finenv.RunningLuaFolderPath()) --"C:\\Program Files\\")
+        --local listing = process.execute('cmd /c dir', finenv.RunningLuaFolderPath()) --"C:\\Program Files\\")
+        local listing = process.execute('cmd /c chcp & echo "∫üåé"')
         print(listing)
         if listing then
-            local fileout = io.open(finenv.RunningLuaFolderPath().."/".."listing.txt", "w")
+            local fileout = io.open(finenv.RunningLuaFolderPath().."/".."listing.txt", "wb")
             fileout:write(listing)
             fileout:close()
         else

@@ -53,10 +53,8 @@ static void __call_lua_function(luaosutils_callback_session &session, Args... ar
  */
 static int luaosutils_download_url(lua_State *L)
 {
-   std::string urlString = luabridge::Stack<std::string>::get(L, 1);
-   luabridge::LuaRef callback = luabridge::Stack<luabridge::LuaRef>::get(L, 2);
-   if (! callback.isFunction())
-      luaL_error(L, "Function download_url expects a callback function in the second argument.");
+   auto urlString = __get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
+   auto callback = __get_lua_parameter<luabridge::LuaRef>(L, 2, LUA_TFUNCTION);
 
    luaosutils_callback_session::id_type sessionID = luaosutils_callback_session::get_new_session_id();
    
@@ -102,8 +100,8 @@ static int luaosutils_download_url(lua_State *L)
  */
 static int luaosutils_download_url_sync(lua_State *L)
 {
-   std::string urlString = luabridge::Stack<std::string>::get(L, 1);
-   double timeout = (std::max)(0.0, luabridge::Stack<double>::get(L, 2));
+   auto urlString = __get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
+   auto timeout = (std::max)(0.0, __get_lua_parameter<double>(L, 2, LUA_TNUMBER));
    
    bool success = false;
    std::string result;

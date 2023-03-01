@@ -12,8 +12,8 @@
 
 static int luaosutils_process_execute(lua_State *L)
 {
-   std::string cmd = __get_lua_parameter(L, 1, std::string());
-   std::string dir = __get_lua_parameter(L, 2, std::string());
+   auto cmd = __get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   auto dir = __get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
    
    if (cmd.size())
    {
@@ -32,8 +32,8 @@ static int luaosutils_process_execute(lua_State *L)
 
 static int luaosutils_process_launch(lua_State *L)
 {
-   std::string cmd = __get_lua_parameter(L, 1, std::string());
-   std::string dir = __get_lua_parameter(L, 2, std::string());
+   auto cmd = __get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   auto dir = __get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
 
    if (cmd.size())
       __push_lua_return_value(L, __process_launch(cmd, dir));
