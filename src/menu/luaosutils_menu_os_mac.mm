@@ -10,7 +10,7 @@
 
 #include "menu/luaosutils_menu_os.h"
 
-NSMenuItem* __GetEnclosingMenuItemForMenu(const NSMenu * const subMenu)
+NSMenuItem* GetEnclosingMenuItemForMenu(const NSMenu * const subMenu)
 {
    NSMenu * superMenu = [subMenu supermenu];
    if ( nil != superMenu )
@@ -26,12 +26,12 @@ NSMenuItem* __GetEnclosingMenuItemForMenu(const NSMenu * const subMenu)
    return nil;
 }
 
-bool __menu_delete_submenu(menu_handle hMenu, window_handle)
+bool menu_delete_submenu(menu_handle hMenu, window_handle)
 {
    NSMenu* subMenu = (__bridge NSMenu*)hMenu;
    @try
    {
-      NSMenuItem* menuItem = __GetEnclosingMenuItemForMenu(subMenu);
+      NSMenuItem* menuItem = GetEnclosingMenuItemForMenu(subMenu);
       if (menuItem)
       {
          [[subMenu supermenu] removeItem:menuItem];
@@ -39,12 +39,12 @@ bool __menu_delete_submenu(menu_handle hMenu, window_handle)
       }
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_delete_submenu: %@", exception);
+      NSLog(@"Caught exception in menu_delete_submenu: %@", exception);
    }
    return false;
 }
 
-menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
+menu_handle menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
    NSInteger startingIndex = starting_index;
@@ -52,7 +52,7 @@ menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, in
    
    auto searchSubmenus = [&itemIndex, itemText](menu_handle menu, NSInteger startIndex, auto&& searchSubmenus) -> menu_handle
    {
-      const int itemCount = __menu_get_item_count(menu);
+      const int itemCount = menu_get_item_count(menu);
       for (NSInteger i = startIndex; i < itemCount; i++)
       {
          NSMenuItem* item = [(__bridge NSMenu *)menu itemAtIndex:i];
@@ -73,7 +73,7 @@ menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, in
    return searchSubmenus(hMenu, startingIndex, searchSubmenus);
 }
 
-long __menu_get_item_command_id(menu_handle hMenu, int index)
+long menu_get_item_command_id(menu_handle hMenu, int index)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
@@ -83,12 +83,12 @@ long __menu_get_item_command_id(menu_handle hMenu, int index)
       return [menuItem tag];
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_item_command_id: %@", exception);
+      NSLog(@"Caught exception in menu_get_item_command_id: %@", exception);
    }
    return -1;
 }
 
-int __menu_get_item_count(menu_handle hMenu)
+int menu_get_item_count(menu_handle hMenu)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
@@ -96,12 +96,12 @@ int __menu_get_item_count(menu_handle hMenu)
       return (int)[menu numberOfItems];
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_item_count: %@", exception);
+      NSLog(@"Caught exception in menu_get_item_count: %@", exception);
    }
    return 0;
 }
 
-menu_handle __menu_get_item_submenu(menu_handle hMenu, int index)
+menu_handle menu_get_item_submenu(menu_handle hMenu, int index)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
@@ -111,13 +111,13 @@ menu_handle __menu_get_item_submenu(menu_handle hMenu, int index)
          return (__bridge menu_handle)[item submenu];
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_item_type: %@", exception);
+      NSLog(@"Caught exception in menu_get_item_type: %@", exception);
    }
    return nullptr;
 
 }
 
-std::string __menu_get_item_text(menu_handle hMenu, int index)
+std::string menu_get_item_text(menu_handle hMenu, int index)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
@@ -128,12 +128,12 @@ std::string __menu_get_item_text(menu_handle hMenu, int index)
       return [[menuItem title] UTF8String];
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_item_text: %@", exception);
+      NSLog(@"Caught exception in menu_get_item_text: %@", exception);
    }
    return "";
 }
 
-MENUITEM_TYPES __menu_get_item_type(menu_handle hMenu, int index)
+MENUITEM_TYPES menu_get_item_type(menu_handle hMenu, int index)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
@@ -147,33 +147,33 @@ MENUITEM_TYPES __menu_get_item_type(menu_handle hMenu, int index)
       }
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_item_type: %@", exception);
+      NSLog(@"Caught exception in menu_get_item_type: %@", exception);
    }
    return MENUITEM_TYPES::ITEMTYPE_INVALID;
 }
 
-std::string __menu_get_title(menu_handle hMenu, window_handle)
+std::string menu_get_title(menu_handle hMenu, window_handle)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
    {
-      NSMenuItem* item = __GetEnclosingMenuItemForMenu(menu);
+      NSMenuItem* item = GetEnclosingMenuItemForMenu(menu);
       if (item)
          return [[item title] UTF8String];
       return [[menu title] UTF8String];
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_text: %@", exception);
+      NSLog(@"Caught exception in menu_get_text: %@", exception);
    }
    return "";
 }
 
-menu_handle __menu_get_top_level_menu(window_handle)
+menu_handle menu_get_top_level_menu(window_handle)
 {
    return (__bridge menu_handle)[[NSApplication sharedApplication] mainMenu];
 }
 
-int __menu_insert_separator(menu_handle hMenu, int insertIndex)
+int menu_insert_separator(menu_handle hMenu, int insertIndex)
 {
    NSMenu* menu =  (__bridge NSMenu*)hMenu;
    @try
@@ -193,12 +193,12 @@ int __menu_insert_separator(menu_handle hMenu, int insertIndex)
 
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_insert_separator: %@", exception);
+      NSLog(@"Caught exception in menu_insert_separator: %@", exception);
    }
    return -1;
 }
 
-menu_handle __menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex)
+menu_handle menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex)
 {
    NSMenu* menu =  (__bridge NSMenu*)hMenu;
    @try
@@ -222,12 +222,12 @@ menu_handle __menu_insert_submenu(const std::string& itemText, menu_handle hMenu
       return (__bridge menu_handle)subMenu;
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_insert_submenu: %@", exception);
+      NSLog(@"Caught exception in menu_insert_submenu: %@", exception);
    }
    return nil;
 }
 
-bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex)
+bool menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex)
 {
    NSMenu* nsFromMenu = (__bridge NSMenu*)fromMenu;
    NSMenu* nsToMenu = (__bridge NSMenu*)toMenu;
@@ -256,7 +256,7 @@ bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, i
    return false;
 }
 
-bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
+bool menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
@@ -268,24 +268,24 @@ bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newTe
       return true;
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_item_text%@", exception);
+      NSLog(@"Caught exception in menu_get_item_text%@", exception);
    }
    return false;
 }
 
-bool __menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText)
+bool menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText)
 {
    NSMenu* menu = (__bridge NSMenu*)hMenu;
    @try
    {
       [menu setTitle:[NSString stringWithUTF8String:newText.c_str()]];
-      NSMenuItem *menuItem = __GetEnclosingMenuItemForMenu(menu);
+      NSMenuItem *menuItem = GetEnclosingMenuItemForMenu(menu);
       if (menuItem)
          [menuItem setTitle:[NSString stringWithUTF8String:newText.c_str()]];
       return true;
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __menu_get_text: %@", exception);
+      NSLog(@"Caught exception in menu_get_text: %@", exception);
    }
    return false;
 }

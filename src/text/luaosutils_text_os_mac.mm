@@ -12,7 +12,7 @@
 
 #include "text/luaosutils_text_os.h"
 
-bool __text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
+bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
 {
    @try {
       CFStringEncoding cfFromEncoding = CFStringConvertWindowsCodepageToEncoding(fromCodepage);
@@ -38,7 +38,7 @@ bool __text_convert_encoding(const std::string& text, unsigned int fromCodepage,
       return true;
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __text_convert_encoding: %@", exception);
+      NSLog(@"Caught exception in text_convert_encoding: %@", exception);
    }
    return false;
 }

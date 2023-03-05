@@ -24,8 +24,8 @@ static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 }
 
 template<typename... Args>
-static void __call_lua_function(luaosutils_callback_session &session, Args... args)
-//static void __call_lua_function(luaosutils_callback_session& session, bool success, const std::string& urlResult)
+static void call_lua_function(luaosutils_callback_session &session, Args... args)
+//static void call_lua_function(luaosutils_callback_session& session, bool success, const std::string& urlResult)
 {
    if (! luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
       return;
@@ -41,7 +41,7 @@ static void __call_lua_function(luaosutils_callback_session &session, Args... ar
       if (finenv["RetainLuaState"].isBool())
          finenv["RetainLuaState"] = false;
 #endif // defined(LUAOSUTILS_RGPLUA_AWARE)
-      __error_message_box(e.what());
+      error_message_box(e.what());
    }
 }
 
@@ -53,18 +53,18 @@ static void __call_lua_function(luaosutils_callback_session &session, Args... ar
  */
 static int luaosutils_download_url(lua_State *L)
 {
-   auto urlString = __get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
-   auto callback = __get_lua_parameter<luabridge::LuaRef>(L, 2, LUA_TFUNCTION);
+   auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
+   auto callback = get_lua_parameter<luabridge::LuaRef>(L, 2, LUA_TFUNCTION);
 
    luaosutils_callback_session::id_type sessionID = luaosutils_callback_session::get_new_session_id();
    
-   const OSSESSION_ptr os_session = __download_url(urlString, -1,
-          __download_callback([sessionID](bool success, const std::string &urlResult) -> void
+   const OSSESSION_ptr os_session = download_url(urlString, -1,
+          lua_callback([sessionID](bool success, const std::string &urlResult) -> void
          {
             luaosutils_callback_session* session = luaosutils_callback_session::get_session_for_id(sessionID);
             if (session)
             {
-               __call_lua_function(*session, success, urlResult);
+               call_lua_function(*session, success, urlResult);
                session->set_os_session(nullptr);
             }
          }));
@@ -74,9 +74,9 @@ static int luaosutils_download_url(lua_State *L)
       luaosutils_callback_session* session = new (lua_newuserdata(L, sizeof(luaosutils_callback_session)))
                                     luaosutils_callback_session(callback, sessionID);
       session->set_os_session(os_session);
-      // Create a metatable for the userdata through that object can be accessed with "__gc". That means we get called when Lua state closes.
+      // Create a metatable for the userdata through that object can be accessed with "gc". That means we get called when Lua state closes.
       lua_newtable(L);
-      lua_pushstring(L, "__gc");
+      lua_pushstring(L, "gc");
       lua_pushcfunction(L, [](lua_State* L)
       {
          auto udata = (luaosutils_callback_session*)lua_touserdata(L, 1);
@@ -100,14 +100,14 @@ static int luaosutils_download_url(lua_State *L)
  */
 static int luaosutils_download_url_sync(lua_State *L)
 {
-   auto urlString = __get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
-   auto timeout = (std::max)(0.0, __get_lua_parameter<double>(L, 2, LUA_TNUMBER));
+   auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
+   auto timeout = (std::max)(0.0, get_lua_parameter<double>(L, 2, LUA_TNUMBER));
    
    bool success = false;
    std::string result;
    
-   __download_url(urlString, timeout,
-          __download_callback([&success, &result](bool cbsuccess, const std::string &data) -> void
+   download_url(urlString, timeout,
+          lua_callback([&success, &result](bool cbsuccess, const std::string &data) -> void
          {
             success = cbsuccess;
             result = data;

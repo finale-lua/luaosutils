@@ -17,13 +17,13 @@
 
 static int luaosutils_text_convert_encoding(lua_State *L)
 {
-   auto text = __get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
-   auto fromCodepage = __get_lua_parameter<unsigned int>(L, 2, LUA_TNUMBER);
-   auto toCodepage = __get_lua_parameter<unsigned int>(L, 3, LUA_TNUMBER, CP_UTF8);
+   auto text = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   auto fromCodepage = get_lua_parameter<unsigned int>(L, 2, LUA_TNUMBER);
+   auto toCodepage = get_lua_parameter<unsigned int>(L, 3, LUA_TNUMBER, CP_UTF8);
 
    if (!text.size())
    {
-      __push_lua_return_value(L, text);
+      push_lua_return_value(L, text);
       return 1;
    }
 
@@ -32,9 +32,9 @@ static int luaosutils_text_convert_encoding(lua_State *L)
    if (fromCodepage && toCodepage)
    {
       std::string output;
-      const bool result = __text_convert_encoding(text, fromCodepage, output, toCodepage);
+      const bool result = text_convert_encoding(text, fromCodepage, output, toCodepage);
       if (result)
-         __push_lua_return_value(L, output);
+         push_lua_return_value(L, output);
       else
          lua_pushnil(L);
    }

@@ -31,19 +31,19 @@ enum class MENUITEM_TYPES
    ITEMTYPE_SEPARATOR =    2
 };
 
-bool __menu_delete_submenu(menu_handle hMenu, window_handle hWnd);
-menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex);
-long __menu_get_item_command_id(menu_handle hMenu, int index);
-int __menu_get_item_count(menu_handle hMenu);
-menu_handle __menu_get_item_submenu(menu_handle hMenu, int index);
-std::string __menu_get_item_text(menu_handle hMenu, int index);
-MENUITEM_TYPES __menu_get_item_type(menu_handle hMenu, int index);
-std::string __menu_get_title(menu_handle hMenu, window_handle hWnd);
-menu_handle __menu_get_top_level_menu(window_handle hWnd);
-int __menu_insert_separator(menu_handle hMenu, int insertIndex);
-menu_handle __menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex);
-bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex);
-bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText);
-bool __menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText);
+bool menu_delete_submenu(menu_handle hMenu, window_handle hWnd);
+menu_handle menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex);
+long menu_get_item_command_id(menu_handle hMenu, int index);
+int menu_get_item_count(menu_handle hMenu);
+menu_handle menu_get_item_submenu(menu_handle hMenu, int index);
+std::string menu_get_item_text(menu_handle hMenu, int index);
+MENUITEM_TYPES menu_get_item_type(menu_handle hMenu, int index);
+std::string menu_get_title(menu_handle hMenu, window_handle hWnd);
+menu_handle menu_get_top_level_menu(window_handle hWnd);
+int menu_insert_separator(menu_handle hMenu, int insertIndex);
+menu_handle menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex);
+bool menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex);
+bool menu_set_item_text(menu_handle hMenu, int index, const std::string& newText);
+bool menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText);
 
 #endif /* luaosutils_menu_os_h */
