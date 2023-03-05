@@ -38,3 +38,16 @@ bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, s
 	WideCharToMultiByte(toCodepage, 0, wInp.c_str(), -1, output.data(), outSize, NULL, NULL);
 	return true;
 }
+
+int text_get_default_codepage(std::string& errorMessage)
+{
+	int retval = GetACP();
+	if (!retval)
+		errorMessage = get_last_error_as_string();
+	return retval;
+}
+
+int text_get_utf8_codepage()
+{
+	return CP_UTF8;
+}

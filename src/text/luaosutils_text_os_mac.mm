@@ -42,3 +42,14 @@ bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, s
    }
    return false;
 }
+
+int text_get_utf8_codepage()
+{
+   return CFStringConvertEncodingToWindowsCodepage(kCFStringEncodingUTF8);
+}
+
+int text_get_default_codepage(std::string& errorMessage)
+{
+   errorMessage = "";
+   return text_get_utf8_codepage();
+}

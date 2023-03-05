@@ -44,8 +44,33 @@ static int luaosutils_text_convert_encoding(lua_State *L)
    return 1;
 }
 
+int luaosutils_text_get_default_encoding(lua_State *L)
+{
+   std::string errorMessage;
+   
+   int retval = text_get_default_codepage(errorMessage);
+   
+   int numReturns = 1;
+   push_lua_return_value(L, retval);
+   if (!retval)
+   {
+      push_lua_return_value(L, errorMessage);
+      numReturns++;
+   }
+   
+   return numReturns;
+}
+
+int luaosutils_text_get_utf8_encoding(lua_State *L)
+{
+   push_lua_return_value(L, text_get_utf8_codepage());
+   return 1;
+}
+
 static const luaL_Reg text_utils[] = {
    {"convert_encoding",       luaosutils_text_convert_encoding},
+   {"get_default_codepage",   luaosutils_text_get_default_encoding},
+   {"get_utf8_codepage",      luaosutils_text_get_utf8_encoding},
    {NULL, NULL} // sentinel
 };
 

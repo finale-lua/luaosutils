@@ -11,6 +11,7 @@
 #define luaosutils_text_os_h
 
 bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage);
-
+int text_get_default_codepage(std::string& errorMessage);
+int text_get_utf8_codepage();
 
 #endif /* luaosutils_text_os_h */

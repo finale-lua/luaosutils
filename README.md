@@ -659,6 +659,38 @@ local w1252_string = text.convert_encoding(my_string, 65001, 1252) -- convert st
 local utf8_string2 = text.convert_encoding(w1252_string, 1252) -- convert 1252 to UTF-8 (with omitted 3rd parameter).
 ```
 
+### text.get\_default\_codepage
+
+On Windows, returns the current ANSI codepage value (as returned by the `GetACP` WinAPI function). On macOS, returns the UTF-8 codepage value.
+
+|Input Type|Description|
+|----------|-----------|
+
+|Output Type|Description|
+|----------|-----------|
+|number|The codepage value of the current default codepage or 0 if error.
+|string|If the codepage value is 0, an error message that describes the error.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local text = osutils.text
+
+local default_codepage, error_msg = text.get_default_codepage() -- 1252 on many Windows systems
+```
+
+### text.get\_utf8\_codepage
+
+Returns the codepage value of UTF-8 using OS-level API calls. This obviates the need for calling code to hardcode it.
+
+```lua
+local osutils = require('luaosutils')
+local text = osutils.text
+
+local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
+```
+
 # Version history
 
 2.1.0

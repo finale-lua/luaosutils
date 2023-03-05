@@ -98,7 +98,7 @@ T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::opti
 }
 
 template<typename T>
-void push_lua_return_value(lua_State* L, T retval)
+void push_lua_return_value(lua_State* L, const T& retval)
 {
    if constexpr (std::is_convertible<T, void*>::value)
    {
