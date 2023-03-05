@@ -14,7 +14,7 @@
 
 #include <windows.h>
 
-inline std::basic_string<WCHAR> __utf8_to_WCHAR(const char* inpstr)
+inline std::basic_string<WCHAR> utf8_to_WCHAR(const char* inpstr)
 {
 	std::basic_string<WCHAR> retval;
 
@@ -27,7 +27,7 @@ inline std::basic_string<WCHAR> __utf8_to_WCHAR(const char* inpstr)
 	return retval;
 }
 
-inline std::string __WCHAR_to_utf8(const WCHAR* inpstr)
+inline std::string WCHAR_to_utf8(const WCHAR* inpstr)
 {
 	std::string retval;
 
@@ -51,12 +51,12 @@ inline std::string __char_to_utf8(const char* inpstr, UINT fallbackCodepage)
 		std::basic_string<WCHAR> wInp;
 		wInp.resize(size);
 		MultiByteToWideChar(fallbackCodepage, 0, inpstr, -1, wInp.data(), size);
-		return __WCHAR_to_utf8(wInp.c_str());
+		return WCHAR_to_utf8(wInp.c_str());
 	}
 	return ""; // error if here
 }
 
-inline std::string __get_last_error_as_string()
+inline std::string get_last_error_as_string()
 {
 	DWORD errorMessageID = ::GetLastError();
 	if (errorMessageID == 0)

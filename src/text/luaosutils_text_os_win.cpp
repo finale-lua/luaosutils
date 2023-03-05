@@ -13,13 +13,13 @@
 #include "text/luaosutils_text_os.h"
 #include "winutils/luaosutils_winutils.h"
 
-bool __text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
+bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
 {
 	const int inpSize = MultiByteToWideChar(fromCodepage, MB_ERR_INVALID_CHARS, text.c_str(), -1, nullptr, 0) - 1; // remove null-terminator
 	if (inpSize <= 0)
 	{
 #ifdef _DEBUG
-		std::string errMsg = __get_last_error_as_string();
+		std::string errMsg = get_last_error_as_string();
 #endif
 		return false;
 	}
@@ -30,7 +30,7 @@ bool __text_convert_encoding(const std::string& text, unsigned int fromCodepage,
 	if (outSize <= 0)
 	{
 #ifdef _DEBUG
-		std::string errMsg = __get_last_error_as_string();
+		std::string errMsg = get_last_error_as_string();
 #endif
 		return false;
 	}
