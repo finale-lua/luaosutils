@@ -693,6 +693,10 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 
 # Version history
 
+2.1.1
+
+- Add explicit Objective-C memory management (macOS) to allow memory-safe embedding in RGP Lua.
+
 2.1.0
 
 - Refactored url download functions into `internet` namespace.

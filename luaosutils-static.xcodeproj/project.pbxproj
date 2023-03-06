@@ -20,6 +20,21 @@
 		B5AA616929ACF79700FB86F2 /* luaosutils_text_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AA616829ACF79700FB86F2 /* luaosutils_text_os.h */; };
 		B5AA616B29ACF84F00FB86F2 /* luaosutils_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5AA616A29ACF84F00FB86F2 /* luaosutils_text.cpp */; };
 		B5AA616D29ACFA0800FB86F2 /* luaosutils_text_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5AA616C29ACFA0800FB86F2 /* luaosutils_text_os_mac.mm */; };
+		B5D65B9429B63B2C00B8286E /* luaosutils_menu_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031EB29A6A6760085ED88 /* luaosutils_menu_os.h */; };
+		B5D65B9529B63B2C00B8286E /* luaosutils_internet_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */; };
+		B5D65B9629B63B2C00B8286E /* luaosutils_callback_session.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5A031E529A6A65E0085ED88 /* luaosutils_callback_session.hpp */; };
+		B5D65B9729B63B2C00B8286E /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5F5261E29A6C30300002B79 /* luaosutils.hpp */; };
+		B5D65B9829B63B2C00B8286E /* luaosutils_text_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AA616829ACF79700FB86F2 /* luaosutils_text_os.h */; };
+		B5D65B9929B63B2C00B8286E /* luaosutils_process_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031F329A6A69A0085ED88 /* luaosutils_process_os.h */; };
+		B5D65B9B29B63B2C00B8286E /* luaosutils_menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031EC29A6A6760085ED88 /* luaosutils_menu.cpp */; };
+		B5D65B9C29B63B2C00B8286E /* luaosutils_process_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031F229A6A69A0085ED88 /* luaosutils_process_os_mac.mm */; };
+		B5D65B9D29B63B2C00B8286E /* luaosutils_text_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5AA616C29ACFA0800FB86F2 /* luaosutils_text_os_mac.mm */; };
+		B5D65B9E29B63B2C00B8286E /* luaosutils_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5AA616A29ACF84F00FB86F2 /* luaosutils_text.cpp */; };
+		B5D65B9F29B63B2C00B8286E /* luaosutils_internet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */; };
+		B5D65BA029B63B2C00B8286E /* luaosutils_process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031F429A6A69A0085ED88 /* luaosutils_process.cpp */; };
+		B5D65BA129B63B2C00B8286E /* luaosutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F5261F29A6C30300002B79 /* luaosutils.cpp */; };
+		B5D65BA229B63B2C00B8286E /* luaosutils_internet_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */; };
+		B5D65BA329B63B2C00B8286E /* luaosutils_menu_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031ED29A6A6760085ED88 /* luaosutils_menu_os_mac.mm */; };
 		B5F5262029A6C30300002B79 /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5F5261E29A6C30300002B79 /* luaosutils.hpp */; };
 		B5F5262129A6C30300002B79 /* luaosutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F5261F29A6C30300002B79 /* luaosutils.cpp */; };
 /* End PBXBuildFile section */
@@ -41,12 +56,21 @@
 		B5AA616829ACF79700FB86F2 /* luaosutils_text_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_text_os.h; sourceTree = "<group>"; };
 		B5AA616A29ACF84F00FB86F2 /* luaosutils_text.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_text.cpp; sourceTree = "<group>"; };
 		B5AA616C29ACFA0800FB86F2 /* luaosutils_text_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_text_os_mac.mm; sourceTree = "<group>"; };
+		B5D65BA829B63B2C00B8286E /* libluaosutils-no-adc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libluaosutils-no-adc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5D65BA929B63B9E00B8286E /* NoAdc.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = NoAdc.xcconfig; sourceTree = "<group>"; };
 		B5F5261E29A6C30300002B79 /* luaosutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = luaosutils.hpp; sourceTree = "<group>"; };
 		B5F5261F29A6C30300002B79 /* luaosutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		B5A031CC29A6A4FC0085ED88 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5D65BA429B63B2C00B8286E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -69,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */,
+				B5D65BA829B63B2C00B8286E /* libluaosutils-no-adc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -77,8 +102,10 @@
 			isa = PBXGroup;
 			children = (
 				B5A031D629A6A55D0085ED88 /* Shared.xcconfig */,
+				B5D65BA929B63B9E00B8286E /* NoAdc.xcconfig */,
 			);
 			name = Config;
+			path = config;
 			sourceTree = "<group>";
 		};
 		B5A031D729A6A5C20085ED88 /* Source */ = {
@@ -153,6 +180,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B5D65B9329B63B2C00B8286E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5D65B9429B63B2C00B8286E /* luaosutils_menu_os.h in Headers */,
+				B5D65B9529B63B2C00B8286E /* luaosutils_internet_os.h in Headers */,
+				B5D65B9629B63B2C00B8286E /* luaosutils_callback_session.hpp in Headers */,
+				B5D65B9729B63B2C00B8286E /* luaosutils.hpp in Headers */,
+				B5D65B9829B63B2C00B8286E /* luaosutils_text_os.h in Headers */,
+				B5D65B9929B63B2C00B8286E /* luaosutils_process_os.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -171,6 +211,23 @@
 			name = "luaosutils-static";
 			productName = "luaosutils-static";
 			productReference = B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		B5D65B9229B63B2C00B8286E /* luaosutils-no-adc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B5D65BA529B63B2C00B8286E /* Build configuration list for PBXNativeTarget "luaosutils-no-adc" */;
+			buildPhases = (
+				B5D65B9329B63B2C00B8286E /* Headers */,
+				B5D65B9A29B63B2C00B8286E /* Sources */,
+				B5D65BA429B63B2C00B8286E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "luaosutils-no-adc";
+			productName = "luaosutils-static";
+			productReference = B5D65BA829B63B2C00B8286E /* libluaosutils-no-adc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -201,6 +258,7 @@
 			projectRoot = "";
 			targets = (
 				B5A031CD29A6A4FC0085ED88 /* luaosutils-static */,
+				B5D65B9229B63B2C00B8286E /* luaosutils-no-adc */,
 			);
 		};
 /* End PBXProject section */
@@ -222,6 +280,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B5D65B9A29B63B2C00B8286E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5D65B9B29B63B2C00B8286E /* luaosutils_menu.cpp in Sources */,
+				B5D65B9C29B63B2C00B8286E /* luaosutils_process_os_mac.mm in Sources */,
+				B5D65B9D29B63B2C00B8286E /* luaosutils_text_os_mac.mm in Sources */,
+				B5D65B9E29B63B2C00B8286E /* luaosutils_text.cpp in Sources */,
+				B5D65B9F29B63B2C00B8286E /* luaosutils_internet.cpp in Sources */,
+				B5D65BA029B63B2C00B8286E /* luaosutils_process.cpp in Sources */,
+				B5D65BA129B63B2C00B8286E /* luaosutils.cpp in Sources */,
+				B5D65BA229B63B2C00B8286E /* luaosutils_internet_os_mac.mm in Sources */,
+				B5D65BA329B63B2C00B8286E /* luaosutils_menu_os_mac.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -234,8 +308,6 @@
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -290,8 +362,6 @@
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -353,6 +423,30 @@
 			};
 			name = Release;
 		};
+		B5D65BA629B63B2C00B8286E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5D65BA929B63B9E00B8286E /* NoAdc.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P54J8A2VK7;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B5D65BA729B63B2C00B8286E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5D65BA929B63B9E00B8286E /* NoAdc.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P54J8A2VK7;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -370,6 +464,15 @@
 			buildConfigurations = (
 				B5A031D329A6A4FC0085ED88 /* Debug */,
 				B5A031D429A6A4FC0085ED88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B5D65BA529B63B2C00B8286E /* Build configuration list for PBXNativeTarget "luaosutils-no-adc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5D65BA629B63B2C00B8286E /* Debug */,
+				B5D65BA729B63B2C00B8286E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

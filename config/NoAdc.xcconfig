@@ -1,0 +1,12 @@
+//
+//  NoAdc.xcconfig
+//  luaosutils-static
+//
+//  Created by Robert Patterson on 3/6/23.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+CLANG_ENABLE_OBJC_ARC = NO
+
