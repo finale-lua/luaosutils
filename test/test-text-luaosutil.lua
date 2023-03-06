@@ -9,7 +9,7 @@ require('mobdebug').start() -- for ZeroBrane Studio debugging
 local osutils = require('luaosutils')
 local text = osutils.text
 
-print(osutils._VERSION)
+print(osutils._VERSION, "Using internal luaosutils: "..tostring(finaleplugin.LoadLuaOSUtils))
 print(text.get_utf8_codepage())
 print(text.get_default_codepage())
 
