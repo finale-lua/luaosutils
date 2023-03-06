@@ -13,7 +13,7 @@
 
 #include "process/luaosutils_process_os.h"
 
-static NSString* __GetUserShellPath()
+static NSString* GetUserShellPath()
 {
    uid_t uid = getuid(); // Get the user ID
    struct passwd *pw = getpwuid(uid); // Get the user information
@@ -21,12 +21,12 @@ static NSString* __GetUserShellPath()
    return [NSString stringWithUTF8String:shell]; // Convert the path to an NSString
 }
 
-bool __process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput)
+bool process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput)
 {
    @try {
       NSString* nsCmd = [NSString stringWithUTF8String:cmd.c_str()];
       NSTask *task = [[NSTask alloc] init];
-      [task setLaunchPath:__GetUserShellPath()];
+      [task setLaunchPath:GetUserShellPath()];
       [task setArguments:@[@"-c", nsCmd]];
       if (dir.size())
       {
@@ -43,7 +43,7 @@ bool __process_execute(const std::string& cmd, const std::string& dir, std::stri
       const bool success = [task launchAndReturnError:&error];
       if (!success)
       {
-         NSLog(@"Error returned from launchAndReturnError in __process_execute: %@", error);
+         NSLog(@"Error returned from launchAndReturnError in process_execute: %@", error);
          return false;
       }
 
@@ -55,17 +55,17 @@ bool __process_execute(const std::string& cmd, const std::string& dir, std::stri
       return true;
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __process_execute: %@", exception);
+      NSLog(@"Caught exception in process_execute: %@", exception);
    }
    return false;
 }
 
-bool __process_launch(const std::string& cmd, const std::string& dir)
+bool process_launch(const std::string& cmd, const std::string& dir)
 {
    @try {
       NSString* nsCmd = [NSString stringWithUTF8String:cmd.c_str()];
       NSTask *task = [[NSTask alloc] init];
-      [task setLaunchPath:__GetUserShellPath()];
+      [task setLaunchPath:GetUserShellPath()];
       [task setArguments:@[@"-c", nsCmd]];
       if (dir.size())
       {
@@ -78,11 +78,11 @@ bool __process_launch(const std::string& cmd, const std::string& dir)
       NSError* error = nil;
       const bool success = [task launchAndReturnError:&error];
       if (!success)
-         NSLog(@"Error returned from launchAndReturnError in __process_launch: %@", error);
+         NSLog(@"Error returned from launchAndReturnError in process_launch: %@", error);
       return success;
    } @catch (NSException *exception)
    {
-      NSLog(@"Caught exception in __process_launch: %@", exception);
+      NSLog(@"Caught exception in process_launch: %@", exception);
    }
    return false;
 }

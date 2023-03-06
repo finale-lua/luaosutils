@@ -14,7 +14,7 @@
 #include "winutils/luaosutils_winutils.h"
 
 /*
-static bool _GetCmdExeFullPath(std::basic_string<WCHAR>& result)
+static bool getCmdExeFullPath(std::basic_string<WCHAR>& result)
 {
    WCHAR sysDir[MAX_PATH];
 
@@ -31,7 +31,7 @@ static bool _GetCmdExeFullPath(std::basic_string<WCHAR>& result)
 }
 */
 
-bool __process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput)
+bool process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput)
 {
    SECURITY_ATTRIBUTES saAttr;
    HANDLE hRead, hWrite;
@@ -58,15 +58,15 @@ bool __process_execute(const std::string& cmd, const std::string& dir, std::stri
 
    ZeroMemory(&pi, sizeof(pi));
 
-   std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
-   std::basic_string<WCHAR> wDir = __utf8_to_WCHAR(dir.c_str());
+   std::basic_string<WCHAR> wCmd = utf8_to_WCHAR(cmd.c_str());
+   std::basic_string<WCHAR> wDir = utf8_to_WCHAR(dir.c_str());
    const WCHAR* pDir = dir.size() ? wDir.c_str() : NULL;
 
    // We have to cast away const here because the API doesn't specify const. But it also does not modify the string.
    if (!CreateProcessW(NULL, wCmd.data(), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, pDir, &si, &pi))
    {
 #ifdef _DEBUG
-      std::string errMessage = __get_last_error_as_string();
+      std::string errMessage = get_last_error_as_string();
 #endif
       //std::cerr << "Error: Unable to create process" << std::endl;
       CloseHandle(hRead);
@@ -102,7 +102,7 @@ bool __process_execute(const std::string& cmd, const std::string& dir, std::stri
    return true;
 }
 
-bool __process_launch(const std::string& cmd, const std::string& dir)
+bool process_launch(const std::string& cmd, const std::string& dir)
 {
    STARTUPINFOW si;
    PROCESS_INFORMATION pi;
@@ -114,15 +114,15 @@ bool __process_launch(const std::string& cmd, const std::string& dir)
 
    ZeroMemory(&pi, sizeof(pi));
 
-   std::basic_string<WCHAR> wCmd = __utf8_to_WCHAR(cmd.c_str());
-   std::basic_string<WCHAR> wDir = __utf8_to_WCHAR(dir.c_str());
+   std::basic_string<WCHAR> wCmd = utf8_to_WCHAR(cmd.c_str());
+   std::basic_string<WCHAR> wDir = utf8_to_WCHAR(dir.c_str());
    const WCHAR* pDir = dir.size() ? wDir.c_str() : NULL;
 
    // We have to cast away const here because the API doesn't specify const. But it also does not modify the string.
    if (!CreateProcessW(NULL, wCmd.data(), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, pDir, &si, &pi))
    {
 #ifdef _DEBUG
-      std::string errMessage = __get_last_error_as_string();
+      std::string errMessage = get_last_error_as_string();
 #endif
       CloseHandle(pi.hProcess);
       CloseHandle(pi.hThread);

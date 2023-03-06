@@ -14,7 +14,7 @@
 #include "menu/luaosutils_menu_os.h"
 #include "winutils/luaosutils_winutils.h"
 
-static HMENU __GetParentMenu(HMENU menu, HMENU origin, int* pos)
+static HMENU getParentMenu(HMENU menu, HMENU origin, int* pos)
 {
 	if (!origin) return NULL;
 	if (origin == menu) return NULL;
@@ -28,19 +28,19 @@ static HMENU __GetParentMenu(HMENU menu, HMENU origin, int* pos)
 		}
 		else if (parent)
 		{
-			parent = __GetParentMenu(menu, parent, pos);
+			parent = getParentMenu(menu, parent, pos);
 			if (parent) return parent;
 		}
 	}
 	return NULL;
 }
 
-bool __menu_delete_submenu(menu_handle hMenu, window_handle hWnd)
+bool menu_delete_submenu(menu_handle hMenu, window_handle hWnd)
 {
 	if (0 == GetMenuItemCount(hMenu))
 	{
 		int superIndex = 0;
-		HMENU superMenu = __GetParentMenu(hMenu, __menu_get_top_level_menu(hWnd), &superIndex);
+		HMENU superMenu = getParentMenu(hMenu, menu_get_top_level_menu(hWnd), &superIndex);
 		if (superMenu)
 		{
 			DeleteMenu(superMenu, superIndex, MF_BYPOSITION);
@@ -50,14 +50,14 @@ bool __menu_delete_submenu(menu_handle hMenu, window_handle hWnd)
 	return false;
 }
 
-menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
+menu_handle menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
-	std::basic_string<WCHAR> itemText = __utf8_to_WCHAR(item_text.c_str());
+	std::basic_string<WCHAR> itemText = utf8_to_WCHAR(item_text.c_str());
 
    auto searchSubmenus = [&itemIndex, itemText](HMENU hMenu, int startIndex, auto&& searchSubmenus) -> HMENU
    {
-		const int maxItems = __menu_get_item_count(hMenu);
+		const int maxItems = menu_get_item_count(hMenu);
 		
 		for (int i = startIndex; i < maxItems; i++)
       {
@@ -94,31 +94,31 @@ menu_handle __menu_find_item(menu_handle hMenu, const std::string& item_text, in
    return searchSubmenus(hMenu, starting_index, searchSubmenus);
 }
 
-long __menu_get_item_command_id(menu_handle hMenu, int index)
+long menu_get_item_command_id(menu_handle hMenu, int index)
 {
 	return hMenu ? GetMenuItemID(hMenu, index) : -1;
 }
 
-int __menu_get_item_count(menu_handle hMenu)
+int menu_get_item_count(menu_handle hMenu)
 {
 	return hMenu ? GetMenuItemCount(hMenu) : 0;
 }
 
-menu_handle __menu_get_item_submenu(menu_handle hMenu, int index)
+menu_handle menu_get_item_submenu(menu_handle hMenu, int index)
 {
 	return GetSubMenu(hMenu, index);
 }
 
-std::string __menu_get_item_text(menu_handle hMenu, int index)
+std::string menu_get_item_text(menu_handle hMenu, int index)
 {
 	WCHAR menuText[1024];
 	if (!GetMenuStringW(hMenu, index, menuText, DIM(menuText) - 1, MF_BYPOSITION))
 		return "";
 	menuText[DIM(menuText) - 1] = 0;
-	return __WCHAR_to_utf8(menuText);
+	return WCHAR_to_utf8(menuText);
 }
 
-MENUITEM_TYPES __menu_get_item_type(menu_handle hMenu, int index)
+MENUITEM_TYPES menu_get_item_type(menu_handle hMenu, int index)
 {
 	if (GetSubMenu(hMenu, index))
 		return MENUITEM_TYPES::ITEMTYPE_SUBMENU;
@@ -127,21 +127,21 @@ MENUITEM_TYPES __menu_get_item_type(menu_handle hMenu, int index)
 	return MENUITEM_TYPES::ITEMTYPE_COMMAND;
 }
 
-std::string __menu_get_title(menu_handle hMenu, window_handle hWnd)
+std::string menu_get_title(menu_handle hMenu, window_handle hWnd)
 {
 	int parentIndex = 0;
-	HMENU hParentMenu = __GetParentMenu(hMenu, __menu_get_top_level_menu(hWnd), &parentIndex);
+	HMENU hParentMenu = getParentMenu(hMenu, menu_get_top_level_menu(hWnd), &parentIndex);
 	if (hParentMenu)
-		return __menu_get_item_text(hParentMenu, parentIndex);
+		return menu_get_item_text(hParentMenu, parentIndex);
 	return "";
 }
 
-menu_handle __menu_get_top_level_menu(window_handle hWnd)
+menu_handle menu_get_top_level_menu(window_handle hWnd)
 {
 	return GetMenu(hWnd);
 }
 
-int __menu_insert_separator(menu_handle hMenu, int insertIndex)
+int menu_insert_separator(menu_handle hMenu, int insertIndex)
 {
 	int retval = -1;
 	if (insertIndex < 0)
@@ -159,12 +159,12 @@ int __menu_insert_separator(menu_handle hMenu, int insertIndex)
 	return retval;
 }	
 
-menu_handle __menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex)
+menu_handle menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex)
 {
 	HMENU newSubMenu = CreatePopupMenu();
 	if (!newSubMenu)
 		return NULL;
-	std::basic_string<WCHAR> itemTextW = __utf8_to_WCHAR(itemText.c_str());
+	std::basic_string<WCHAR> itemTextW = utf8_to_WCHAR(itemText.c_str());
 	if (insertIndex < 0)
 	{
 		itemIndex = GetMenuItemCount(hMenu);
@@ -180,7 +180,7 @@ menu_handle __menu_insert_submenu(const std::string& itemText, menu_handle hMenu
 	return newSubMenu;
 }
 
-bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex)
+bool menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex)
 {
 	MENUITEMINFOW menuInfo;
 	memset(&menuInfo, 0, sizeof(menuInfo));
@@ -207,9 +207,9 @@ bool __menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, i
 	return false;
 }
 
-bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
+bool menu_set_item_text(menu_handle hMenu, int index, const std::string& newText)
 {
-	std::basic_string<WCHAR> newTextW = __utf8_to_WCHAR(newText.c_str());
+	std::basic_string<WCHAR> newTextW = utf8_to_WCHAR(newText.c_str());
 	const int commandID = static_cast<int>(GetMenuItemID(hMenu, index));
 	if (commandID == -1)
 	{
@@ -230,11 +230,11 @@ bool __menu_set_item_text(menu_handle hMenu, int index, const std::string& newTe
 	}
 }
 
-bool __menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText)
+bool menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText)
 {
 	int parentIndex = 0;
-	HMENU hParentMenu = __GetParentMenu(hMenu, __menu_get_top_level_menu(hWnd), &parentIndex);
+	HMENU hParentMenu = getParentMenu(hMenu, menu_get_top_level_menu(hWnd), &parentIndex);
 	if (hParentMenu)
-		return __menu_set_item_text(hParentMenu, parentIndex, newText);
+		return menu_set_item_text(hParentMenu, parentIndex, newText);
 	return false;
 }

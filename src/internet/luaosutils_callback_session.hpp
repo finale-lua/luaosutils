@@ -56,7 +56,7 @@ public:
    {
 #if OPERATING_SYSTEM == MAC_OS
       if (this->os_session())
-         __cancel_session(this->os_session());
+         cancel_session(this->os_session());
 #endif
       
       _get_active_sessions().erase(m_ID);

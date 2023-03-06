@@ -1,6 +1,6 @@
 function plugindef()
     finaleplugin.RequireDocument = false
-    finaleplugin.LoadLuaOSUtils = true
+    finaleplugin.LoadLuaOSUtils = false
     return "aaa - luautils text test"
 end
 
@@ -9,7 +9,9 @@ require('mobdebug').start() -- for ZeroBrane Studio debugging
 local osutils = require('luaosutils')
 local text = osutils.text
 
-print(osutils._VERSION)
+print(osutils._VERSION, "Using internal luaosutils: "..tostring(finaleplugin.LoadLuaOSUtils))
+print(text.get_utf8_codepage())
+print(text.get_default_codepage())
 
 local listing
 local file = io.open(finenv.RunningLuaFolderPath().."/".."listing.txt", "rb")
@@ -20,9 +22,9 @@ end
 local listing_codepage = 850
 
 if listing then
-    print(listing)
+    --print(listing)
     local to_utf8 = text.convert_encoding(listing, listing_codepage, 1252)
-    print(to_utf8)
+    --print(to_utf8)
 end
 
 local str1 = "こんにちは"

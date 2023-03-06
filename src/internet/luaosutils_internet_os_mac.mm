@@ -12,7 +12,7 @@
 #include "luaosutils.hpp"
 #include "internet/luaosutils_internet_os.h"
 
-OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __download_callback callback)
+OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback)
 {
    __block bool inProgress = true; // matters only in the synchronous version of this routine
    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:urlString.c_str()]];
@@ -67,14 +67,14 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
    return (__bridge void *)(sessionTask);
 }
 
-void __cancel_session(OSSESSION_ptr session)
+void cancel_session(OSSESSION_ptr session)
 {
    NSURLSessionDataTask* nssession = (__bridge NSURLSessionDataTask*)session;
    if (! [[nssession progress] isFinished])
       [nssession cancel];
 }
 
-static NSModalResponse __InternalRunAlertPanel(NSAlertStyle style, NSString *title, NSString *msgFormat, NSString *defaultButton, NSString *alternateButton, NSString *otherButton)
+static NSModalResponse InternalRunAlertPanel(NSAlertStyle style, NSString *title, NSString *msgFormat, NSString *defaultButton, NSString *alternateButton, NSString *otherButton)
 {
     NSModalResponse retVal = NSModalResponseAbort;
     NSAlert * alert = [[NSAlert alloc] init];
@@ -98,9 +98,9 @@ static NSModalResponse __InternalRunAlertPanel(NSAlertStyle style, NSString *tit
     return retVal;
 }
 
-void __error_message_box(const std::string &msg)
+void error_message_box(const std::string &msg)
 {
    NSString* messagestring = [NSString stringWithUTF8String:msg.c_str()];
    NSString* titlestring = @"Error";
-   __InternalRunAlertPanel(NSAlertStyleCritical, titlestring, messagestring, @"OK", nil, nil);
+   InternalRunAlertPanel(NSAlertStyleCritical, titlestring, messagestring, @"OK", nil, nil);
 }

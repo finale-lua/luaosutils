@@ -57,8 +57,7 @@
 #endif // __GNUC__
 #endif // __OBJC__
 
-//ToDo: __download_callback should be in url/luaosutils_url.cpp
-using __download_callback = std::function<void (bool, const std::string&)>;
+using lua_callback = std::function<void (bool, const std::string&)>;
 
 //utility functions
 
@@ -66,7 +65,7 @@ using __download_callback = std::function<void (bool, const std::string&)>;
 
 #ifndef __OBJC__
 template<typename T>
-T __get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt)
+T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt)
 {
    const int type = lua_type(L, param_number);
    const bool is_nil = (type == LUA_TNIL || type == LUA_TNONE);
@@ -99,7 +98,7 @@ T __get_lua_parameter(lua_State* L, int param_number, int expected_type, std::op
 }
 
 template<typename T>
-void __push_lua_return_value(lua_State* L, T retval)
+void push_lua_return_value(lua_State* L, const T& retval)
 {
    if constexpr (std::is_convertible<T, void*>::value)
    {
@@ -113,7 +112,7 @@ void __push_lua_return_value(lua_State* L, T retval)
 }
 #endif
 
-inline void __add_constant(lua_State *L, const char* const_name, int value, int table_index)
+inline void add_constant(lua_State *L, const char* const_name, int value, int table_index)
 {
    lua_pushstring(L, const_name);
    lua_pushinteger(L, value);
