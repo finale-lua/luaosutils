@@ -696,6 +696,7 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 2.1.1
 
 - Add explicit Objective-C memory management (macOS) to allow memory-safe embedding in RGP Lua.
+- The `window_handle` is now a required parameter for the Windows version of `menu.redraw`.
 
 2.1.0
 

@@ -68,18 +68,16 @@ template<typename T>
 T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt)
 {
    const int type = lua_type(L, param_number);
-   const bool is_nil = (type == LUA_TNIL || type == LUA_TNONE);
-   if (type != expected_type && (!default_value.has_value() || !is_nil))
+   if (type == LUA_TNIL || type == LUA_TNONE)
+   {
+      if (default_value.has_value())
+         return default_value.value();
+   }
+   if (type != expected_type)
    {
       const char* expected_type_name = lua_typename(L, expected_type);
       const char* actual_type_name = lua_typename(L, type);
       luaL_error(L, "param %d expected %s, got %s", param_number, expected_type_name, actual_type_name);
-   }
-   if (is_nil)
-   {
-      if (default_value.has_value())
-         return default_value.value();
-      luaL_error(L, "param %d must supply default value for nil", param_number);
    }
    if constexpr(std::is_same<T, luabridge::LuaRef>::value)
    {
