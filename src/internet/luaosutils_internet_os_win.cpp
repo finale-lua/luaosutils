@@ -4,15 +4,16 @@
 //
 //  Created by Robert Patterson on 9/11/22.
 //  Copyright © 2022 Robert Patterson. All rights reserved.
+//  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
 
 #include <windows.h>
 #include <wininet.h>
 
 #include "luaosutils.hpp"
-#include "luaosutils_os.h"
+#include "internet/luaosutils_internet_os.h"
 
-win_request_context::win_request_context(__download_callback callback) :
+win_request_context::win_request_context(lua_callback callback) :
             callbackFunction(callback),
             hInternet(0), hRequest(0), hThread(0),
             threadShouldHalt(false), timerID(0)
@@ -126,7 +127,7 @@ static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
    return 0;
 }
 
-static void __HandleThreadResult(win_request_context* session, DWORD result, bool errorOnTimeout)
+static void HandleThreadResult(win_request_context* session, DWORD result, bool errorOnTimeout)
 {
    if (!errorOnTimeout || result != WAIT_TIMEOUT)
       session->SetTimerID(0); // kill timer if there is one
@@ -164,11 +165,11 @@ static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
    win_request_context* session = win_request_context::get_context_from_timer(idEvent);
    assert(session && session->hThread);
    DWORD result = WaitForSingleObject(session->hThread, 0);
-   __HandleThreadResult(session, result, false);
-   // __HandleThreadResult may have destroyed our session, so do not reference it again.
+   HandleThreadResult(session, result, false);
+   // HandleThreadResult may have destroyed our session, so do not reference it again.
 }
 
-OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __download_callback callback)
+OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback)
 {
    OSSESSION_ptr session = OSSESSION_ptr(new win_request_context(callback));
 
@@ -201,7 +202,7 @@ OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __do
    if (timeout >= 0)
    {
       DWORD result = WaitForSingleObject(session->hThread, lround(timeout*1000.0));
-      __HandleThreadResult(session.get(), result, true);
+      HandleThreadResult(session.get(), result, true);
    }
    else
    {
@@ -248,7 +249,7 @@ HWND __FindTopWindow()
    return NULL;
 }
 
-void __error_message_box(const std::string& msg)
+void error_message_box(const std::string& msg)
 {
    MessageBoxA(__FindTopWindow(), msg.c_str(), "Error", MB_OK);
 }

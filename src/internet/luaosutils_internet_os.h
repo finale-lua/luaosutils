@@ -23,14 +23,14 @@ using OSSESSION_ptr = void*;
 #include <wininet.h>
 struct win_request_context
 {
-	__download_callback callbackFunction;
+	lua_callback callbackFunction;
 	HINTERNET hInternet;
 	HINTERNET hRequest;
 	HANDLE hThread;
 	bool threadShouldHalt;
 	std::string buffer;
 
-	win_request_context(__download_callback callback);
+	win_request_context(lua_callback callback);
 	~win_request_context();
 
 	static win_request_context* get_context_from_timer(UINT_PTR timerID);
@@ -50,11 +50,11 @@ private:
 using OSSESSION_ptr = std::shared_ptr<win_request_context>;
 #endif //OPERATING_SYSTEM == WINDOWS
 
-OSSESSION_ptr __download_url (const std::string &urlString, double timeout, __download_callback callback);
+OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback);
 #if OPERATING_SYSTEM == MAC_OS
-void __cancel_session(OSSESSION_ptr session);
+void cancel_session(OSSESSION_ptr session);
 #endif
 
-void __error_message_box(const std::string &msg);
+void error_message_box(const std::string &msg);
 
 #endif /* luaosutils_os_h */

@@ -8,7 +8,7 @@
     <ReleaseDir>$(ProjectDir)..\release</ReleaseDir>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(LuaDir);$(ProjectDir)\..\LuaBridge\Source</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(LuaDir);$(ProjectDir)\..\LuaBridge\Source;$(ProjectDir)\..\src</IncludePath>
     <TargetName>$(LuaName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>

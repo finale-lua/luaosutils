@@ -7,12 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B53F2F5C28CB68030096F6F8 /* luaosutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */; };
-		B53F2F5D28CB68030096F6F8 /* luaosutils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */; };
-		B53F2F6C28CBB6690096F6F8 /* luaosutils_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */; };
-		B53F2F6E28CBB6BF0096F6F8 /* luaosutils_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */; };
+		B51F449A29A6B38E00D1A0BD /* libluaosutils-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B51F449729A6B37200D1A0BD /* libluaosutils-static.a */; };
+		B51F449B29A6B39300D1A0BD /* libLua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B51F448F29A6B34C00D1A0BD /* libLua.a */; };
 		B5A6773F28D0DB7200D9B74C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6773E28D0DB7200D9B74C /* Cocoa.framework */; };
-		B5AABB4E284E57ED00708D15 /* libLua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AABB4B284E57C900708D15 /* libLua.a */; };
 		B5EFCF2728634BBA003AC07F /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1D28634BB9003AC07F /* Vector.h */; };
 		B5EFCF2828634BBA003AC07F /* List.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1E28634BB9003AC07F /* List.h */; };
 		B5EFCF2928634BBA003AC07F /* RefCountedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1F28634BB9003AC07F /* RefCountedObject.h */; };
@@ -22,34 +19,45 @@
 		B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2428634BB9003AC07F /* UnorderedMap.h */; };
 		B5EFCF2E28634BBA003AC07F /* Array.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2528634BB9003AC07F /* Array.h */; };
 		B5EFCF2F28634BBA003AC07F /* Optional.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2628634BB9003AC07F /* Optional.h */; };
+		B5F5262329A6C52800002B79 /* libosutils_dylibmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B5AABB4A284E57C900708D15 /* PBXContainerItemProxy */ = {
+		B51F448E29A6B34C00D1A0BD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5AABB46284E57C900708D15 /* Lua.xcodeproj */;
+			containerPortal = B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = B50BDD1E26E9499000F1FAD3;
 			remoteInfo = Lua;
 		};
-		B5AABB4C284E57E100708D15 /* PBXContainerItemProxy */ = {
+		B51F449029A6B35A00D1A0BD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5AABB46284E57C900708D15 /* Lua.xcodeproj */;
+			containerPortal = B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = B50BDD1D26E9499000F1FAD3;
 			remoteInfo = Lua;
 		};
+		B51F449629A6B37200D1A0BD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B5A031CE29A6A4FC0085ED88;
+			remoteInfo = "luaosutils-static";
+		};
+		B51F449829A6B37D00D1A0BD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B5A031CD29A6A4FC0085ED88;
+			remoteInfo = "luaosutils-static";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B53882D128CDFE09000BB3C5 /* luaosutils_callback_session.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = luaosutils_callback_session.hpp; sourceTree = "<group>"; };
-		B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils.cpp; sourceTree = "<group>"; };
-		B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = luaosutils.hpp; sourceTree = "<group>"; };
-		B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_os_mac.mm; sourceTree = "<group>"; };
-		B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_os.h; sourceTree = "<group>"; };
+		B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Lua.xcodeproj; path = "lua-source/Lua.xcodeproj"; sourceTree = "<group>"; };
+		B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "luaosutils-static.xcodeproj"; sourceTree = "<group>"; };
 		B55E2B362610CE9C003E0F63 /* luaosutils.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = luaosutils.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A6773E28D0DB7200D9B74C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
-		B5AABB46284E57C900708D15 /* Lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Lua.xcodeproj; path = "lua-source/Lua.xcodeproj"; sourceTree = "<group>"; };
 		B5AABB52284E69DA00708D15 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		B5EFCF1D28634BB9003AC07F /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
 		B5EFCF1E28634BB9003AC07F /* List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = List.h; sourceTree = "<group>"; };
@@ -61,6 +69,7 @@
 		B5EFCF2428634BB9003AC07F /* UnorderedMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnorderedMap.h; sourceTree = "<group>"; };
 		B5EFCF2528634BB9003AC07F /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		B5EFCF2628634BB9003AC07F /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Optional.h; sourceTree = "<group>"; };
+		B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = libosutils_dylibmain.cpp; path = src/libosutils_dylibmain.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,8 +77,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B51F449B29A6B39300D1A0BD /* libLua.a in Frameworks */,
+				B51F449A29A6B38E00D1A0BD /* libluaosutils-static.a in Frameworks */,
 				B5A6773F28D0DB7200D9B74C /* Cocoa.framework in Frameworks */,
-				B5AABB4E284E57ED00708D15 /* libLua.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,13 +94,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B51F448B29A6B34C00D1A0BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B51F448F29A6B34C00D1A0BD /* libLua.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B51F449329A6B37200D1A0BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B51F449729A6B37200D1A0BD /* libluaosutils-static.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		B55E2B2D2610CE9C003E0F63 = {
 			isa = PBXGroup;
 			children = (
+				B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */,
 				B5AABB52284E69DA00708D15 /* Shared.xcconfig */,
-				B5AABB46284E57C900708D15 /* Lua.xcodeproj */,
 				B5EFCF1C28634B7F003AC07F /* LuaBridge */,
-				B5AABB41284E569300708D15 /* Source */,
+				B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */,
+				B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */,
 				B55E2B372610CE9C003E0F63 /* Products */,
 				B50B920F26ED05D100DE877C /* Frameworks */,
 			);
@@ -100,27 +127,6 @@
 			isa = PBXGroup;
 			children = (
 				B55E2B362610CE9C003E0F63 /* luaosutils.dylib */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		B5AABB41284E569300708D15 /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				B53882D128CDFE09000BB3C5 /* luaosutils_callback_session.hpp */,
-				B53F2F6B28CBB6690096F6F8 /* luaosutils_os_mac.mm */,
-				B53F2F6D28CBB6BF0096F6F8 /* luaosutils_os.h */,
-				B53F2F5A28CB68030096F6F8 /* luaosutils.cpp */,
-				B53F2F5B28CB68030096F6F8 /* luaosutils.hpp */,
-			);
-			name = Source;
-			path = src;
-			sourceTree = "<group>";
-		};
-		B5AABB47284E57C900708D15 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B5AABB4B284E57C900708D15 /* libLua.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -154,9 +160,7 @@
 				B5EFCF2728634BBA003AC07F /* Vector.h in Headers */,
 				B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */,
 				B5EFCF2928634BBA003AC07F /* RefCountedObject.h in Headers */,
-				B53F2F6E28CBB6BF0096F6F8 /* luaosutils_os.h in Headers */,
 				B5EFCF2B28634BBA003AC07F /* Map.h in Headers */,
-				B53F2F5D28CB68030096F6F8 /* luaosutils.hpp in Headers */,
 				B5EFCF2C28634BBA003AC07F /* LuaBridge.h in Headers */,
 				B5EFCF2A28634BBA003AC07F /* RefCountedPtr.h in Headers */,
 				B5EFCF2F28634BBA003AC07F /* Optional.h in Headers */,
@@ -178,7 +182,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				B5AABB4D284E57E100708D15 /* PBXTargetDependency */,
+				B51F449929A6B37D00D1A0BD /* PBXTargetDependency */,
+				B51F449129A6B35A00D1A0BD /* PBXTargetDependency */,
 			);
 			name = luaosutils;
 			productName = LuaInterfaceTest;
@@ -191,7 +196,7 @@
 		B55E2B2E2610CE9C003E0F63 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = "Robert Patterson";
 				TargetAttributes = {
 					B55E2B352610CE9C003E0F63 = {
@@ -212,8 +217,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = B5AABB47284E57C900708D15 /* Products */;
-					ProjectRef = B5AABB46284E57C900708D15 /* Lua.xcodeproj */;
+					ProductGroup = B51F448B29A6B34C00D1A0BD /* Products */;
+					ProjectRef = B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */;
+				},
+				{
+					ProductGroup = B51F449329A6B37200D1A0BD /* Products */;
+					ProjectRef = B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -224,11 +233,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B5AABB4B284E57C900708D15 /* libLua.a */ = {
+		B51F448F29A6B34C00D1A0BD /* libLua.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libLua.a;
-			remoteRef = B5AABB4A284E57C900708D15 /* PBXContainerItemProxy */;
+			remoteRef = B51F448E29A6B34C00D1A0BD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B51F449729A6B37200D1A0BD /* libluaosutils-static.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libluaosutils-static.a";
+			remoteRef = B51F449629A6B37200D1A0BD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -238,18 +254,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B53F2F6C28CBB6690096F6F8 /* luaosutils_os_mac.mm in Sources */,
-				B53F2F5C28CB68030096F6F8 /* luaosutils.cpp in Sources */,
+				B5F5262329A6C52800002B79 /* libosutils_dylibmain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		B5AABB4D284E57E100708D15 /* PBXTargetDependency */ = {
+		B51F449129A6B35A00D1A0BD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Lua;
-			targetProxy = B5AABB4C284E57E100708D15 /* PBXContainerItemProxy */;
+			targetProxy = B51F449029A6B35A00D1A0BD /* PBXContainerItemProxy */;
+		};
+		B51F449929A6B37D00D1A0BD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "luaosutils-static";
+			targetProxy = B51F449829A6B37D00D1A0BD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -279,12 +299,14 @@
 		B55E2B3B2610CE9C003E0F63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = "-dynamiclib";
 			};
 			name = Debug;
 		};
 		B55E2B3C2610CE9C003E0F63 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = "-dynamiclib";
 			};
 			name = Release;
 		};

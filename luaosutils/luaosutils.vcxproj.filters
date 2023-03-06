@@ -102,15 +102,6 @@
     <ClInclude Include="..\LuaBridge\Source\LuaBridge\detail\Userdata.h">
       <Filter>LuaBridge\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\luaosutils.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\luaosutils_callback_session.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\luaosutils_os.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -119,11 +110,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\luaosutils.cpp">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="luaosutils.def">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\luaosutils_os_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    </None>
   </ItemGroup>
 </Project>

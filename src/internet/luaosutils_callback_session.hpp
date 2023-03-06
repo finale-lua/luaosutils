@@ -4,6 +4,7 @@
 //
 //  Created by Robert Patterson on 9/11/22.
 //  Copyright © 2022 Robert Patterson. All rights reserved.
+//  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
 
 #ifndef luaosutils_callback_session_hpp
@@ -12,7 +13,7 @@
 #include <map>
 
 #include "luaosutils.hpp"
-#include "luaosutils_os.h"
+#include "internet/luaosutils_internet_os.h"
 
 /** \brief This class is used to guarantee that a Lua state is still active when a callback occurs.
  * A userdata of it is returned to Lua and the session stays active as long as
@@ -55,7 +56,7 @@ public:
    {
 #if OPERATING_SYSTEM == MAC_OS
       if (this->os_session())
-         __cancel_session(this->os_session());
+         cancel_session(this->os_session());
 #endif
       
       _get_active_sessions().erase(m_ID);

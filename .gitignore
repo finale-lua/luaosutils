@@ -94,7 +94,10 @@ RD*
 *.lib
 x64
 Debug
-test
+
+*.ico
+*.zip
+listing.txt
 
 !release/luaosutils.dll
 !release/luaosutils.dylib
