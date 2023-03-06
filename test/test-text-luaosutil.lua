@@ -10,8 +10,8 @@ local osutils = require('luaosutils')
 local text = osutils.text
 
 print(osutils._VERSION)
-print(osutils.get_utf8_codepage())
-print(osutils.get_default_codepage())
+print(text.get_utf8_codepage())
+print(text.get_default_codepage())
 
 local listing
 local file = io.open(finenv.RunningLuaFolderPath().."/".."listing.txt", "rb")

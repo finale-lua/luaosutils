@@ -9,17 +9,11 @@
 #include "luaosutils.hpp"
 #include "text/luaosutils_text_os.h"
 
-#if OPERATING_SYSTEM == WINDOWS
-#include <windows.h>
-#else
-#define CP_UTF8 65001
-#endif
-
 static int luaosutils_text_convert_encoding(lua_State *L)
 {
    auto text = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
    auto fromCodepage = get_lua_parameter<unsigned int>(L, 2, LUA_TNUMBER);
-   auto toCodepage = get_lua_parameter<unsigned int>(L, 3, LUA_TNUMBER, CP_UTF8);
+   auto toCodepage = get_lua_parameter<unsigned int>(L, 3, LUA_TNUMBER, text_get_utf8_codepage());
 
    if (!text.size())
    {
