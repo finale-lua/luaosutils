@@ -9,9 +9,9 @@ The `release` directory contains two files:
 - `luaosutils.dll` (for Windows)
 - `luaosutils.dylib` (for macOS)
 
-Choose the appropriate release for your operating system and place it in a folder where Lua can find it with `require`. For the _RGP Lua_ plugin running on Finale, a simple option is the same folder as the script that calls it.
+Choose the appropriate release for your operating system and place it in a folder where Lua can find it with `require`. The _RGP Lua_ plugin running on Finale embeds a version of `luaosutils`, and no additional installation is necessary to use the embedded version. However, if you wish to use an external version with the plugin, a simple option is to place `luaosutils.dll` (Windows) or `luaosutils.dylib` (macOS) in the same folder as the script that `requires` it.
 
-If you are bundling this with a plugin suite for end users, you may need to build, sign, and notarize it yourself for it to be deployable without error messages on macOS.
+If you are bundling `luaosutils` externally with a plugin suite for end users, you may need to build, sign, and notarize it yourself for it to be deployable without error messages on macOS.
 
 # Functions
 
