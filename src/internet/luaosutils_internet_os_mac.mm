@@ -77,9 +77,10 @@ void cancel_session(OSSESSION_ptr session)
 static NSModalResponse InternalRunAlertPanel(NSAlertStyle style, NSString *title, NSString *msgFormat, NSString *defaultButton, NSString *alternateButton, NSString *otherButton)
 {
     NSModalResponse retVal = NSModalResponseAbort;
-    NSAlert * alert = [[NSAlert alloc] init];
+    NSAlert * alert = nil;
     @try
     {
+        alert = [[NSAlert alloc] init];
         if (style >= 0) alert.alertStyle = style;
         alert.informativeText = msgFormat;
         alert.messageText = title;
@@ -91,10 +92,12 @@ static NSModalResponse InternalRunAlertPanel(NSAlertStyle style, NSString *title
     @catch ( NSException *exc )
     {
        NSLog (@"%@ %@", [exc name], [exc reason]);
-    }
+    } @finally
+    {
 #if ! __has_feature(objc_arc)
-    if (alert) [alert release];
+       [alert release];
 #endif
+    }
     return retVal;
 }
 

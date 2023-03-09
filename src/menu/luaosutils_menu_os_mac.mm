@@ -201,13 +201,15 @@ int menu_insert_separator(menu_handle hMenu, int insertIndex)
 menu_handle menu_insert_submenu(const std::string& itemText, menu_handle hMenu, int insertIndex, int& itemIndex)
 {
    NSMenu* menu =  (__bridge NSMenu*)hMenu;
+   NSMenuItem* subMenuItem = nil;
+   NSMenu* subMenu = nil;
    @try
    {
       NSString* title = [NSString stringWithUTF8String:itemText.c_str()];
-      NSMenuItem * subMenuItem = [[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""];
+      subMenuItem = [[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""];
       [subMenuItem setEnabled:true];
       [subMenuItem setTitle:title];
-      NSMenu * subMenu = [[NSMenu alloc] initWithTitle:title];
+      subMenu = [[NSMenu alloc] initWithTitle:title];
       [subMenuItem setSubmenu:subMenu];
       if (insertIndex >= 0)
       {
@@ -223,6 +225,12 @@ menu_handle menu_insert_submenu(const std::string& itemText, menu_handle hMenu, 
    } @catch (NSException *exception)
    {
       NSLog(@"Caught exception in menu_insert_submenu: %@", exception);
+   } @finally
+   {
+#if ! __has_feature(objc_arc)
+      [subMenuItem release];
+      [subMenu autorelease];
+#endif
    }
    return nil;
 }
@@ -231,11 +239,12 @@ bool menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int
 {
    NSMenu* nsFromMenu = (__bridge NSMenu*)fromMenu;
    NSMenu* nsToMenu = (__bridge NSMenu*)toMenu;
+   NSMenuItem* newItem = nil;
    @try
    {
       NSMenuItem* fromItem = [nsFromMenu itemAtIndex:fromIndex];
       if ([fromItem submenu]) return false;
-      NSMenuItem* newItem = [fromItem copy];
+      newItem = [fromItem copy];
       [newItem setMenu:nil];
       if (toIndex < 0)
       {
@@ -252,6 +261,11 @@ bool menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int
    } @catch (NSException *exception)
    {
       NSLog (@"Exception In MenuUtilities AppendMenuItem: %@", exception);
+   } @finally
+   {
+#if ! __has_feature(objc_arc)
+      [newItem release];
+#endif
    }
    return false;
 }

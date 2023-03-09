@@ -23,9 +23,11 @@ static NSString* GetUserShellPath()
 
 bool process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput)
 {
+   NSTask *task = nil;
+   NSString *output = nil;
    @try {
       NSString* nsCmd = [NSString stringWithUTF8String:cmd.c_str()];
-      NSTask *task = [[NSTask alloc] init];
+      task = [[NSTask alloc] init];
       [task setLaunchPath:GetUserShellPath()];
       [task setArguments:@[@"-c", nsCmd]];
       if (dir.size())
@@ -48,7 +50,7 @@ bool process_execute(const std::string& cmd, const std::string& dir, std::string
       }
 
       NSData *data = [file readDataToEndOfFile];
-      NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+      output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
       
       processOutput = [output UTF8String];
       
@@ -56,15 +58,22 @@ bool process_execute(const std::string& cmd, const std::string& dir, std::string
    } @catch (NSException *exception)
    {
       NSLog(@"Caught exception in process_execute: %@", exception);
+   } @finally
+   {
+#if ! __has_feature(objc_arc)
+      [task release];
+      [output release];
+#endif
    }
    return false;
 }
 
 bool process_launch(const std::string& cmd, const std::string& dir)
 {
+   NSTask *task = nil;
    @try {
       NSString* nsCmd = [NSString stringWithUTF8String:cmd.c_str()];
-      NSTask *task = [[NSTask alloc] init];
+      task = [[NSTask alloc] init];
       [task setLaunchPath:GetUserShellPath()];
       [task setArguments:@[@"-c", nsCmd]];
       if (dir.size())
@@ -83,6 +92,11 @@ bool process_launch(const std::string& cmd, const std::string& dir)
    } @catch (NSException *exception)
    {
       NSLog(@"Caught exception in process_launch: %@", exception);
+   } @finally
+   {
+#if ! __has_feature(objc_arc)
+      [task release];
+#endif
    }
    return false;
 }

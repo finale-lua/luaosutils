@@ -51,6 +51,13 @@
 			remoteGlobalIDString = B5A031CD29A6A4FC0085ED88;
 			remoteInfo = "luaosutils-static";
 		};
+		B5D65BAD29B63E1E00B8286E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B5D65BA829B63B2C00B8286E;
+			remoteInfo = "luaosutils-no-adc";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -58,7 +65,7 @@
 		B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "luaosutils-static.xcodeproj"; sourceTree = "<group>"; };
 		B55E2B362610CE9C003E0F63 /* luaosutils.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = luaosutils.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A6773E28D0DB7200D9B74C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
-		B5AABB52284E69DA00708D15 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		B5D65BB029B63E4C00B8286E /* Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		B5EFCF1D28634BB9003AC07F /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
 		B5EFCF1E28634BB9003AC07F /* List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = List.h; sourceTree = "<group>"; };
 		B5EFCF1F28634BB9003AC07F /* RefCountedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCountedObject.h; sourceTree = "<group>"; };
@@ -106,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				B51F449729A6B37200D1A0BD /* libluaosutils-static.a */,
+				B5D65BAE29B63E1E00B8286E /* libluaosutils-no-adc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -114,7 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */,
-				B5AABB52284E69DA00708D15 /* Shared.xcconfig */,
+				B5D65BAF29B63E2900B8286E /* Config */,
 				B5EFCF1C28634B7F003AC07F /* LuaBridge */,
 				B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */,
 				B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */,
@@ -129,6 +137,15 @@
 				B55E2B362610CE9C003E0F63 /* luaosutils.dylib */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B5D65BAF29B63E2900B8286E /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B5D65BB029B63E4C00B8286E /* Shared.xcconfig */,
+			);
+			name = Config;
+			path = config;
 			sourceTree = "<group>";
 		};
 		B5EFCF1C28634B7F003AC07F /* LuaBridge */ = {
@@ -247,6 +264,13 @@
 			remoteRef = B51F449629A6B37200D1A0BD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		B5D65BAE29B63E1E00B8286E /* libluaosutils-no-adc.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libluaosutils-no-adc.a";
+			remoteRef = B5D65BAD29B63E1E00B8286E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -276,7 +300,7 @@
 /* Begin XCBuildConfiguration section */
 		B55E2B382610CE9C003E0F63 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B5AABB52284E69DA00708D15 /* Shared.xcconfig */;
+			baseConfigurationReference = B5D65BB029B63E4C00B8286E /* Shared.xcconfig */;
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -287,7 +311,7 @@
 		};
 		B55E2B392610CE9C003E0F63 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B5AABB52284E69DA00708D15 /* Shared.xcconfig */;
+			baseConfigurationReference = B5D65BB029B63E4C00B8286E /* Shared.xcconfig */;
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				MTL_ENABLE_DEBUG_INFO = NO;
