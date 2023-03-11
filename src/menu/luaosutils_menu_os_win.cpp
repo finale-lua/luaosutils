@@ -74,6 +74,8 @@ menu_handle menu_find_item(menu_handle hMenu, const std::string& item_text, int 
 			bool gotIt = true;
 			for (int x1 = 0, x2 = 0; itemText[x1]; x1++, x2++)
 			{
+				if ('&' == itemText[x1])
+					x1++;
 				if ('&' == menuText[x2])
 					x2++;
 				if (itemText[x1] != menuText[x2])
