@@ -693,6 +693,10 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 
 # Version history
 
+2.1.2
+
+- Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
+
 2.1.1
 
 - Add explicit Objective-C memory management (macOS) to allow memory-safe embedding in RGP Lua.
