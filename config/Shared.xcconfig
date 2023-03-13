@@ -9,6 +9,8 @@
 // Configuration settings file format documentation can be found at:
 // https://help.apple.com/xcode/#/dev745c5c974
 
+#include "../lua-source/config/LuaVersion.xcconfig"
+
 GCC_PREPROCESSOR_DEFINITIONS_Debug = _DEBUG=1
 GCC_PREPROCESSOR_DEFINITIONS_Release =
 GCC_PREPROCESSOR_DEFINITIONS = LUAOSUTILS_RGPLUA_AWARE $(GCC_PREPROCESSOR_DEFINITIONS_$(CONFIGURATION)) $(inherited)
@@ -87,8 +89,6 @@ ENABLE_TESTABILITY_Release = NO
 ENABLE_TESTABILITY = $(ENABLE_TESTABILITY_$(CONFIGURATION))
 
 SKIP_INSTALL = YES
-
-LUA_VERSION = 5.2.4
 
 ALWAYS_SEARCH_USER_PATHS = NO
 HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/src" "$(PROJECT_DIR)/lua-source/lua-$(LUA_VERSION)/src" "$(PROJECT_DIR)/LuaBridge/Source"
