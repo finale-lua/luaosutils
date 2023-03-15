@@ -1,6 +1,6 @@
 function plugindef()
     finaleplugin.RequireDocument = false
-    finaleplugin.LoadLuaOSUtils = true
+    finaleplugin.LoadLuaOSUtils = false
     return "aaa - luautils internet test"
 end
     
@@ -10,6 +10,11 @@ local osutils = require('luaosutils')
 local internet = osutils.internet
 
 local async_call = true
+
+local headers = {
+            ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
+            ["Accept-Language"] = "en-US,en;q=0.9"
+        }
 
 local url = "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico"
 --local url = "https://robertgpatterson.com/-fininfo/-downloads/-usenglish/Fin26Mac.zip"
@@ -34,9 +39,9 @@ function callback(download_successful, urlcontents)
 end
 
 if async_call then
-    g_session = internet.download_url(url, callback)
+    g_session = internet.download_url(url, callback, headers)
     finenv.RetainLuaState = true
 else
-    local success, data = internet.download_url_sync(url, 5)
+    local success, data = internet.download_url_sync(url, 5, headers)
     callback(success, data)
 end

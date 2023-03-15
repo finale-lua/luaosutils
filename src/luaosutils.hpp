@@ -52,6 +52,7 @@
 #pragma GCC diagnostic ignored "-Wdocumentation"
 #endif // __GNUC__
 #include "LuaBridge/LuaBridge.h"
+#include "LuaBridge/Map.h"
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif // __GNUC__

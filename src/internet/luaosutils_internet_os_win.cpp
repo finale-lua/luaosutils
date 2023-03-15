@@ -169,7 +169,8 @@ static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
    // HandleThreadResult may have destroyed our session, so do not reference it again.
 }
 
-OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback)
+OSSESSION_ptr https_request(const std::string& requestType, const std::string& urlString, const std::string& postData,
+                              const HeadersMap& headers, double timeout, lua_callback callback)
 {
    OSSESSION_ptr session = OSSESSION_ptr(new win_request_context(callback));
 

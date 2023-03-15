@@ -15,6 +15,8 @@
 
 #include "luaosutils.hpp"
 
+using HeadersMap = std::map<std::string, std::string>;
+
 #if OPERATING_SYSTEM == MAC_OS
 using OSSESSION_ptr = void*;
 #endif //OPERATING_SYSTEM == MAC_OS
@@ -50,7 +52,8 @@ private:
 using OSSESSION_ptr = std::shared_ptr<win_request_context>;
 #endif //OPERATING_SYSTEM == WINDOWS
 
-OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback);
+OSSESSION_ptr https_request(const std::string& requestType, const std::string &urlString, const std::string& postData,
+                                 const HeadersMap& headers, double timeout, lua_callback callback);
 #if OPERATING_SYSTEM == MAC_OS
 void cancel_session(OSSESSION_ptr session);
 #endif
