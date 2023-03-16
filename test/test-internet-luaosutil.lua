@@ -6,10 +6,15 @@ end
     
 require('mobdebug').start() -- for ZeroBrane Studio debugging
 
+if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT + finale.CMDMODKEY_SHIFT) then
+    finenv.RetainLuaState = false
+    return
+end
+
 local osutils = require('luaosutils')
 local internet = osutils.internet
 
-local async_call = true
+local async_call = false
 
 local headers = {
             ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",

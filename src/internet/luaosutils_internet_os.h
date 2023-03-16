@@ -27,9 +27,11 @@ struct win_request_context
 {
 	lua_callback callbackFunction;
 	HINTERNET hInternet;
+	HINTERNET hConnect;
 	HINTERNET hRequest;
 	HANDLE hThread;
 	bool threadShouldHalt;
+	bool readError;
 	std::string buffer;
 
 	win_request_context(lua_callback callback);
