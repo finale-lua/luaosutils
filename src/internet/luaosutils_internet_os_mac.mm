@@ -12,11 +12,41 @@
 #include "luaosutils.hpp"
 #include "internet/luaosutils_internet_os.h"
 
-OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback)
+OSSESSION_ptr https_request(const std::string& requestType, const std::string &urlString, const std::string& postData,
+                             const HeadersMap& headers, double timeout, lua_callback callback)
 {
    __block bool inProgress = true; // matters only in the synchronous version of this routine
    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:urlString.c_str()]];
-   NSURLSessionDataTask* sessionTask = [[NSURLSession sharedSession] dataTaskWithURL:url
+   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+   NSString *method = [NSString stringWithUTF8String:requestType.c_str()];
+
+   // Set the HTTP method based on the user's input
+   if ([method isEqualToString:@"get"])
+   {
+      request.HTTPMethod = @"GET";
+   }
+   else if ([method isEqualToString:@"post"])
+   {
+      request.HTTPMethod = @"POST";
+      NSData *postDataBytes = [[NSString stringWithUTF8String:postData.c_str()] dataUsingEncoding:NSUTF8StringEncoding];
+      [request setHTTPBody:postDataBytes];
+   }
+   else
+   {
+      NSLog(@"Invalid method: %@", method);
+      assert(false); // offensive programming, since this should never happen
+      return nil;
+   }
+   
+   // Set the HTTP headers if any
+   for (auto header : headers)
+   {
+      NSString *key = [NSString stringWithUTF8String:header.first.c_str()];
+      NSString *value = [NSString stringWithUTF8String:header.second.c_str()];
+      [request addValue:value forHTTPHeaderField:key];
+   }
+
+   NSURLSessionDataTask* sessionTask = [[NSURLSession sharedSession] dataTaskWithRequest:request
       completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
       {
          NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;

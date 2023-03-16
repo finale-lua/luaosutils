@@ -6,6 +6,7 @@
 //  Copyright © 2022 Robert Patterson. All rights reserved.
 //  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
+#include <algorithm>
 
 #include <windows.h>
 #include <wininet.h>
@@ -15,8 +16,8 @@
 
 win_request_context::win_request_context(lua_callback callback) :
             callbackFunction(callback),
-            hInternet(0), hRequest(0), hThread(0),
-            threadShouldHalt(false), timerID(0)
+            hInternet(0), hConnect(0), hRequest(0), hThread(0),
+            threadShouldHalt(false), readError(false), timerID(0)
 {
 }
 
@@ -30,6 +31,7 @@ win_request_context::~win_request_context()
       ::CloseHandle(hThread);
    }
    if (hRequest) InternetCloseHandle(hRequest);
+   if (hConnect) InternetCloseHandle(hConnect);
    if (hInternet) InternetCloseHandle(hInternet);
 }
 
@@ -110,10 +112,18 @@ static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
          session->buffer.reserve(length);
    }
 
-   DWORD numBytesRead = 0;
-   char buffer[4096];
-   while (InternetReadFile(session->hRequest, buffer, sizeof(buffer), &numBytesRead) && numBytesRead)
+   while (true)
    {
+      DWORD numBytesRead = 0;
+      char buffer[4096];
+      BOOL result = InternetReadFile(session->hRequest, buffer, sizeof(buffer), &numBytesRead);
+      if (!result)
+      {
+         session->readError = true;
+         return -1;
+      }
+      if (!numBytesRead)
+         break;
       if (session->threadShouldHalt)
          return -1;
       session->buffer.append(buffer, numBytesRead);
@@ -121,6 +131,8 @@ static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
 
    InternetCloseHandle(session->hRequest);
    session->hRequest = NULL;
+   InternetCloseHandle(session->hConnect);
+   session->hConnect = NULL;
    InternetCloseHandle(session->hInternet);
    session->hInternet = NULL;
 
@@ -139,7 +151,7 @@ static void HandleThreadResult(win_request_context* session, DWORD result, bool 
          DWORD threadResult = 0;
          BOOL exitResult = GetExitCodeThread(session->hThread, &threadResult);
          if (!exitResult)
-            session->callbackFunction(false, GetStringFromLastError(GetLastError()));
+            session->callbackFunction(false, GetStringFromLastError(GetLastError(), session->readError));
          else if (threadResult)
             session->callbackFunction(false, "Download thread failed to download the file.");
          else
@@ -169,7 +181,28 @@ static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
    // HandleThreadResult may have destroyed our session, so do not reference it again.
 }
 
-OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback)
+void SplitUrl(const std::string& url, std::string& host, std::string& path)
+{
+   URL_COMPONENTSA urlComponents;
+   ZeroMemory(&urlComponents, sizeof(urlComponents));
+   urlComponents.dwStructSize = sizeof(urlComponents);
+   urlComponents.dwHostNameLength = 1;
+   urlComponents.dwUrlPathLength = 1;
+
+   if (InternetCrackUrlA(url.c_str(), static_cast<DWORD>(url.length()), 0, &urlComponents))
+   {
+      host.assign(urlComponents.lpszHostName, urlComponents.dwHostNameLength);
+      path.assign(urlComponents.lpszUrlPath, urlComponents.dwUrlPathLength);
+   }
+   else
+   {
+      host = "";
+      path = "";
+   }
+}
+
+OSSESSION_ptr https_request(const std::string& requestType, const std::string& urlString, const std::string& postData,
+                              const HeadersMap& headers, double timeout, lua_callback callback)
 {
    OSSESSION_ptr session = OSSESSION_ptr(new win_request_context(callback));
 
@@ -180,15 +213,53 @@ OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_ca
       return nullptr;
    }
 
-   session->hRequest = InternetOpenUrlA(session->hInternet, urlString.c_str(), NULL, 0,
-                                       INTERNET_FLAG_SECURE |
-                                       INTERNET_FLAG_NO_CACHE_WRITE |
-                                       INTERNET_FLAG_NO_AUTO_REDIRECT |
-                                       INTERNET_FLAG_NO_COOKIES |
-                                       INTERNET_FLAG_NO_UI, NULL);
+   std::string host;
+   std::string path;
+   SplitUrl(urlString, host, path);
+
+   session->hConnect = InternetConnectA(session->hInternet, host.c_str(), INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+   if (!session->hConnect) {
+      callback(false, GetStringFromLastError(GetLastError(), true));
+      return nullptr;
+   }
+
+   DWORD dwOpenRequestFlags = INTERNET_FLAG_SECURE | INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE
+                           | INTERNET_FLAG_NO_UI | INTERNET_FLAG_NO_AUTH | INTERNET_FLAG_PRAGMA_NOCACHE
+                           | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_NO_AUTO_REDIRECT | INTERNET_FLAG_KEEP_CONNECTION;
+   session->hRequest = HttpOpenRequestA(session->hConnect, requestType == "get" ? "GET" : "POST", path.c_str(), NULL, NULL, NULL, dwOpenRequestFlags, 0);
    if (!session->hRequest)
    {
       callback(false, GetStringFromLastError(GetLastError(), true));
+      return nullptr;
+   }
+
+   for (auto& header : headers)
+   {
+      const std::string value = header.first + ": " + header.second;
+      HttpAddRequestHeadersA(session->hRequest, value.c_str(), static_cast<DWORD>(value.size()), HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+   }
+
+   if (requestType == "post")
+   {
+      if (headers.find("Content-Type") == headers.end())
+      {
+         std::string contentType = "application/x-www-form-urlencoded";
+         HttpAddRequestHeadersA(session->hRequest, ("Content-Type: " + contentType).c_str(), static_cast<DWORD>(contentType.size()), HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+      }
+      if (headers.find("Content-Length") == headers.end())
+      {
+         std::string contentLength = std::to_string(postData.size());
+         HttpAddRequestHeadersA(session->hRequest, ("Content-Length: " + contentLength).c_str(), static_cast<DWORD>(contentLength.size()), HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
+      }
+      HttpSendRequest(session->hRequest, NULL, 0, const_cast<char*>(postData.c_str()), static_cast<DWORD>(postData.size()));
+   }
+   else if (requestType == "get")
+   {
+      HttpSendRequest(session->hRequest, NULL, 0, NULL, 0);
+   }
+   else
+   {
+      assert(false); // offensive programming: we should not get here
       return nullptr;
    }
 

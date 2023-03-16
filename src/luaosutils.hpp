@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 2.1.2"
+#define LUAOSUTILS_VERSION "Luaosutils 2.2.0"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
@@ -52,6 +52,7 @@
 #pragma GCC diagnostic ignored "-Wdocumentation"
 #endif // __GNUC__
 #include "LuaBridge/LuaBridge.h"
+#include "LuaBridge/Map.h"
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif // __GNUC__

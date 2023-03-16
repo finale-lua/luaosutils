@@ -17,23 +17,15 @@ If you are bundling `luaosutils` externally with a plugin suite for end users, y
 
 ## The 'internet' namespace
 
-### internet.download\_url
+This namespace provides functions to send `GET` or `POST` requests to web servers. The functions then return the full response in a Lua string. For asynchronous calls, the response is passed to a callback function.
 
-Downloads the contents of a url to a Lua string. The URL can be text or binary. The Lua string acts as a data buffer for the download and can be subsequently saved as a file (binary or text).
-The function uses the HTTPS protocol. On Windows, HTTPS protocol is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
+##### Asynchronous calls
 
-|Input Type|Description|
-|----------|-----------|
-|string|The url to download.|
-|function|The function to call when the download completes.|
+Asynchronous calls are the recommended option. They return a session variable that you maintain until the request completes. You return control to Finale and leave its Lua state open either with `finenv.RetainLuaState = true` or a dialog box or both. The completion function then finishes whatever needs to be done while running in the background.
 
-|Output Type|Description|
-|-----------|-----------|
-|session|If non-nil, the callback function will be called. If nil, there was an error and it will not be called.|
+The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your script runs when running in the background.
 
-The call is an asynchronous call. With this function you return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true` or a dialog box. The completion function then finishes whatever needs to be done while running in the background. The completion function does not run in a separate thread, so you cannot wait on this function to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your script runs when running in the background.
-
-You must keep a reference to the session until the callback is called. It will be aborted if the session variable goes out of scope and is garbage-collected.
+You must keep a reference to the session until the callback is called. Your request is aborted if the session variable goes out of scope and is garbage-collected. Your request is also aborted if the Lua state that created it is closed.
 
 The callback function has the following parameters.
 
@@ -41,6 +33,44 @@ The callback function has the following parameters.
 |----------|-----------|
 |boolean|Success or failure|
 |string|The downloaded data if success. An error message or `nil` if failure.|
+
+
+##### Synchronous calls
+
+With synchronous calls, you supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small replies where you can limit the timeout to 1 or 2 seconds. Synchronous calls block Finale's user interface.
+
+Synchronous function names have a `_sync` prefix.
+
+##### HTTPS required
+
+These functions use the HTTPS protocol. On Windows, HTTPS protocol is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
+
+##### HTML headers
+
+The functions all have an optional headers parameter that allows you to include HTML headers on the request message. These take the form of a table of key/value pairs (all strings).
+
+Example:
+
+```lua
+local headers = {
+            ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
+            ["Accept-Language"] = "en-US,en;q=0.9"
+        }
+```
+
+### internet.download\_url
+
+Downloads the contents of a url to a Lua string using a `GET` request. The URL resource can be text or binary.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to download.|
+|function|The callback function to call when the download completes.|
+|(headers)|An optional table of html headers.|
+
+|Output Type|Description|
+|-----------|-----------|
+|session|If nil, there was an error.|
 
 
 Example:
@@ -68,12 +98,13 @@ The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/lu
 
 ### internet.download\_url\_sync
 
-Downloads a url synchronously. You supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small files where you can limit the timeout to 1 or 2 seconds. Synchronous calls block Finale's user interface.
+Downloads the contents of a url synchronously to a Lua string using a `GET` request. The URL resource can be text or binary.
 
 |Input Type|Description|
 |----------|-----------|
 |string|The url to download.|
 |number|The timeout value in seconds. (May be fractional.)|
+|(headers)|An optional table of html headers.|
 
 
 |Output Type|Description|
@@ -91,6 +122,79 @@ local download_successful, urlcontents = internet.download_url_sync("https://mys
 
 if download_successful then
     local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.zip", "wb")
+    fileout:write(urlcontents)
+    fileout:close()
+end
+```
+
+### internet.post
+
+Post data to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to send the request to.|
+|string|The data to post.|
+|function|The callback function to call when the download completes.|
+|(headers)|An optional table of html headers.|
+
+|Output Type|Description|
+|-----------|-----------|
+|session|If nil, there was an error.|
+
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+function callback(download_successful, urlcontents)
+   if download_successful then
+       local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.json", "wb")
+       fileout:write(urlcontents)
+       fileout:close()
+   end
+   finenv.RetainLuaState = false
+end
+
+local post_data = "<your post data> (maybe JSON?)"
+
+-- use a global to guarantee that it stays in scope in the callback
+g_session = internet.post("https://mysite.com", post_data, callback)
+
+finenv.RetainLuaState = true
+```
+
+### internet.post\_sync
+
+Post data synchronously to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to download.|
+|string|The data to post.|
+|number|The timeout value in seconds. (May be fractional.)|
+|(headers)|An optional table of html headers.|
+
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|Success or failure|
+|string|The downloaded data if success. An error message or `nil` if failure.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+local post_data = "<your post data> (maybe JSON?)"
+
+local download_successful, urlcontents = internet.post_sync("https://mysite.com", post_data , 5)
+
+if download_successful then
+    local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.json", "wb")
     fileout:write(urlcontents)
     fileout:close()
 end
@@ -693,8 +797,9 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 
 # Version history
 
-2.1.2
+2.2.0
 
+- Added `post` functions to the `internet` namespace, along with the option to specify html headers.
 - Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
 
 2.1.1
