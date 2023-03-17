@@ -801,6 +801,7 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 
 - Added `post` functions to the `internet` namespace, along with the option to specify html headers.
 - Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
+- Prebuilt binaries compiled with Lua 5.4
 
 2.1.1
 
