@@ -70,7 +70,7 @@ static void create_luaosutils_callback_session(lua_State *L, OSSESSION_ptr os_se
  * stack position 3: optional HTTP headers
  * \return download session or nil
  */
-static int luaosutils_internet_download_url(lua_State *L)
+static int luaosutils_internet_get(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
    auto callback = get_lua_parameter<luabridge::LuaRef>(L, 2, LUA_TFUNCTION);
@@ -106,7 +106,7 @@ static int luaosutils_internet_download_url(lua_State *L)
  * \return success
  * \return data or error message
  */
-static int luaosutils_internet_download_url_sync(lua_State *L)
+static int luaosutils_internet_get_sync(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
    auto timeout = (std::max)(0.0, get_lua_parameter<double>(L, 2, LUA_TNUMBER));
@@ -200,8 +200,10 @@ static int luaosutils_internet_post_sync(lua_State *L)
 
 
 static const luaL_Reg internet_utils[] = {
-   {"download_url",        luaosutils_internet_download_url},
-   {"download_url_sync",   luaosutils_internet_download_url_sync},
+   {"download_url",        luaosutils_internet_get},        // alias for backwards compatibility
+   {"download_url_sync",   luaosutils_internet_get_sync},   // alias for backwards compatibility
+   {"get",                 luaosutils_internet_get},
+   {"get_sync",            luaosutils_internet_get_sync},
    {"post",                luaosutils_internet_post},
    {"post_sync",           luaosutils_internet_post_sync},
    {NULL, NULL} // sentinel
