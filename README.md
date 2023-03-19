@@ -23,7 +23,7 @@ This namespace provides functions to send `GET` or `POST` requests to web server
 
 Asynchronous calls are the recommended option. They return a session variable that you maintain until the request completes. You return control to Finale and leave its Lua state open either with `finenv.RetainLuaState = true` or a dialog box or both. The completion function then finishes whatever needs to be done while running in the background.
 
-The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your script runs when running in the background.
+The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your completion function runs when running in the background, because it blocks the UI.
 
 You must keep a reference to the session until the callback is called. Your request is aborted if the session variable goes out of scope and is garbage-collected. Your request is also aborted if the Lua state that created it is closed.
 
@@ -58,7 +58,7 @@ local headers = {
         }
 ```
 
-### internet.download\_url
+### internet.get
 
 Downloads the contents of a url to a Lua string using a `GET` request. The URL resource can be text or binary.
 
@@ -89,14 +89,16 @@ function callback(download_successful, urlcontents)
 end
 
 -- use a global to guarantee that it stays in scope in the callback
-g_session = internet.download_url("https://mysite.com/myfile.zip", callback)
+g_session = internet.get("https://mysite.com/myfile.zip", callback)
 
 finenv.RetainLuaState = true
 ```
 
 The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
 
-### internet.download\_url\_sync
+This function is also aliased as `download_url` for backwards compatibility.
+
+### internet.get\_sync
 
 Downloads the contents of a url synchronously to a Lua string using a `GET` request. The URL resource can be text or binary.
 
@@ -118,7 +120,7 @@ Example:
 local osutils = require('luaosutils')
 local internet = osutils.internet
 
-local download_successful, urlcontents = internet.download_url_sync("https://mysite.com/myfile.zip", 5)
+local download_successful, urlcontents = internet.get_sync("https://mysite.com/myfile.zip", 5)
 
 if download_successful then
     local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.zip", "wb")
@@ -126,6 +128,8 @@ if download_successful then
     fileout:close()
 end
 ```
+
+This function is also aliased as `download_url_sync` for backwards compatibility.
 
 ### internet.post
 
@@ -800,6 +804,7 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 2.2.0
 
 - Added `post` functions to the `internet` namespace, along with the option to specify html headers.
+- Rename `download_url` functions as `get`, but maintain `download_url` functions as aliases.
 - Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
 - Prebuilt binaries compiled with Lua 5.4
 
