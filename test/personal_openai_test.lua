@@ -1,6 +1,6 @@
 function plugindef()
     finaleplugin.NoStore = true
-    finaleplugin.LoadLuaOSUtils = false
+    finaleplugin.LoadLuaOSUtils = true
     finaleplugin.RequireDocument = false
     finaleplugin.MinJWLuaVersion = 0.66
     return "aaa - OpenAI API Test"
@@ -17,11 +17,14 @@ require("mobdebug").start()
 openai_api_key = openai_api_key or "ABCDEFG"
 
 package.path = finenv.RunningLuaFolderPath() .. "openai-lua/?.lua;" .. package.path
-package.path = finenv.RunningLuaFolderPath() .. "../../../Lua Scripts/src/?.lua;" .. package.path
 
-local json = require("lunajson.lunajson")
+print("cjson global", cjson)
 
-local async_call = true
+local json = require("cjson")
+
+print("cjson version", json._VERSION)
+
+local async_call = false
 
 local openai = require("openai")
 
@@ -46,7 +49,7 @@ if async_call then
     g_session = openai.create_completion(model, prompt, temperature, max_tokens, callback)
     finenv.RetainLuaState = true
 else
-    local success, response = openai.create_completion(model, prompt, temperature, max_tokens, 2)
+    local success, response = openai.create_completion(model, prompt, temperature, max_tokens, 5)
     callback(success, response)
     finenv.RetainLuaState = false -- in case it got left open
 end
