@@ -6,6 +6,8 @@ end
     
 require('mobdebug').start() -- for ZeroBrane Studio debugging
 
+print("RetainLuaState", finenv.RetainLuaState)
+
 if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT + finale.CMDMODKEY_SHIFT) then
     finenv.RetainLuaState = false
     return

@@ -13,14 +13,51 @@
 #include "luaosutils.hpp"
 #include "internet/luaosutils_callback_session.hpp"
 
+template <>
+struct LuaStack<HeadersMap> {
+public:
+   LuaStack(lua_State* L) : L(L) {}
+   
+   void push(const std::map<std::string, std::string>& value)
+   {
+      lua_newtable(L);
+      for (const auto& entry : value) {
+         LuaStack<std::string>(L).push(entry.first);
+         LuaStack<std::string>(L).push(entry.second);
+         lua_settable(L, -3);
+      }
+   }
+   
+   HeadersMap get(int index)
+   {
+      HeadersMap result;
+      lua_pushnil(L);
+      while (lua_next(L, index) != 0)
+      {
+         std::string key = LuaStack<std::string>(L).get(-2);
+         std::string value = LuaStack<std::string>(L).get(-1);
+         result[key] = value;
+         lua_pop(L, 1);
+      }
+      return result;
+   }
+   
+private:
+   lua_State* L;
+};
+
 static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
 {
    // I'm just guessing what this function should do, but this seems to make sense.
    if (! L)
       return;
-   luabridge::LuaRef printFunc = luabridge::getGlobal(L, "print");
-   if (printFunc.isFunction())
-      printFunc(str);
+   lua_getglobal(L, "print"); // get the global variable "print"
+   if (lua_isfunction(L, -1)) // check if it is a function
+   {
+      lua_pushstring(L, str); // push the argument "str" onto the stack
+      lua_call(L, 1, 0); // call the function with 1 argument and 0 return values
+   }
+   lua_pop(L, 1); // pop the function from the stack
 }
 
 template<typename... Args>
@@ -28,27 +65,32 @@ static void call_lua_function(luaosutils_callback_session &session, Args... args
 {
    if (! luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
       return;
-   try
+   lua_rawgeti(session.state(), LUA_REGISTRYINDEX, session.function());
+   int nArgs = push_lua_args(session.state(), args...);
+   int result = lua_pcall(session.state(), nArgs, 0, 0);
+   if (result != LUA_OK)
    {
-      session.function()(args...);
-   }
-   catch (luabridge::LuaException &e)
-   {
-      LuaRun_AppendLineToOutput(e.state(), e.what());
+      const char* errorMessage = lua_tostring(session.state(), -1);
+      LuaRun_AppendLineToOutput(session.state(), errorMessage);
 #if defined(LUAOSUTILS_RGPLUA_AWARE)
-      luabridge::LuaRef finenv = luabridge::getGlobal(e.state(), "finenv");
-      if (finenv["RetainLuaState"].isBool())
-         finenv["RetainLuaState"] = false;
+      lua_getglobal(session.state(), "finenv");
+      lua_getfield(session.state(), -1, "RetainLuaState");
+      if (lua_isboolean(session.state(), -1))
+      {
+         lua_pushboolean(session.state(), 0);
+         lua_setfield(session.state(), -3, "RetainLuaState");
+      }
 #endif // defined(LUAOSUTILS_RGPLUA_AWARE)
-      error_message_box(e.what());
+      error_message_box(errorMessage);
+      lua_pop(session.state(), 1); // pop the error message from the stack
    }
 }
 
 static void create_luaosutils_callback_session(lua_State *L, OSSESSION_ptr os_session,
-        luabridge::LuaRef callback, luaosutils_callback_session::id_type sessionID)
+           int callback, luaosutils_callback_session::id_type sessionID)
 {
    luaosutils_callback_session* session = new (lua_newuserdata(L, sizeof(luaosutils_callback_session)))
-                                 luaosutils_callback_session(callback, sessionID);
+                                 luaosutils_callback_session(L, callback, sessionID);
    session->set_os_session(os_session);
    // Create a metatable for the userdata through that object can be accessed with "gc". That means we get called when Lua state closes.
    lua_newtable(L);
@@ -73,9 +115,9 @@ static void create_luaosutils_callback_session(lua_State *L, OSSESSION_ptr os_se
 static int luaosutils_internet_get(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
-   auto callback = get_lua_parameter<luabridge::LuaRef>(L, 2, LUA_TFUNCTION);
+   auto callback = get_lua_parameter<int>(L, 2, LUA_TFUNCTION);
    auto headers = get_lua_parameter<HeadersMap>(L, 3, LUA_TTABLE, HeadersMap());
-
+   
    luaosutils_callback_session::id_type sessionID = luaosutils_callback_session::get_new_session_id();
    
    const OSSESSION_ptr os_session = https_request("get", urlString, "", headers, -1,
@@ -111,7 +153,7 @@ static int luaosutils_internet_get_sync(lua_State *L)
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
    auto timeout = (std::max)(0.0, get_lua_parameter<double>(L, 2, LUA_TNUMBER));
    auto headers = get_lua_parameter<HeadersMap>(L, 3, LUA_TTABLE, HeadersMap());
-
+   
    bool success = false;
    std::string result;
    
@@ -122,8 +164,8 @@ static int luaosutils_internet_get_sync(lua_State *L)
             result = data;
          }));
    
-   luabridge::Stack<bool>::push(L, success);
-   luabridge::Stack<std::string>::push(L, result);
+   LuaStack<bool>(L).push(success);
+   LuaStack<std::string>(L).push(result);
    return 2;
 }
 
@@ -140,9 +182,9 @@ static int luaosutils_internet_post(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
    auto postData = get_lua_parameter<std::string >(L, 2, LUA_TSTRING);
-   auto callback = get_lua_parameter<luabridge::LuaRef>(L, 3, LUA_TFUNCTION);
+   auto callback = get_lua_parameter<int>(L, 3, LUA_TFUNCTION);
    auto headers = get_lua_parameter<HeadersMap>(L, 4, LUA_TTABLE, HeadersMap());
-
+   
    luaosutils_callback_session::id_type sessionID = luaosutils_callback_session::get_new_session_id();
    
    const OSSESSION_ptr os_session = https_request("post", urlString, postData, headers, -1,
@@ -182,19 +224,19 @@ static int luaosutils_internet_post_sync(lua_State *L)
    auto postData = get_lua_parameter<std::string >(L, 2, LUA_TSTRING);
    auto timeout = (std::max)(0.0, get_lua_parameter<double>(L, 3, LUA_TNUMBER));
    auto headers = get_lua_parameter<HeadersMap>(L, 4, LUA_TTABLE, HeadersMap());
-
+   
    bool success = false;
    std::string result;
    
    https_request("post", urlString, postData, headers, timeout,
-          lua_callback([&success, &result](bool cbsuccess, const std::string &data) -> void
-         {
-            success = cbsuccess;
-            result = data;
-         }));
+                 lua_callback([&success, &result](bool cbsuccess, const std::string &data) -> void
+                              {
+      success = cbsuccess;
+      result = data;
+   }));
    
-   luabridge::Stack<bool>::push(L, success);
-   luabridge::Stack<std::string>::push(L, result);
+   LuaStack<bool>(L).push(success);
+   LuaStack<std::string>(L).push(result);
    return 2;
 }
 

@@ -53,6 +53,7 @@
 		B5A031F229A6A69A0085ED88 /* luaosutils_process_os_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_process_os_mac.mm; sourceTree = "<group>"; };
 		B5A031F329A6A69A0085ED88 /* luaosutils_process_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaosutils_process_os.h; sourceTree = "<group>"; };
 		B5A031F429A6A69A0085ED88 /* luaosutils_process.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_process.cpp; sourceTree = "<group>"; };
+		B5A45A1129D6F54F0006200F /* luaosutils_luastack.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = luaosutils_luastack.h; sourceTree = "<group>"; tabWidth = 3; };
 		B5AA616829ACF79700FB86F2 /* luaosutils_text_os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_text_os.h; sourceTree = "<group>"; };
 		B5AA616A29ACF84F00FB86F2 /* luaosutils_text.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_text.cpp; sourceTree = "<group>"; };
 		B5AA616C29ACFA0800FB86F2 /* luaosutils_text_os_mac.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = luaosutils_text_os_mac.mm; sourceTree = "<group>"; };
@@ -118,6 +119,7 @@
 				B551DF9029A7B6E0009AAAB8 /* luaosutils_export.h */,
 				B5F5261F29A6C30300002B79 /* luaosutils.cpp */,
 				B5F5261E29A6C30300002B79 /* luaosutils.hpp */,
+				B5A45A1129D6F54F0006200F /* luaosutils_luastack.h */,
 			);
 			name = Source;
 			path = src;

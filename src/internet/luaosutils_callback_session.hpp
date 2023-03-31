@@ -28,7 +28,8 @@ private:
    using active_sessions_type = std::map<id_type, luaosutils_callback_session*>;
    
    id_type m_ID;
-   luabridge::LuaRef m_luaRef;
+   lua_State* m_L;
+   int m_function;
    OSSESSION_ptr m_osSession;
 
    static active_sessions_type& _get_active_sessions()
@@ -38,15 +39,16 @@ private:
    }
    
 public:
-   /** \brief Constuctor.
+   /** \brief Constructor.
     *
     * Because it may be necessary to know the id before constructing instances, the creation of the
     * unique instance identifier is external to the contructor function.
     *
-    * \param luaRef A luabridge::LuaRef containing a Lua callback function.
+    * \param L The Lua state.
+    * \param func A reference to a Lua callback function.
     * \param id A process-level unique instance identifier. Use #get_new_session_id to generate it.
     */
-   luaosutils_callback_session(luabridge::LuaRef& luaRef, id_type id) : m_luaRef(luaRef), m_ID(id), m_osSession(nullptr)
+   luaosutils_callback_session(lua_State* L, int func, id_type id) : m_L(L), m_function(func), m_ID(id), m_osSession(nullptr)
    {
       _get_active_sessions().emplace(id, this);
    }
@@ -58,7 +60,7 @@ public:
       if (this->os_session())
          cancel_session(this->os_session());
 #endif
-      
+      luaL_unref(m_L, LUA_REGISTRYINDEX, m_function);
       _get_active_sessions().erase(m_ID);
    }
 
@@ -70,10 +72,10 @@ public:
    }
 
    /** \brief Returns the Lua state for this instance. */
-   lua_State* state() const { return m_luaRef.state(); }
+   lua_State* state() const { return m_L; }
    
    /** \brief Returns the Lua function for this instance. */
-   luabridge::LuaRef& function() { return m_luaRef; }
+   int function() { return m_function; }
    
    /** \brief Returns the OS session pointer for this instance. */
    OSSESSION_ptr os_session() const { return m_osSession; }
