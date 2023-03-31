@@ -1,17 +1,19 @@
 function plugindef()
     finaleplugin.NoStore = true
-    finaleplugin.LoadLuaOSUtils = true
+    finaleplugin.LoadLuaOSUtils = false
     finaleplugin.RequireDocument = false
     finaleplugin.MinJWLuaVersion = 0.66
     return "aaa - OpenAI API Test"
 end
 
+require("mobdebug").start()
+
+print("RetainLuaState", finenv.RetainLuaState)
+
 if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT + finale.CMDMODKEY_SHIFT) then
     finenv.RetainLuaState = false
     return
 end
-
-require("mobdebug").start()
 
 -- note: the actual openai_api_key should be set in the prefix setting for RGP Lua
 openai_api_key = openai_api_key or "ABCDEFG"
@@ -24,7 +26,7 @@ local json = require("cjson")
 
 print("cjson version", json._VERSION)
 
-local async_call = false
+local async_call = true
 
 local openai = require("openai")
 
