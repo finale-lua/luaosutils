@@ -62,20 +62,25 @@ private:
    template<>
    struct get_helper<int> {
       static int get(lua_State* L, int index) {
+         if (lua_isfunction(L, index))
+         {
+            lua_pushvalue(L, index);
+            return luaL_ref(L, LUA_REGISTRYINDEX);
+         }
          return static_cast<int>(lua_tointeger(L, index));
       }
    };
    
    template<>
    struct get_helper<unsigned int> {
-      static int get(lua_State* L, int index) {
+      static unsigned int get(lua_State* L, int index) {
          return static_cast<unsigned int>(lua_tointeger(L, index));
       }
    };
 
    template<>
    struct get_helper<long> {
-      static int get(lua_State* L, int index) {
+      static long get(lua_State* L, int index) {
          return static_cast<long>(lua_tointeger(L, index));
       }
    };
@@ -88,21 +93,12 @@ private:
    };
    
    template<>
-   struct get_helper<lua_CFunction> {
-      static lua_CFunction get(lua_State* L, int index) {
-         if (! lua_isfunction(L, index))
-         {
-            int type = lua_type(L, index);
-            assert(type == LUA_TFUNCTION);
-         }
-         return lua_tocfunction(L, index);
-      }
-   };
-   
-   template<>
    struct get_helper<std::string> {
       static std::string get(lua_State* L, int index) {
-         return lua_tostring(L, index);
+         const char* str = lua_tolstring(L, index, nullptr);
+         if (str == nullptr) return "";
+         const size_t len = lua_rawlen(L, index);
+         return std::string(str, len);
       }
    };
 
@@ -127,7 +123,7 @@ private:
    }
    
    void push_impl(const std::string& value) {
-      lua_pushstring(L, value.c_str());
+      lua_pushlstring(L, value.data(), value.size());
    }
 };
 

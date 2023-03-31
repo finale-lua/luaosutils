@@ -65,7 +65,7 @@ static void call_lua_function(luaosutils_callback_session &session, Args... args
 {
    if (! luaosutils_callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
       return;
-   lua_pushcfunction(session.state(), session.function());
+   lua_rawgeti(session.state(), LUA_REGISTRYINDEX, session.function());
    int nArgs = push_lua_args(session.state(), args...);
    int result = lua_pcall(session.state(), nArgs, 0, 0);
    if (result != LUA_OK)
@@ -87,7 +87,7 @@ static void call_lua_function(luaosutils_callback_session &session, Args... args
 }
 
 static void create_luaosutils_callback_session(lua_State *L, OSSESSION_ptr os_session,
-           lua_CFunction callback, luaosutils_callback_session::id_type sessionID)
+           int callback, luaosutils_callback_session::id_type sessionID)
 {
    luaosutils_callback_session* session = new (lua_newuserdata(L, sizeof(luaosutils_callback_session)))
                                  luaosutils_callback_session(L, callback, sessionID);
@@ -115,7 +115,7 @@ static void create_luaosutils_callback_session(lua_State *L, OSSESSION_ptr os_se
 static int luaosutils_internet_get(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
-   auto callback = get_lua_parameter<lua_CFunction>(L, 2, LUA_TFUNCTION);
+   auto callback = get_lua_parameter<int>(L, 2, LUA_TFUNCTION);
    auto headers = get_lua_parameter<HeadersMap>(L, 3, LUA_TTABLE, HeadersMap());
    
    luaosutils_callback_session::id_type sessionID = luaosutils_callback_session::get_new_session_id();
@@ -182,7 +182,7 @@ static int luaosutils_internet_post(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
    auto postData = get_lua_parameter<std::string >(L, 2, LUA_TSTRING);
-   auto callback = get_lua_parameter<lua_CFunction>(L, 3, LUA_TFUNCTION);
+   auto callback = get_lua_parameter<int>(L, 3, LUA_TFUNCTION);
    auto headers = get_lua_parameter<HeadersMap>(L, 4, LUA_TTABLE, HeadersMap());
    
    luaosutils_callback_session::id_type sessionID = luaosutils_callback_session::get_new_session_id();
