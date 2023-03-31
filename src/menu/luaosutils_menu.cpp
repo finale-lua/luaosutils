@@ -6,6 +6,7 @@
 //  Copyright © 2023 Robert Patterson. All rights reserved.
 //  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
+#include <map>
 
 #include "luaosutils.hpp"
 #include "menu/luaosutils_menu_os.h"

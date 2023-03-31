@@ -46,70 +46,13 @@
 
 #include "luaosutils_export.h"
 
-#ifndef __OBJC__
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdocumentation"
-#endif // __GNUC__
-#include "LuaBridge/LuaBridge.h"
-#include "LuaBridge/Map.h"
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif // __GNUC__
-#endif // __OBJC__
+#include "luaosutils_luastack.h"
 
 using lua_callback = std::function<void (bool, const std::string&)>;
 
 //utility functions
 
 #define DIM(a) (sizeof(a)/sizeof(a[0]))
-
-#ifndef __OBJC__
-template<typename T>
-T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt)
-{
-   const int type = lua_type(L, param_number);
-   if (type == LUA_TNIL || type == LUA_TNONE)
-   {
-      if (default_value.has_value())
-         return default_value.value();
-   }
-   if (type != expected_type)
-   {
-      const char* expected_type_name = lua_typename(L, expected_type);
-      const char* actual_type_name = lua_typename(L, type);
-      luaL_error(L, "param %d expected %s, got %s", param_number, expected_type_name, actual_type_name);
-   }
-   if constexpr(std::is_same<T, luabridge::LuaRef>::value)
-   {
-      return luabridge::Stack<luabridge::LuaRef>::get(L, param_number);
-   }
-   else if constexpr (std::is_convertible<T, void*>::value)
-   {
-      T ptr = reinterpret_cast<T>(lua_touserdata(L, param_number));
-      return ptr;
-   }
-   else
-   {
-      luabridge::LuaRef ref = luabridge::Stack<luabridge::LuaRef>::get(L, param_number);
-      return ref.cast<T>();
-   }
-}
-
-template<typename T>
-void push_lua_return_value(lua_State* L, const T& retval)
-{
-   if constexpr (std::is_convertible<T, void*>::value)
-   {
-      if (! retval)
-         lua_pushnil(L);
-      else
-         lua_pushlightuserdata(L, retval);
-   }
-   else
-      luabridge::Stack<T>::push(L, retval);
-}
-#endif
 
 inline void add_constant(lua_State *L, const char* const_name, int value, int table_index)
 {

@@ -10,15 +10,6 @@
 		B51F449A29A6B38E00D1A0BD /* libluaosutils-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B51F449729A6B37200D1A0BD /* libluaosutils-static.a */; };
 		B51F449B29A6B39300D1A0BD /* libLua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B51F448F29A6B34C00D1A0BD /* libLua.a */; };
 		B5A6773F28D0DB7200D9B74C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A6773E28D0DB7200D9B74C /* Cocoa.framework */; };
-		B5EFCF2728634BBA003AC07F /* Vector.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1D28634BB9003AC07F /* Vector.h */; };
-		B5EFCF2828634BBA003AC07F /* List.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1E28634BB9003AC07F /* List.h */; };
-		B5EFCF2928634BBA003AC07F /* RefCountedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF1F28634BB9003AC07F /* RefCountedObject.h */; };
-		B5EFCF2A28634BBA003AC07F /* RefCountedPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2128634BB9003AC07F /* RefCountedPtr.h */; };
-		B5EFCF2B28634BBA003AC07F /* Map.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2228634BB9003AC07F /* Map.h */; };
-		B5EFCF2C28634BBA003AC07F /* LuaBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2328634BB9003AC07F /* LuaBridge.h */; };
-		B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2428634BB9003AC07F /* UnorderedMap.h */; };
-		B5EFCF2E28634BBA003AC07F /* Array.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2528634BB9003AC07F /* Array.h */; };
-		B5EFCF2F28634BBA003AC07F /* Optional.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EFCF2628634BB9003AC07F /* Optional.h */; };
 		B5F5262329A6C52800002B79 /* libosutils_dylibmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */; };
 /* End PBXBuildFile section */
 
@@ -66,16 +57,6 @@
 		B55E2B362610CE9C003E0F63 /* luaosutils.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = luaosutils.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A6773E28D0DB7200D9B74C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		B5D65BB029B63E4C00B8286E /* Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
-		B5EFCF1D28634BB9003AC07F /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
-		B5EFCF1E28634BB9003AC07F /* List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = List.h; sourceTree = "<group>"; };
-		B5EFCF1F28634BB9003AC07F /* RefCountedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCountedObject.h; sourceTree = "<group>"; };
-		B5EFCF2028634BB9003AC07F /* detail */ = {isa = PBXFileReference; lastKnownFileType = folder; path = detail; sourceTree = "<group>"; };
-		B5EFCF2128634BB9003AC07F /* RefCountedPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCountedPtr.h; sourceTree = "<group>"; };
-		B5EFCF2228634BB9003AC07F /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
-		B5EFCF2328634BB9003AC07F /* LuaBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LuaBridge.h; sourceTree = "<group>"; };
-		B5EFCF2428634BB9003AC07F /* UnorderedMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnorderedMap.h; sourceTree = "<group>"; };
-		B5EFCF2528634BB9003AC07F /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
-		B5EFCF2628634BB9003AC07F /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Optional.h; sourceTree = "<group>"; };
 		B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = libosutils_dylibmain.cpp; path = src/libosutils_dylibmain.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -123,7 +104,6 @@
 			children = (
 				B5F5262229A6C48C00002B79 /* libosutils_dylibmain.cpp */,
 				B5D65BAF29B63E2900B8286E /* Config */,
-				B5EFCF1C28634B7F003AC07F /* LuaBridge */,
 				B51F448A29A6B34C00D1A0BD /* Lua.xcodeproj */,
 				B51F449229A6B37200D1A0BD /* luaosutils-static.xcodeproj */,
 				B55E2B372610CE9C003E0F63 /* Products */,
@@ -148,24 +128,6 @@
 			path = config;
 			sourceTree = "<group>";
 		};
-		B5EFCF1C28634B7F003AC07F /* LuaBridge */ = {
-			isa = PBXGroup;
-			children = (
-				B5EFCF2528634BB9003AC07F /* Array.h */,
-				B5EFCF2028634BB9003AC07F /* detail */,
-				B5EFCF1E28634BB9003AC07F /* List.h */,
-				B5EFCF2328634BB9003AC07F /* LuaBridge.h */,
-				B5EFCF2228634BB9003AC07F /* Map.h */,
-				B5EFCF2628634BB9003AC07F /* Optional.h */,
-				B5EFCF1F28634BB9003AC07F /* RefCountedObject.h */,
-				B5EFCF2128634BB9003AC07F /* RefCountedPtr.h */,
-				B5EFCF2428634BB9003AC07F /* UnorderedMap.h */,
-				B5EFCF1D28634BB9003AC07F /* Vector.h */,
-			);
-			name = LuaBridge;
-			path = LuaBridge/Source/LuaBridge;
-			sourceTree = SOURCE_ROOT;
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -173,15 +135,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5EFCF2E28634BBA003AC07F /* Array.h in Headers */,
-				B5EFCF2728634BBA003AC07F /* Vector.h in Headers */,
-				B5EFCF2D28634BBA003AC07F /* UnorderedMap.h in Headers */,
-				B5EFCF2928634BBA003AC07F /* RefCountedObject.h in Headers */,
-				B5EFCF2B28634BBA003AC07F /* Map.h in Headers */,
-				B5EFCF2C28634BBA003AC07F /* LuaBridge.h in Headers */,
-				B5EFCF2A28634BBA003AC07F /* RefCountedPtr.h in Headers */,
-				B5EFCF2F28634BBA003AC07F /* Optional.h in Headers */,
-				B5EFCF2828634BBA003AC07F /* List.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
