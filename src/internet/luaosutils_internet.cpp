@@ -173,7 +173,7 @@ static int luaosutils_internet_get_sync(lua_State *L)
 
 /** \brief post data to a url and returns the reply in a string
  *
- * stack position 1: the url to download
+ * stack position 1: the url to post to
  * stack position 2: the post data (string)
  * stack position 3: a reference to a lua function to call on completion
  * stack position 4: optional HTTP headers
@@ -214,7 +214,7 @@ static int luaosutils_internet_post(lua_State *L)
 
 /** \brief downloads the contents of a url into a string synchronously (blocks the UI)
  *
- * stack position 1: the url to download
+ * stack position 1: the url to post to
  * stack position 2: the post data (string)
  * stack position 3: a timeout value
  * stack position 4: optional HTTP headers
@@ -222,6 +222,10 @@ static int luaosutils_internet_post(lua_State *L)
  * \return data or error message
  */
 
+/** \brief launch the url in the user's default browsert
+ *
+ * stack position 1: the url to launch
+ */
 static int luaosutils_internet_post_sync(lua_State *L)
 {
    if (! luaosutils_trusted)
