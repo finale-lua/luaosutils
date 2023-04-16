@@ -40,7 +40,7 @@ private:
    
    template<typename U>
    struct get_helper {
-      static U get(lua_State* L, int index) {
+      static U get(lua_State*, int) {
          // Default implementation throws an error
          static_assert(sizeof(U) == 0, "No specialized implementation for this type");
          return U();
@@ -48,7 +48,7 @@ private:
    };
    
    template<typename U>
-   void push_impl(U value) {
+   void push_impl(U) {
       static_assert(sizeof(U) == 0, "No specialized implementation for this type");
    }
    

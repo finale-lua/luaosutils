@@ -13,11 +13,10 @@
 #include <memory>
 #include <map>
 
-#include "luaosutils.hpp"
-
 namespace luaosutils
 {
 
+using lua_callback = std::function<void (bool, const std::string&)>;
 using HeadersMap = std::map<std::string, std::string>;
 
 #if OPERATING_SYSTEM == MAC_OS

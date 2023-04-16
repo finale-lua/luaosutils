@@ -16,6 +16,7 @@
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
 #define UNKNOWN_OS   -1
 
+#ifndef OPERATING_SYSTEM
 #if defined(__GNUC__)
 #define OPERATING_SYSTEM MAC_OS
 #elif defined(_MSC_VER)
@@ -23,7 +24,9 @@
 #else
 #define OPERATING_SYSTEM UNKNOWN_OS
 #endif
+#endif
 
+#ifndef WINCODE
 #if OPERATING_SYSTEM == WINDOWS
 #define WINCODE(X) X
 #define WIN_PARM(X) , X
@@ -31,13 +34,16 @@
 #define WINCODE(X)
 #define WIN_PARM(X)
 #endif
+#endif
 
+#ifndef MACCODE
 #if OPERATING_SYSTEM == MAC_OS
 #define MACCODE(X) X
 #define MAC_PARM(X) , X
 #else
 #define MACCODE(X)
 #define MAC_PARM(X)
+#endif
 #endif
 
 #include <string>
@@ -50,11 +56,11 @@
 
 #define TRUSTED_ERROR_MESSAGE "trusted code is required to run this function"
 
-using lua_callback = std::function<void (bool, const std::string&)>;
-
 //utility functions
 
+#ifndef DIM
 #define DIM(a) (sizeof(a)/sizeof(a[0]))
+#endif
 
 inline void add_constant(lua_State *L, const char* const_name, int value, int table_index)
 {

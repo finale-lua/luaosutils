@@ -122,7 +122,7 @@ static int luaosutils_internet_get(lua_State *L)
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
    
    const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("get", urlString, "", headers, -1,
-         lua_callback([sessionID](bool success, const std::string &urlResult) -> void
+         [sessionID](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
@@ -130,7 +130,7 @@ static int luaosutils_internet_get(lua_State *L)
                call_lua_function(*session, success, urlResult);
                session->set_os_session(nullptr);
             }
-         }));
+         });
 
    if (os_session)
    {
@@ -159,11 +159,11 @@ static int luaosutils_internet_get_sync(lua_State *L)
    std::string result;
    
    luaosutils::https_request("get", urlString, "", headers, timeout,
-          lua_callback([&success, &result](bool cbsuccess, const std::string &data) -> void
+            [&success, &result](bool cbsuccess, const std::string &data) -> void
                   {
                      success = cbsuccess;
                      result = data;
-                  }));
+                  });
    
    LuaStack<bool>(L).push(success);
    LuaStack<std::string>(L).push(result);
@@ -192,7 +192,7 @@ static int luaosutils_internet_post(lua_State *L)
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
    
    const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("post", urlString, postData, headers, -1,
-         lua_callback([sessionID](bool success, const std::string &urlResult) -> void
+         [sessionID](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
@@ -200,7 +200,7 @@ static int luaosutils_internet_post(lua_State *L)
                call_lua_function(*session, success, urlResult);
                session->set_os_session(nullptr);
             }
-         }));
+         });
 
    if (os_session)
    {
@@ -240,11 +240,11 @@ static int luaosutils_internet_post_sync(lua_State *L)
    std::string result;
    
    luaosutils::https_request("post", urlString, postData, headers, timeout,
-                 lua_callback([&success, &result](bool cbsuccess, const std::string &data) -> void
+                  [&success, &result](bool cbsuccess, const std::string &data) -> void
                               {
                                  success = cbsuccess;
                                  result = data;
-                              }));
+                              });
    
    LuaStack<bool>(L).push(success);
    LuaStack<std::string>(L).push(result);
