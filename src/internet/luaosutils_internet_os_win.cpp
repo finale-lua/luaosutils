@@ -14,6 +14,10 @@
 #include "luaosutils.hpp"
 #include "internet/luaosutils_internet_os.h"
 
+namespace luaosutils
+{
+
+
 win_request_context::win_request_context(lua_callback callback) :
             callbackFunction(callback),
             hInternet(0), hConnect(0), hRequest(0), hThread(0),
@@ -323,4 +327,6 @@ HWND __FindTopWindow()
 void error_message_box(const std::string& msg)
 {
    MessageBoxA(__FindTopWindow(), msg.c_str(), "Error", MB_OK);
+}
+
 }

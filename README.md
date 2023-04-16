@@ -15,6 +15,8 @@ If you are bundling `luaosutils` externally with a plugin suite for end users, y
 
 # Functions
 
+\*Items with an asterisk must be running in trusted mode. Luaosutils exports a boolean value `luaosutils_trusted` which defaults to `true`. The code that loads the library can set this value to 	`false` and restrict access by Lua scripts to the marked functions. If Lua itself loads the library, it will always be trusted. Trusted code comes into play if the library is included in an embedded Lua environment.
+
 ## The 'internet' namespace
 
 This namespace provides functions to send `GET` or `POST` requests to web servers. The functions then return the full response in a Lua string. For asynchronous calls, the response is passed to a callback function.
@@ -131,7 +133,24 @@ end
 
 This function is also aliased as `download_url_sync` for backwards compatibility.
 
-### internet.post
+### internet.launch_website
+
+Launches the specified URL in the user's default web browser.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to launch.|
+
+Example:
+
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+internet.launch_website("https://mysite.com")
+```
+
+### internet.post\*
 
 Post data to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
 
@@ -170,7 +189,7 @@ g_session = internet.post("https://mysite.com", post_data, callback)
 finenv.RetainLuaState = true
 ```
 
-### internet.post\_sync
+### internet.post\_sync\*
 
 Post data synchronously to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
 
@@ -234,7 +253,7 @@ local del_result = menu.delete_submenu(spacing_menu, main_window)
 print(del_result)
 ```
 
-### menu.delete\_submenu
+### menu.delete\_submenu\*
 
 Deletes the specified submenu item from its parent menu. The submenu must contain zero menu items or it will not be deleted.
 
@@ -496,7 +515,7 @@ local menu = osutils.menu
 local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
 ```
 
-### menu.insert\_separator
+### menu.insert\_separator\*
 
 Inserts a menu separator at the specified index.
 
@@ -524,7 +543,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.insert\_submenu
+### menu.insert\_submenu\*
 
 Inserts a new submenu at the specified index.
 
@@ -554,7 +573,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.move\_item
+### menu.move\_item\*
 
 Moves a menu item from one menu location to another.
 
@@ -589,7 +608,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.redraw
+### menu.redraw\*
 
 Redraws the menu bar. This function does nothing on macOS.
 
@@ -612,7 +631,7 @@ local menu = osutils.menu
 menu.redraw(finenv.GetFinaleMainWindow())
 ```
 
-### menu.set\_item\_text
+### menu.set\_item\_text\*
 
 Changes the text of the specified menu item to the new value.
 
@@ -643,7 +662,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.set\_title
+### menu.set\_title\*
 
 Returns the title of the specified menu.
 
@@ -680,7 +699,7 @@ The `process` namespace offers functions to launch a separate process. The advan
 
 The optional folder path for the working directory must be a fully qualified path name. Do not enclose this string in outer quote marks even if the path name contains spaces. If you do, Windows will not recognize it as a path name, and the function will fail. On macOS the functions do not fail, but the outer quote marks are not necessary either. For example, you can directly pass `finenv.RunningLuaFolderPath()` directly on either operating system. Do not enclose it in quotes, even if the running lua path contains spaces.
 
-### process.execute
+### process.execute\*
 
 Executes a process with the input command line and waits for it to complete. It captures any text the process sends to `stdio` and returns it in a string.
 
@@ -709,7 +728,7 @@ if finenv.UI():IsOnWindows() then
 end
 ```
 
-### process.launch
+### process.launch\*
 
 Launches a process with the input command line and returns immediately.
 
@@ -807,6 +826,8 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 - Rename `download_url` functions as `get`, but maintain `download_url` functions as aliases.
 - Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
 - Prebuilt binaries compiled with Lua 5.4
+- Added a trusted code variable that prevents code from running certain functions if the code isn't trusted. (This is used by embedded environments such as the Finale Lua plugin.)
+- Added `launch_website` to the `internet` namespace.
 
 2.1.1
 

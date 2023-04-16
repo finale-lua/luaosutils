@@ -13,6 +13,9 @@
 #include "process/luaosutils_process_os.h"
 #include "winutils/luaosutils_winutils.h"
 
+namespace luaosutils
+{
+
 /*
 static bool getCmdExeFullPath(std::basic_string<WCHAR>& result)
 {
@@ -133,4 +136,6 @@ bool process_launch(const std::string& cmd, const std::string& dir)
    CloseHandle(pi.hProcess);
    CloseHandle(pi.hThread);
    return true;
+}
+
 }

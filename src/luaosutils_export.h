@@ -15,12 +15,15 @@
 #ifdef _MSC_VER // can't use #if OPERATING_SYSTEM == WINDOWS here because external code may have conflicting definitions
 #define LUAOSUTILS_EXPORT __declspec(dllexport)
 #else
-#define LUAOSUTILS_EXPORT
+#define LUAOSUTILS_EXPORT __attribute__((visibility("default")))
 #endif
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+LUAOSUTILS_EXPORT extern bool luaosutils_trusted; // defaults to true
 
 LUAOSUTILS_EXPORT int luaopen_luaosutils(lua_State* L);
 

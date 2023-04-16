@@ -14,6 +14,10 @@
 
 #include "luaosutils.hpp"
 
+
+namespace luaosutils
+{
+
 #if OPERATING_SYSTEM == WINDOWS
 #include <windows.h>
 typedef HWND window_handle;
@@ -45,5 +49,13 @@ menu_handle menu_insert_submenu(const std::string& itemText, menu_handle hMenu, 
 bool menu_move_item(menu_handle fromMenu, int fromIndex, menu_handle toMenu, int toIndex, int& itemIndex);
 bool menu_set_item_text(menu_handle hMenu, int index, const std::string& newText);
 bool menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& newText);
+inline void menu_redraw(window_handle hWnd)
+{
+#if OPERATING_SYSTEM == WINDOWS
+   if (hWnd) DrawMenuBar(hWnd);
+#endif
+}
+
+}
 
 #endif /* luaosutils_menu_os_h */

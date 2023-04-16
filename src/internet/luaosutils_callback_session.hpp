@@ -1,5 +1,5 @@
 //
-//  luaosutils_callback_session.hpp
+//  luaosutils::callback_session.hpp
 //  luaosutils
 //
 //  Created by Robert Patterson on 9/11/22.
@@ -15,23 +15,26 @@
 #include "luaosutils.hpp"
 #include "internet/luaosutils_internet_os.h"
 
+namespace luaosutils
+{
+
 /** \brief This class is used to guarantee that a Lua state is still active when a callback occurs.
  * A userdata of it is returned to Lua and the session stays active as long as
  * the Lua script maintains the returned value in scope. If the Lua state is closed,
  * the pointer is garbage collected, and the callback can no longer be called.
  */
-class luaosutils_callback_session
+class callback_session
 {
 public:
    using id_type = unsigned long;
 private:
-   using active_sessions_type = std::map<id_type, luaosutils_callback_session*>;
+   using active_sessions_type = std::map<id_type, luaosutils::callback_session*>;
    
    id_type m_ID;
    lua_State* m_L;
    int m_function;
    OSSESSION_ptr m_osSession;
-
+   
    static active_sessions_type& _get_active_sessions()
    {
       static active_sessions_type g_activeSessions;
@@ -48,13 +51,13 @@ public:
     * \param func A reference to a Lua callback function.
     * \param id A process-level unique instance identifier. Use #get_new_session_id to generate it.
     */
-   luaosutils_callback_session(lua_State* L, int func, id_type id) : m_L(L), m_function(func), m_ID(id), m_osSession(nullptr)
+   callback_session(lua_State* L, int func, id_type id) : m_L(L), m_function(func), m_ID(id), m_osSession(nullptr)
    {
       _get_active_sessions().emplace(id, this);
    }
    
    /** \brief Destructor. Attempts to cancel session if there is one. */
-   ~luaosutils_callback_session()
+   ~callback_session()
    {
 #if OPERATING_SYSTEM == MAC_OS
       if (this->os_session())
@@ -63,14 +66,14 @@ public:
       luaL_unref(m_L, LUA_REGISTRYINDEX, m_function);
       _get_active_sessions().erase(m_ID);
    }
-
+   
    /** \brief Class-level function that generates a new value for use as a unique instance identifier. */
    static id_type get_new_session_id() // this should always be used to calculate the id
    {
       static id_type sessionID = 0;
       return ++sessionID;
    }
-
+   
    /** \brief Returns the Lua state for this instance. */
    lua_State* state() const { return m_L; }
    
@@ -79,7 +82,7 @@ public:
    
    /** \brief Returns the OS session pointer for this instance. */
    OSSESSION_ptr os_session() const { return m_osSession; }
- 
+   
    /** \brief Sets the OS session pointer for this instance. */
    void set_os_session(OSSESSION_ptr session) { m_osSession = session; }
    
@@ -87,7 +90,7 @@ public:
     *
     * \param id The unique instance identifier to find.
     */
-   static luaosutils_callback_session* get_session_for_id(id_type id)
+   static luaosutils::callback_session* get_session_for_id(id_type id)
    {
       auto it = _get_active_sessions().find(id);
       if (it == _get_active_sessions().end())
@@ -104,10 +107,12 @@ public:
     * \param session The session to find.
     * \returns true if the session is valid or false if it has been destroyed by Lua garbage collection.
     */
-   static bool is_valid_session(luaosutils_callback_session *session)
+   static bool is_valid_session(luaosutils::callback_session *session)
    {
       return get_session_for_id(session->m_ID) != nullptr;
    }
 };
+
+}
 
 #endif /* luaosutils_callback_session_hpp */

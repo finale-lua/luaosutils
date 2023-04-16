@@ -9,6 +9,8 @@
 
 #include "luaosutils.hpp"
 
+bool luaosutils_trusted = true;
+
 static const luaL_Reg funcs[] = {
    // currently no top-level functions
    {NULL, NULL} // sentinel

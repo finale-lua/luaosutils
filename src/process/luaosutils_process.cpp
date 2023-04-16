@@ -12,13 +12,16 @@
 
 static int luaosutils_process_execute(lua_State *L)
 {
+   if (! luaosutils_trusted)
+      luaL_error(L, TRUSTED_ERROR_MESSAGE);
+   
    auto cmd = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
    auto dir = get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
    
    if (cmd.size())
    {
       std::string output;
-      const bool result = process_execute(cmd, dir, output);
+      const bool result = luaosutils::process_execute(cmd, dir, output);
       if (result)
          push_lua_return_value(L, output);
       else
@@ -32,11 +35,14 @@ static int luaosutils_process_execute(lua_State *L)
 
 static int luaosutils_process_launch(lua_State *L)
 {
+   if (! luaosutils_trusted)
+      luaL_error(L, TRUSTED_ERROR_MESSAGE);
+   
    auto cmd = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
    auto dir = get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
 
    if (cmd.size())
-      push_lua_return_value(L, process_launch(cmd, dir));
+      push_lua_return_value(L, luaosutils::process_launch(cmd, dir));
    else
       push_lua_return_value(L, false);
    return 1;

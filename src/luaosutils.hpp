@@ -48,6 +48,8 @@
 
 #include "luaosutils_luastack.h"
 
+#define TRUSTED_ERROR_MESSAGE "trusted code is required to run this function"
+
 using lua_callback = std::function<void (bool, const std::string&)>;
 
 //utility functions

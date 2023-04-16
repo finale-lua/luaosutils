@@ -14,6 +14,9 @@
 #include "menu/luaosutils_menu_os.h"
 #include "winutils/luaosutils_winutils.h"
 
+namespace luaosutils
+{
+
 static HMENU getParentMenu(HMENU menu, HMENU origin, int* pos)
 {
 	if (!origin) return NULL;
@@ -239,4 +242,6 @@ bool menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& ne
 	if (hParentMenu)
 		return menu_set_item_text(hParentMenu, parentIndex, newText);
 	return false;
+}
+
 }

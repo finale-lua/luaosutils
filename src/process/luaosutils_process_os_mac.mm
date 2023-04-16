@@ -13,6 +13,9 @@
 
 #include "process/luaosutils_process_os.h"
 
+namespace luaosutils
+{
+
 static NSString* GetUserShellPath()
 {
    uid_t uid = getuid(); // Get the user ID
@@ -48,7 +51,7 @@ bool process_execute(const std::string& cmd, const std::string& dir, std::string
          NSLog(@"Error returned from launchAndReturnError in process_execute: %@", error);
          return false;
       }
-
+      
       NSData *data = [file readDataToEndOfFile];
       output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
       
@@ -81,7 +84,7 @@ bool process_launch(const std::string& cmd, const std::string& dir)
          NSString* dirPath = [NSString stringWithUTF8String:dir.c_str()];
          [task setCurrentDirectoryURL:[NSURL fileURLWithPath:dirPath]];
       }
-
+      
       [task setStandardOutput:[NSPipe pipe]];
       [task setStandardError:[NSPipe pipe]];
       NSError* error = nil;
@@ -99,4 +102,6 @@ bool process_launch(const std::string& cmd, const std::string& dir)
 #endif
    }
    return false;
+}
+
 }
