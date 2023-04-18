@@ -2,5 +2,5 @@ LIBRARY luaosutils.dll
 
 EXPORTS
 luaopen_luaosutils
-luaosutils_trusted @1
+luaopen_luaosutils_restricted
 

@@ -13,9 +13,6 @@
 
 static int luaosutils_menu_delete_submenu(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto hMenu = get_lua_parameter<luaosutils::menu_handle>(L, 1, LUA_TLIGHTUSERDATA, nullptr);
    auto hWnd = get_lua_parameter<luaosutils::window_handle>(L, 2, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
    
@@ -129,9 +126,6 @@ static int luaosutils_menu_get_top_level_menu(lua_State *L)
 
 static int luaosutils_menu_insert_separator(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto hMenu = get_lua_parameter<luaosutils::menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
    auto insertIndex = get_lua_parameter<int>(L, 2, LUA_TNUMBER, -1);
    
@@ -152,9 +146,6 @@ static int luaosutils_menu_insert_separator(lua_State *L)
 
 static int luaosutils_menu_insert_submenu(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto itemText = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
    auto hMenu = get_lua_parameter<luaosutils::menu_handle>(L, 2, LUA_TLIGHTUSERDATA);
    auto insertIndex = get_lua_parameter<int>(L, 3, LUA_TNUMBER, -1);
@@ -180,9 +171,6 @@ static int luaosutils_menu_insert_submenu(lua_State *L)
 
 static int luaosutils_menu_move_item(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto fromMenu = get_lua_parameter<luaosutils::menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
    auto fromIndex = get_lua_parameter<int>(L, 2, LUA_TNUMBER);
    auto toMenu = get_lua_parameter<luaosutils::menu_handle>(L, 3, LUA_TLIGHTUSERDATA);
@@ -206,9 +194,6 @@ static int luaosutils_menu_move_item(lua_State *L)
 
 static int luaosutils_menu_redraw([[maybe_unused]]lua_State* L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-
    luaosutils::window_handle hWnd = get_lua_parameter<luaosutils::window_handle>(L, 1, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
 
    luaosutils::menu_redraw(hWnd);
@@ -217,9 +202,6 @@ static int luaosutils_menu_redraw([[maybe_unused]]lua_State* L)
 
 static int luaosutils_menu_set_item_text(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto hMenu = get_lua_parameter<luaosutils::menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
    auto index = get_lua_parameter<int>(L, 2, LUA_TNUMBER);
    auto newText = get_lua_parameter<std::string>(L, 3, LUA_TSTRING);
@@ -233,9 +215,6 @@ static int luaosutils_menu_set_item_text(lua_State *L)
 
 static int luaosutils_menu_set_title(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto hMenu = get_lua_parameter<luaosutils::menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
    auto hWnd = get_lua_parameter<luaosutils::window_handle>(L, 2, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
    auto newText = get_lua_parameter<std::string>(L, 3, LUA_TSTRING);
@@ -274,14 +253,34 @@ static const luaL_Reg menu_utils[] = {
    {NULL, NULL} // sentinel
 };
 
-void luaosutils_menu_create(lua_State *L)
+static const luaL_Reg menu_utils_restricted[] = {
+   {"delete_submenu",      restricted_function},
+   {"find_item",           luaosutils_menu_find_item},
+   {"get_item_command_id", luaosutils_menu_get_item_command_id},
+   {"get_item_count",      luaosutils_menu_get_item_count},
+   {"get_item_submenu",    luaosutils_menu_get_item_submenu},
+   {"get_item_text",       luaosutils_menu_get_item_text},
+   {"get_item_type",       luaosutils_get_item_type},
+   {"get_title",           luaosutils_menu_get_title},
+   {"get_top_level_menu",  luaosutils_menu_get_top_level_menu},
+   {"insert_separator",    restricted_function},
+   {"insert_submenu",      restricted_function},
+   {"move_item",           restricted_function},
+   {"redraw",              restricted_function},
+   {"set_item_text",       restricted_function},
+   {"set_title",           restricted_function},
+   {NULL, NULL} // sentinel
+};
+
+void luaosutils_menu_create(lua_State *L, bool restricted)
 {
    lua_newtable(L);  // create nested table
    
    for (auto constant : constants)
       add_constant(L, constant.first.c_str(), static_cast<int>(constant.second), -3);
    
-   luaL_setfuncs(L, menu_utils, 0);  // add file methods to new metatable
+   const luaL_Reg* funcs = restricted ? menu_utils_restricted : menu_utils;
+   luaL_setfuncs(L, funcs, 0);      // add file methods to new metatable
    lua_setfield(L, -2, "menu");     // add the nested table to the parent table with the name
 }
 

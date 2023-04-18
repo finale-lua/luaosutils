@@ -12,9 +12,6 @@
 
 static int luaosutils_process_execute(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto cmd = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
    auto dir = get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
    
@@ -35,9 +32,6 @@ static int luaosutils_process_execute(lua_State *L)
 
 static int luaosutils_process_launch(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto cmd = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
    auto dir = get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
 
@@ -54,10 +48,17 @@ static const luaL_Reg process_utils[] = {
    {NULL, NULL} // sentinel
 };
 
-void luaosutils_process_create(lua_State *L)
+static const luaL_Reg process_utils_restricted[] = {
+   {"execute",             restricted_function},
+   {"launch",              restricted_function},
+   {NULL, NULL} // sentinel
+};
+
+void luaosutils_process_create(lua_State *L, bool restricted)
 {
    lua_newtable(L);  // create nested table
    
-   luaL_setfuncs(L, process_utils, 0);   // add file methods to new metatable
-   lua_setfield(L, -2, "process");       // add the nested table to the parent table with the name
+   const luaL_Reg* funcs = restricted ? process_utils_restricted : process_utils;
+   luaL_setfuncs(L, funcs, 0);         // add file methods to new metatable
+   lua_setfield(L, -2, "process");     // add the nested table to the parent table with the name
 }

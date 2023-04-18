@@ -181,9 +181,6 @@ static int luaosutils_internet_get_sync(lua_State *L)
  */
 static int luaosutils_internet_post(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
    auto postData = get_lua_parameter<std::string >(L, 2, LUA_TSTRING);
    auto callback = get_lua_parameter<int>(L, 3, LUA_TFUNCTION);
@@ -228,9 +225,6 @@ static int luaosutils_internet_post(lua_State *L)
  */
 static int luaosutils_internet_post_sync(lua_State *L)
 {
-   if (! luaosutils_trusted)
-      luaL_error(L, TRUSTED_ERROR_MESSAGE);
-   
    auto urlString = get_lua_parameter<std::string >(L, 1, LUA_TSTRING);
    auto postData = get_lua_parameter<std::string >(L, 2, LUA_TSTRING);
    auto timeout = (std::max)(0.0, get_lua_parameter<double>(L, 3, LUA_TNUMBER));
@@ -272,10 +266,22 @@ static const luaL_Reg internet_utils[] = {
    {NULL, NULL} // sentinel
 };
 
-void luaosutils_internet_create(lua_State *L)
+static const luaL_Reg internet_utils_restricted[] = {
+   {"download_url",        luaosutils_internet_get},        // alias for backwards compatibility
+   {"download_url_sync",   luaosutils_internet_get_sync},   // alias for backwards compatibility
+   {"get",                 luaosutils_internet_get},
+   {"get_sync",            luaosutils_internet_get_sync},
+   {"post",                restricted_function},
+   {"post_sync",           restricted_function},
+   {"launch_website",      luaosutils_launch_website},
+   {NULL, NULL} // sentinel
+};
+
+void luaosutils_internet_create(lua_State *L, bool restricted)
 {
    lua_newtable(L);  // create nested table
    
-   luaL_setfuncs(L, internet_utils, 0);   // add file methods to new metatable
+   const luaL_Reg* funcs = restricted ? internet_utils_restricted : internet_utils;
+   luaL_setfuncs(L, funcs, 0);            // add file methods to new metatable
    lua_setfield(L, -2, "internet");       // add the nested table to the parent table with the name
 }

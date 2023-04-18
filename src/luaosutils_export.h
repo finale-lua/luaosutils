@@ -23,9 +23,8 @@
 extern "C" {
 #endif
 
-LUAOSUTILS_EXPORT extern bool luaosutils_trusted; // defaults to true
-
 LUAOSUTILS_EXPORT int luaopen_luaosutils(lua_State* L);
+LUAOSUTILS_EXPORT int luaopen_luaosutils_restricted(lua_State* L);
 
 #ifdef __cplusplus
 }

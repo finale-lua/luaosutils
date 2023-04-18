@@ -61,9 +61,15 @@ inline void add_constant(lua_State *L, const char* const_name, int value, int ta
    lua_rawset(L, table_index);
 }
 
-void luaosutils_internet_create(lua_State *L);
-void luaosutils_menu_create(lua_State *L);
-void luaosutils_process_create(lua_State *L);
-void luaosutils_text_create(lua_State *L);
+inline int restricted_function(lua_State *L)
+{
+   luaL_error(L, "trusted code is required to run this function");
+   return 0;
+}
+
+void luaosutils_internet_create(lua_State *L, bool restricted);
+void luaosutils_menu_create(lua_State *L, bool restricted);
+void luaosutils_process_create(lua_State *L, bool restricted);
+void luaosutils_text_create(lua_State *L, bool restricted);
 
 #endif // luaosutils_hpp
