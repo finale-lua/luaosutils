@@ -15,7 +15,13 @@ If you are bundling `luaosutils` externally with a plugin suite for end users, y
 
 # Functions
 
-\*Items with an asterisk must be running in trusted mode. Luaosutils exports a boolean value `luaosutils_trusted` which defaults to `true`. The code that loads the library can set this value to 	`false` and restrict access by Lua scripts to the marked functions. If Lua itself loads the library, it will always be trusted. Trusted code comes into play if the library is included in an embedded Lua environment.
+\*Items marked with an asterisk are not available in restricted mode. You can load a restricted verision of the library as follows:
+
+```lua
+local osutils = require('luaosutils.restricted')
+```
+
+This prevents the script from doing things such as changing application menus, executing external code, or sending post requests to websites. The restricted mode is primarily useful to environments where `luaosutils` is embedded in the environment. The host app can determine if it trusts the code and either make the full or the restricted version of `luaosutils` available as is appropriate.
 
 ## The 'internet' namespace
 
@@ -826,7 +832,7 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 - Rename `download_url` functions as `get`, but maintain `download_url` functions as aliases.
 - Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
 - Prebuilt binaries compiled with Lua 5.4
-- Added a trusted code variable that prevents code from running certain functions if the code isn't trusted. (This is used by embedded environments such as the Finale Lua plugin.)
+- Added an untrusted code variant that can be loaded with `require('luaosutils.restricted')`.
 - Added `launch_website` to the `internet` namespace.
 
 2.1.1
@@ -848,4 +854,3 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 1.1.0
 
 - original release
-	
