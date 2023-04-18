@@ -15,8 +15,6 @@
 namespace luaosutils
 {
 
-static const NSInteger kHTTPStatusCodeOK = 200;
-
 OSSESSION_ptr https_request(const std::string& requestType, const std::string &urlString, const std::string& postData,
                             const HeadersMap& headers, double timeout, lua_callback callback)
 {

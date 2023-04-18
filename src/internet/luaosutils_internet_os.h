@@ -19,6 +19,8 @@ namespace luaosutils
 using lua_callback = std::function<void (bool, const std::string&)>;
 using HeadersMap = std::map<std::string, std::string>;
 
+static const int kHTTPStatusCodeOK = 200;
+
 #if OPERATING_SYSTEM == MAC_OS
 using OSSESSION_ptr = void*;
 #endif //OPERATING_SYSTEM == MAC_OS
