@@ -15,6 +15,8 @@
 namespace luaosutils
 {
 
+static const NSInteger kHTTPStatusCodeOK = 200;
+
 OSSESSION_ptr https_request(const std::string& requestType, const std::string &urlString, const std::string& postData,
                             const HeadersMap& headers, double timeout, lua_callback callback)
 {
@@ -50,23 +52,26 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string &u
    }
    
    NSURLSessionDataTask* sessionTask = [[NSURLSession sharedSession] dataTaskWithRequest:request
-                                                                       completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
-                                        {
-      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-      NSLog(@"NSURLSessionDataTask response status code: %ld", (long)[httpResponse statusCode]);
-      if (! inProgress) return;
-      auto codeBlock = ^{
-         if (error)
-            callback(false, [[error localizedDescription] UTF8String]);
-         else
-            callback(true, std::string(static_cast<const char *>([data bytes]), [data length]));
-      };
-      if (timeout < 0)
-         dispatch_async(dispatch_get_main_queue(), codeBlock); // async calls must run on main thread because Lua is not thread-safe
-      else
-         codeBlock();
-      inProgress = false;
-   }];
+               completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
+                  {
+                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                     NSLog(@"NSURLSessionDataTask response status code: %ld", (long)[httpResponse statusCode]);
+                     if (! inProgress) return;
+                     auto codeBlock = ^{
+                        if (error)
+                        {
+                           NSLog(@"Https request completed with error: %@", [error localizedDescription]);
+                           callback(false, [[error localizedDescription] UTF8String]);
+                        }
+                        else
+                           callback([httpResponse statusCode] == kHTTPStatusCodeOK, std::string(static_cast<const char *>([data bytes]), [data length]));
+                     };
+                     if (timeout < 0)
+                        dispatch_async(dispatch_get_main_queue(), codeBlock); // async calls must run on main thread because Lua is not thread-safe
+                     else
+                        codeBlock();
+                     inProgress = false;
+                  }];
    if (! sessionTask)
    {
       callback(false, [[NSString stringWithFormat:@"Failed to create session for %@.", [url absoluteString]] UTF8String]);
