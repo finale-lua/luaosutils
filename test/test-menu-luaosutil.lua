@@ -8,7 +8,7 @@ end
 require('mobdebug').start() -- for ZeroBrane Studio debugging
 
 
-local osutils = require('luaosutils')
+local osutils = require('luaosutils.restricted')
 local menu = osutils.menu
 
 local main_window = finenv.GetFinaleMainWindow()

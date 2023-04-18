@@ -13,7 +13,7 @@ if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT + finale.CMDMODKEY_SHIFT
     return
 end
 
-local osutils = require('luaosutils')
+local osutils = require('luaosutils.restricted')
 local internet = osutils.internet
 
 local async_call = true
