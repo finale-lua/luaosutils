@@ -16,10 +16,10 @@
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
 #define UNKNOWN_OS   -1
 
-#if defined(__GNUC__)
-#define OPERATING_SYSTEM MAC_OS
-#elif defined(_MSC_VER)
+#if defined(_WIN32)
 #define OPERATING_SYSTEM WINDOWS
+#elif defined(__GNUC__)
+#define OPERATING_SYSTEM MAC_OS
 #else
 #define OPERATING_SYSTEM UNKNOWN_OS
 #endif

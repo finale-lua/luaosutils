@@ -12,7 +12,7 @@
 
 #include "lua.hpp"
 
-#ifdef _MSC_VER // can't use #if OPERATING_SYSTEM == WINDOWS here because external code may have conflicting definitions
+#ifdef _WIN32 // can't use #if OPERATING_SYSTEM == WINDOWS here because external code may have conflicting definitions
 #define LUAOSUTILS_EXPORT __declspec(dllexport)
 #else
 #define LUAOSUTILS_EXPORT __attribute__((visibility("default")))
