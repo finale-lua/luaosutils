@@ -21,7 +21,8 @@ namespace luaosutils
 win_request_context::win_request_context(lua_callback callback) :
             callbackFunction(callback),
             hInternet(0), hConnect(0), hRequest(0), hThread(0),
-            threadShouldHalt(false), readError(false), timerID(0)
+            threadShouldHalt(false), readError(false), timerID(0),
+            statusCode(0)
 {
 }
 
@@ -133,6 +134,14 @@ static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
       session->buffer.append(buffer, numBytesRead);
    }
 
+   DWORD statusCodeSize = sizeof(session->statusCode);
+   BOOL result = HttpQueryInfoA(session->hRequest, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, &session->statusCode, &statusCodeSize, NULL);
+   if (!result)
+   {
+      session->statusCode = 0;
+      session->buffer = GetStringFromLastError(GetLastError(), true);
+   }
+
    InternetCloseHandle(session->hRequest);
    session->hRequest = NULL;
    InternetCloseHandle(session->hConnect);
@@ -159,7 +168,7 @@ static void HandleThreadResult(win_request_context* session, DWORD result, bool 
          else if (threadResult)
             session->callbackFunction(false, "Download thread failed to download the file.");
          else
-            session->callbackFunction(true, session->buffer);
+            session->callbackFunction(session->statusCode == kHTTPStatusCodeOK, session->buffer);
          break;
       }
 

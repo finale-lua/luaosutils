@@ -34,6 +34,7 @@ struct win_request_context
    HINTERNET hConnect;
    HINTERNET hRequest;
    HANDLE hThread;
+   DWORD statusCode;
    bool threadShouldHalt;
    bool readError;
    std::string buffer;
