@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B59D86B729F98C710096076E /* luaosutils_internet_lua.h in Headers */ = {isa = PBXBuildFile; fileRef = B59D86B629F98C710096076E /* luaosutils_internet_lua.h */; };
 		B5A031E629A6A65E0085ED88 /* luaosutils_internet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */; };
 		B5A031E729A6A65E0085ED88 /* luaosutils_internet_os.h in Headers */ = {isa = PBXBuildFile; fileRef = B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */; };
 		B5A031E829A6A65E0085ED88 /* luaosutils_internet_os_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		B551DF9029A7B6E0009AAAB8 /* luaosutils_export.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = luaosutils_export.h; path = src/luaosutils_export.h; sourceTree = SOURCE_ROOT; };
+		B59D86B629F98C710096076E /* luaosutils_internet_lua.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luaosutils_internet_lua.h; sourceTree = "<group>"; };
 		B5A031CE29A6A4FC0085ED88 /* libluaosutils-static.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libluaosutils-static.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5A031D629A6A55D0085ED88 /* Shared.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luaosutils_internet.cpp; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				B5A031E429A6A65E0085ED88 /* luaosutils_internet_os_mac.mm */,
 				B5A031E329A6A65E0085ED88 /* luaosutils_internet_os.h */,
 				B5A031E229A6A65E0085ED88 /* luaosutils_internet.cpp */,
+				B59D86B629F98C710096076E /* luaosutils_internet_lua.h */,
 			);
 			path = internet;
 			sourceTree = "<group>";
@@ -175,6 +178,7 @@
 			files = (
 				B5A031EE29A6A6760085ED88 /* luaosutils_menu_os.h in Headers */,
 				B5A031E729A6A65E0085ED88 /* luaosutils_internet_os.h in Headers */,
+				B59D86B729F98C710096076E /* luaosutils_internet_lua.h in Headers */,
 				B5A031E929A6A65E0085ED88 /* luaosutils_callback_session.hpp in Headers */,
 				B5F5262029A6C30300002B79 /* luaosutils.hpp in Headers */,
 				B5AA616929ACF79700FB86F2 /* luaosutils_text_os.h in Headers */,

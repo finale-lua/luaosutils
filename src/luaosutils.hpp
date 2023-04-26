@@ -44,8 +44,8 @@
 #include <functional>
 #include <optional>
 
+#include "lua.hpp"
 #include "luaosutils_export.h"
-
 #include "luaosutils_luastack.h"
 
 #define TRUSTED_ERROR_MESSAGE "trusted code is required to run this function"

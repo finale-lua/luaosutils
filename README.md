@@ -156,7 +156,7 @@ local internet = osutils.internet
 internet.launch_website("https://mysite.com")
 ```
 
-### internet.post\*
+### internet.post
 
 Post data to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
 
@@ -195,7 +195,7 @@ g_session = internet.post("https://mysite.com", post_data, callback)
 finenv.RetainLuaState = true
 ```
 
-### internet.post\_sync\*
+### internet.post\_sync
 
 Post data synchronously to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
 
