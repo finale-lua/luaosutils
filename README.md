@@ -139,7 +139,7 @@ end
 
 This function is also aliased as `download_url_sync` for backwards compatibility.
 
-### internet.launch_website
+### internet.launch\_website
 
 Launches the specified URL in the user's default web browser.
 
@@ -227,6 +227,25 @@ if download_successful then
     fileout:write(urlcontents)
     fileout:close()
 end
+```
+### internet.server\_name
+
+Returns the servername contained within the specified URL.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to examine.|
+
+|Output Type|Description|
+|----------|-----------|
+|string|The name of the host contained within the url.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+local host = internet.server_name("https://mysite.com") -- return "mysite.com"
 ```
 
 ## The 'menu' namespace
@@ -833,7 +852,7 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 - Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
 - Prebuilt binaries compiled with Lua 5.4
 - Added an untrusted code variant that can be loaded with `require('luaosutils.restricted')`.
-- Added `launch_website` to the `internet` namespace.
+- Added `launch_website` and `server_name` to the `internet` namespace.
 
 2.1.1
 
