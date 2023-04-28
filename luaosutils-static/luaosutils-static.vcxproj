@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\internet\luaosutils_callback_session.hpp" />
+    <ClInclude Include="..\src\internet\luaosutils_internet_lua.h" />
     <ClInclude Include="..\src\internet\luaosutils_internet_os.h" />
     <ClInclude Include="..\src\luaosutils.hpp" />
     <ClInclude Include="..\src\luaosutils_export.h" />

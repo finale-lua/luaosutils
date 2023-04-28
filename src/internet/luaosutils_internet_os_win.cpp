@@ -10,8 +10,10 @@
 
 #include <windows.h>
 #include <wininet.h>
+#include <shlwapi.h>
 
 #include "luaosutils.hpp"
+#include "winutils/luaosutils_winutils.h"
 #include "internet/luaosutils_internet_os.h"
 
 namespace luaosutils
@@ -336,6 +338,17 @@ HWND __FindTopWindow()
 void error_message_box(const std::string& msg)
 {
    MessageBoxA(__FindTopWindow(), msg.c_str(), "Error", MB_OK);
+}
+
+std::string server_name(const std::string& url)
+{
+   auto urlW = utf8_to_WCHAR(url.c_str());
+   WCHAR buffer[1024];
+   DWORD bufferSize = DIM(buffer);
+   HRESULT result = UrlGetPartW(urlW.c_str(), buffer, &bufferSize, URL_PART_HOSTNAME, 0);
+   if (result != S_OK)
+      return url;
+   return WCHAR_to_utf8(buffer);
 }
 
 }
