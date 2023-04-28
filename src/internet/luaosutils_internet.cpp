@@ -246,7 +246,15 @@ int luaosutils_internet_post_sync(lua_State *L)
    return 2;
 }
 
-int luaosutils_launch_website(lua_State *L)
+static int luaosutils_server_name(lua_State *L)
+{
+   auto urlString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   std::string result = luaosutils::server_name(urlString);
+   LuaStack<std::string>(L).push(result);
+   return 1;
+}
+
+static int luaosutils_launch_website(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
 
@@ -264,6 +272,7 @@ static const luaL_Reg internet_utils[] = {
    {"post",                luaosutils_internet_post},
    {"post_sync",           luaosutils_internet_post_sync},
    {"launch_website",      luaosutils_launch_website},
+   {"server_name",         luaosutils_server_name},
    {NULL, NULL} // sentinel
 };
 

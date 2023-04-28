@@ -67,6 +67,8 @@ void cancel_session(OSSESSION_ptr session);
 
 void error_message_box(const std::string &msg);
 
+std::string server_name(const std::string &url);
+
 }
 
 #endif /* luaosutils_os_h */

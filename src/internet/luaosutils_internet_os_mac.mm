@@ -144,4 +144,10 @@ void error_message_box(const std::string &msg)
    InternalRunAlertPanel(NSAlertStyleCritical, titlestring, messagestring, @"OK", nil, nil);
 }
 
+std::string server_name(const std::string &url)
+{
+    NSURL* nsUrl = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
+    return [nsUrl.host UTF8String];
+}
+
 }
