@@ -146,8 +146,9 @@ void error_message_box(const std::string &msg)
 
 std::string server_name(const std::string &url)
 {
-    NSURL* nsUrl = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
-    return [nsUrl.host UTF8String];
+   NSURL* nsUrl = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
+   const char * result = [nsUrl.host UTF8String];
+   return result ? result : "";
 }
 
 }
