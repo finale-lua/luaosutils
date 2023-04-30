@@ -347,7 +347,7 @@ std::string server_name(const std::string& url)
    DWORD bufferSize = DIM(buffer);
    HRESULT result = UrlGetPartW(urlW.c_str(), buffer, &bufferSize, URL_PART_HOSTNAME, 0);
    if (result != S_OK)
-      return url;
+      return "";
    return WCHAR_to_utf8(buffer);
 }
 
