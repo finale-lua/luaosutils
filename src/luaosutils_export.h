@@ -30,4 +30,7 @@ LUAOSUTILS_EXPORT int luaopen_luaosutils_restricted(lua_State* L);
 }
 #endif
 
+/* luaopen_luaosutils_restricted_allow_menus is internal only */
+int luaopen_luaosutils_restricted_allow_menus(lua_State* L);
+
 #endif /* luaosutils_export_h */

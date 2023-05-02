@@ -14,7 +14,8 @@ static const luaL_Reg funcs[] = {
    {NULL, NULL} // sentinel
 };
 
-static int luaopen_luaosutils (lua_State *L, bool restricted) {
+static int luaopen_luaosutils(lua_State *L, bool restricted, bool restrictMenus)
+{
    /* export functions (and leave namespace table on top of stack) */
 #if LUA_VERSION_NUM <= 501
    luaL_openlib(L, "luaosutils", funcs, 0);
@@ -23,7 +24,7 @@ static int luaopen_luaosutils (lua_State *L, bool restricted) {
 #endif
    /* add nested tables */
    luaosutils_internet_create(L, restricted);
-   luaosutils_menu_create(L, restricted);
+   luaosutils_menu_create(L, restrictMenus);
    luaosutils_process_create(L, restricted);
    luaosutils_text_create(L, restricted);
    /* make version string available to scripts */
@@ -33,12 +34,17 @@ static int luaopen_luaosutils (lua_State *L, bool restricted) {
    return 1;
 }
 
-int luaopen_luaosutils (lua_State *L)
+int luaopen_luaosutils(lua_State *L)
 {
-   return luaopen_luaosutils(L, false);
+   return luaopen_luaosutils(L, false, false);
 }
 
-int luaopen_luaosutils_restricted (lua_State *L)
+int luaopen_luaosutils_restricted(lua_State *L)
 {
-   return luaopen_luaosutils(L, true);
+   return luaopen_luaosutils(L, true, true);
+}
+
+int luaopen_luaosutils_restricted_allow_menus(lua_State *L)
+{
+   return luaopen_luaosutils(L, true, false);
 }

@@ -42,15 +42,49 @@ static int luaosutils_process_launch(lua_State *L)
    return 1;
 }
 
+static int luaosutils_process_make_dir(lua_State *L)
+{
+   auto pathString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   auto dir = get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
+
+   const std::string mkdirString = std::string(WINCODE("cmd /c mkdir ") MACCODE("mkdir ")) + '"' + pathString + '"';
+   push_lua_return_value(L, luaosutils::process_launch(mkdirString, dir));
+   
+   return 1;
+}
+
+static int luaosutils_process_list_dir(lua_State *L)
+{
+   auto pathString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   auto options = get_lua_parameter<std::string>(L, 2, LUA_TSTRING, std::string());
+   if (options.size())
+      options = ' ' + options;
+
+   const std::string lsdirString = std::string(WINCODE("cmd /c dir") MACCODE("ls")) + options;
+   std::string output;
+   const bool result = luaosutils::process_execute(lsdirString, pathString, output);
+   if (result)
+      push_lua_return_value(L, output);
+   else
+      lua_pushnil(L);
+
+   return 1;
+}
+
+
 static const luaL_Reg process_utils[] = {
    {"execute",             luaosutils_process_execute},
    {"launch",              luaosutils_process_launch},
+   {"make_dir",            luaosutils_process_make_dir},
+   {"list_dir",            luaosutils_process_list_dir},
    {NULL, NULL} // sentinel
 };
 
 static const luaL_Reg process_utils_restricted[] = {
    {"execute",             restricted_function},
    {"launch",              restricted_function},
+   {"make_dir",            luaosutils_process_make_dir},
+   {"list_dir",            luaosutils_process_list_dir},
    {NULL, NULL} // sentinel
 };
 

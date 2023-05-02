@@ -1,6 +1,6 @@
 function plugindef()
     finaleplugin.RequireDocument = false
-    finaleplugin.LoadLuaOSUtils = false
+    finaleplugin.LoadLuaOSUtils = true
     return "aaa - luautils process test"
 end
 
@@ -8,7 +8,7 @@ end
 require('mobdebug').start() -- for ZeroBrane Studio debugging
 
 print("luaosutils is "..tostring(luaosutils))
-local osutils = require('luaosutils.restricted')
+local osutils = require('luaosutils')
 local process = osutils.process
 local text = osutils.text
 
@@ -17,7 +17,7 @@ print(osutils._VERSION)
 if finenv.UI():IsOnMac() then
     local result = process.launch("open \"System Information.app\"", "/System/Applications/Utilities/")
     print("launch result", result)
-    local listing = process.execute("ls -l", finenv.RunningLuaFolderPath())
+    local listing = process.execute("ls", finenv.RunningLuaFolderPath())
     if listing then
         local fileout = io.open(finenv.RunningLuaFolderPath().."/".."listing.txt", "w")
         fileout:write(listing)
