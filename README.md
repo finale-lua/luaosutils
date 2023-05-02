@@ -21,7 +21,7 @@ If you are bundling `luaosutils` externally with a plugin suite for end users, y
 local osutils = require('luaosutils.restricted')
 ```
 
-This prevents the script from doing things such as changing application menus, executing external code, or sending post requests to websites. The restricted mode is primarily useful to environments where `luaosutils` is embedded in the environment. The host app can determine if it trusts the code and either make the full or the restricted version of `luaosutils` available as is appropriate.
+This prevents the script from doing things such as changing application menus or executing external code. The restricted mode is primarily useful to environments where `luaosutils` is embedded in the environment. The host app can determine if it trusts the code and either make the full or the restricted version of `luaosutils` available as is appropriate.
 
 ## The 'internet' namespace
 
@@ -228,6 +228,7 @@ if download_successful then
     fileout:close()
 end
 ```
+
 ### internet.server\_name
 
 Returns the servername contained within the specified URL.
@@ -245,7 +246,7 @@ Example:
 ```lua
 local osutils = require('luaosutils')
 local internet = osutils.internet
-local host = internet.server_name("https://mysite.com") -- return "mysite.com"
+local host = internet.server_name("https://mysite.com") -- returns "mysite.com"
 ```
 
 ## The 'menu' namespace
@@ -722,7 +723,7 @@ end
 
 The `process` namespace offers functions to launch a separate process. The advantage of these APIs over the standard Lua APIs is that the process is launched *silently*. No console window appears on either macOS or Windows.
 
-The optional folder path for the working directory must be a fully qualified path name. Do not enclose this string in outer quote marks even if the path name contains spaces. If you do, Windows will not recognize it as a path name, and the function will fail. On macOS the functions do not fail, but the outer quote marks are not necessary either. For example, you can directly pass `finenv.RunningLuaFolderPath()` directly on either operating system. Do not enclose it in quotes, even if the running lua path contains spaces.
+The optional folder path for the working directory must be a fully qualified path name. Do not enclose this string in outer quote marks even if the path name contains spaces. If you do, Windows will not recognize it as a path name, and the function will fail. On macOS the functions do not fail, but the outer quote marks are not necessary either. For example, you can pass `finenv.RunningLuaFolderPath()` directly on either operating system. Do not enclose it in quotes, even if the running Lua path contains spaces.
 
 ### process.execute\*
 
@@ -778,6 +779,56 @@ if finenv.UI():IsOnMac() then
     -- launch Safari and return immediately
     local success = process.launch("open /Applications/Safari.app")
 end
+```
+
+### process.list\_dir
+
+Returns a directory listing for the specified directory. 
+
+|Input Type|Description|
+|----------|-----------|
+|string|The directory to list encoded in UTF-8.|
+|(string)|Optional string that contains options for the listing command. These are OS-specific.|
+
+|Output Type|Description|
+|----------|-----------|
+|string|Output of the list command, encoded in either UTF-8 (macOS) or the default codepage (Windows).|
+
+This function uses `ls` on macOS and `dir` on Windows. This function is not restriced, so unverified code can use it to get a directory listing instead `process.execute` or `io.popen`, both of which are restricted.
+
+Example:
+
+```
+local osutils = require('luaosutils')
+local process = osutils.process
+
+-- get a file listing of the scripts running path
+local dir = process.list_dir(finenv.RunningLuaFolderPath())
+```
+
+### process.make\_dir
+
+Makes a new directory if it does not already exist.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The path of the directory to create encoded in UTF-8.|
+|(string)|Optional base directory path in which to create the new directory.|
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|True if the command was successfully launched.|
+
+You can specify the entire directory path to create in the first paremeter and omit the second. This function uses the `mkdir` command. This function is not restriced, so unverified code can use it to create a directory instead of `process.launch` or `os.execute`, both of which are restricted.
+
+Example:
+
+```
+local osutils = require('luaosutils')
+local process = osutils.process
+
+-- create a directory called "test" inside the script's folder path
+local dir = process.make_dir("test", finenv.RunningLuaFolderPath())
 ```
 
 ## The 'text' namespace
@@ -851,8 +902,9 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 - Rename `download_url` functions as `get`, but maintain `download_url` functions as aliases.
 - Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
 - Prebuilt binaries compiled with Lua 5.4
-- Added an untrusted code variant that can be loaded with `require('luaosutils.restricted')`.
+- Added a variant for unverified code that can be loaded with `require('luaosutils.restricted')`.
 - Added `launch_website` and `server_name` to the `internet` namespace.
+- Added `list_dir` and `make_dir` to the `process` namespace.
 
 2.1.1
 
