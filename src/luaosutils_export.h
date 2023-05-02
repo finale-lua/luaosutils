@@ -12,20 +12,25 @@
 
 #include "lua.hpp"
 
-#ifdef _MSC_VER // can't use #if OPERATING_SYSTEM == WINDOWS here because external code may have conflicting definitions
+#ifdef _WIN32 // can't use #if OPERATING_SYSTEM == WINDOWS here because external code may have conflicting definitions
 #define LUAOSUTILS_EXPORT __declspec(dllexport)
 #else
-#define LUAOSUTILS_EXPORT
+#define LUAOSUTILS_EXPORT __attribute__((visibility("default")))
 #endif
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 LUAOSUTILS_EXPORT int luaopen_luaosutils(lua_State* L);
+LUAOSUTILS_EXPORT int luaopen_luaosutils_restricted(lua_State* L);
 
 #ifdef __cplusplus
 }
 #endif
+
+/* luaopen_luaosutils_restricted_allow_menus is internal only */
+int luaopen_luaosutils_restricted_allow_menus(lua_State* L);
 
 #endif /* luaosutils_export_h */

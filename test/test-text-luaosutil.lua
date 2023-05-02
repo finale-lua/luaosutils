@@ -6,7 +6,7 @@ end
 
 require('mobdebug').start() -- for ZeroBrane Studio debugging
 
-local osutils = require('luaosutils')
+local osutils = require('luaosutils.restricted')
 local text = osutils.text
 
 print(osutils._VERSION, "Using internal luaosutils: "..tostring(finaleplugin.LoadLuaOSUtils))

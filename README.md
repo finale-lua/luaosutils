@@ -15,25 +15,25 @@ If you are bundling `luaosutils` externally with a plugin suite for end users, y
 
 # Functions
 
+\*Items marked with an asterisk are not available in restricted mode. You can load a restricted verision of the library as follows:
+
+```lua
+local osutils = require('luaosutils.restricted')
+```
+
+This prevents the script from doing things such as changing application menus or executing external code. The restricted mode is primarily useful to environments where `luaosutils` is embedded in the environment. The host app can determine if it trusts the code and either make the full or the restricted version of `luaosutils` available as is appropriate.
+
 ## The 'internet' namespace
 
-### internet.download\_url
+This namespace provides functions to send `GET` or `POST` requests to web servers. The functions then return the full response in a Lua string. For asynchronous calls, the response is passed to a callback function.
 
-Downloads the contents of a url to a Lua string. The URL can be text or binary. The Lua string acts as a data buffer for the download and can be subsequently saved as a file (binary or text).
-The function uses the HTTPS protocol. On Windows, HTTPS protocol is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
+##### Asynchronous calls
 
-|Input Type|Description|
-|----------|-----------|
-|string|The url to download.|
-|function|The function to call when the download completes.|
+Asynchronous calls are the recommended option. They return a session variable that you maintain until the request completes. You return control to Finale and leave its Lua state open either with `finenv.RetainLuaState = true` or a dialog box or both. The completion function then finishes whatever needs to be done while running in the background.
 
-|Output Type|Description|
-|-----------|-----------|
-|session|If non-nil, the callback function will be called. If nil, there was an error and it will not be called.|
+The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your completion function runs when running in the background, because it blocks the UI.
 
-The call is an asynchronous call. With this function you return control to Finale and leave its Lua state open with `finenv.RetainLuaState = true` or a dialog box. The completion function then finishes whatever needs to be done while running in the background. The completion function does not run in a separate thread, so you cannot wait on this function to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your script runs when running in the background.
-
-You must keep a reference to the session until the callback is called. It will be aborted if the session variable goes out of scope and is garbage-collected.
+You must keep a reference to the session until the callback is called. Your request is aborted if the session variable goes out of scope and is garbage-collected. Your request is also aborted if the Lua state that created it is closed.
 
 The callback function has the following parameters.
 
@@ -41,6 +41,44 @@ The callback function has the following parameters.
 |----------|-----------|
 |boolean|Success or failure|
 |string|The downloaded data if success. An error message or `nil` if failure.|
+
+
+##### Synchronous calls
+
+With synchronous calls, you supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small replies where you can limit the timeout to 1 or 2 seconds. Synchronous calls block Finale's user interface.
+
+Synchronous function names have a `_sync` prefix.
+
+##### HTTPS required
+
+These functions use the HTTPS protocol. On Windows, HTTPS protocol is explicitly required in the code. On macOS, requiring HTTPS protocol is the default user setting.
+
+##### HTML headers
+
+The functions all have an optional headers parameter that allows you to include HTML headers on the request message. These take the form of a table of key/value pairs (all strings).
+
+Example:
+
+```lua
+local headers = {
+            ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
+            ["Accept-Language"] = "en-US,en;q=0.9"
+        }
+```
+
+### internet.get
+
+Downloads the contents of a url to a Lua string using a `GET` request. The URL resource can be text or binary.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to download.|
+|function|The callback function to call when the download completes.|
+|(headers)|An optional table of html headers.|
+
+|Output Type|Description|
+|-----------|-----------|
+|session|If nil, there was an error.|
 
 
 Example:
@@ -59,21 +97,24 @@ function callback(download_successful, urlcontents)
 end
 
 -- use a global to guarantee that it stays in scope in the callback
-g_session = internet.download_url("https://mysite.com/myfile.zip", callback)
+g_session = internet.get("https://mysite.com/myfile.zip", callback)
 
 finenv.RetainLuaState = true
 ```
 
 The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
 
-### internet.download\_url\_sync
+This function is also aliased as `download_url` for backwards compatibility.
 
-Downloads a url synchronously. You supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small files where you can limit the timeout to 1 or 2 seconds. Synchronous calls block Finale's user interface.
+### internet.get\_sync
+
+Downloads the contents of a url synchronously to a Lua string using a `GET` request. The URL resource can be text or binary.
 
 |Input Type|Description|
 |----------|-----------|
 |string|The url to download.|
 |number|The timeout value in seconds. (May be fractional.)|
+|(headers)|An optional table of html headers.|
 
 
 |Output Type|Description|
@@ -87,13 +128,125 @@ Example:
 local osutils = require('luaosutils')
 local internet = osutils.internet
 
-local download_successful, urlcontents = internet.download_url_sync("https://mysite.com/myfile.zip", 5)
+local download_successful, urlcontents = internet.get_sync("https://mysite.com/myfile.zip", 5)
 
 if download_successful then
     local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.zip", "wb")
     fileout:write(urlcontents)
     fileout:close()
 end
+```
+
+This function is also aliased as `download_url_sync` for backwards compatibility.
+
+### internet.launch\_website
+
+Launches the specified URL in the user's default web browser.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to launch.|
+
+Example:
+
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+internet.launch_website("https://mysite.com")
+```
+
+### internet.post
+
+Post data to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to send the request to.|
+|string|The data to post.|
+|function|The callback function to call when the download completes.|
+|(headers)|An optional table of html headers.|
+
+|Output Type|Description|
+|-----------|-----------|
+|session|If nil, there was an error.|
+
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+function callback(download_successful, urlcontents)
+   if download_successful then
+       local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.json", "wb")
+       fileout:write(urlcontents)
+       fileout:close()
+   end
+   finenv.RetainLuaState = false
+end
+
+local post_data = "<your post data> (maybe JSON?)"
+
+-- use a global to guarantee that it stays in scope in the callback
+g_session = internet.post("https://mysite.com", post_data, callback)
+
+finenv.RetainLuaState = true
+```
+
+### internet.post\_sync
+
+Post data synchronously to a url using a `POST` request and returns the response a Lua string. The data returned may be text or binary.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to download.|
+|string|The data to post.|
+|number|The timeout value in seconds. (May be fractional.)|
+|(headers)|An optional table of html headers.|
+
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|Success or failure|
+|string|The downloaded data if success. An error message or `nil` if failure.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+local post_data = "<your post data> (maybe JSON?)"
+
+local download_successful, urlcontents = internet.post_sync("https://mysite.com", post_data , 5)
+
+if download_successful then
+    local fileout = io.open(finenv.RunningLuaFolderPath().."/myfile.json", "wb")
+    fileout:write(urlcontents)
+    fileout:close()
+end
+```
+
+### internet.server\_name
+
+Returns the servername contained within the specified URL.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The url to examine.|
+
+|Output Type|Description|
+|----------|-----------|
+|string|The name of the host contained within the url.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+local host = internet.server_name("https://mysite.com") -- returns "mysite.com"
 ```
 
 ## The 'menu' namespace
@@ -126,7 +279,7 @@ local del_result = menu.delete_submenu(spacing_menu, main_window)
 print(del_result)
 ```
 
-### menu.delete\_submenu
+### menu.delete\_submenu\*
 
 Deletes the specified submenu item from its parent menu. The submenu must contain zero menu items or it will not be deleted.
 
@@ -388,7 +541,7 @@ local menu = osutils.menu
 local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
 ```
 
-### menu.insert\_separator
+### menu.insert\_separator\*
 
 Inserts a menu separator at the specified index.
 
@@ -416,7 +569,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.insert\_submenu
+### menu.insert\_submenu\*
 
 Inserts a new submenu at the specified index.
 
@@ -446,7 +599,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.move\_item
+### menu.move\_item\*
 
 Moves a menu item from one menu location to another.
 
@@ -481,7 +634,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.redraw
+### menu.redraw\*
 
 Redraws the menu bar. This function does nothing on macOS.
 
@@ -504,7 +657,7 @@ local menu = osutils.menu
 menu.redraw(finenv.GetFinaleMainWindow())
 ```
 
-### menu.set\_item\_text
+### menu.set\_item\_text\*
 
 Changes the text of the specified menu item to the new value.
 
@@ -535,7 +688,7 @@ if rgp_lua_menu then
 end
 ```
 
-### menu.set\_title
+### menu.set\_title\*
 
 Returns the title of the specified menu.
 
@@ -570,9 +723,9 @@ end
 
 The `process` namespace offers functions to launch a separate process. The advantage of these APIs over the standard Lua APIs is that the process is launched *silently*. No console window appears on either macOS or Windows.
 
-The optional folder path for the working directory must be a fully qualified path name. Do not enclose this string in outer quote marks even if the path name contains spaces. If you do, Windows will not recognize it as a path name, and the function will fail. On macOS the functions do not fail, but the outer quote marks are not necessary either. For example, you can directly pass `finenv.RunningLuaFolderPath()` directly on either operating system. Do not enclose it in quotes, even if the running lua path contains spaces.
+The optional folder path for the working directory must be a fully qualified path name. Do not enclose this string in outer quote marks even if the path name contains spaces. If you do, Windows will not recognize it as a path name, and the function will fail. On macOS the functions do not fail, but the outer quote marks are not necessary either. For example, you can pass `finenv.RunningLuaFolderPath()` directly on either operating system. Do not enclose it in quotes, even if the running Lua path contains spaces.
 
-### process.execute
+### process.execute\*
 
 Executes a process with the input command line and waits for it to complete. It captures any text the process sends to `stdio` and returns it in a string.
 
@@ -601,7 +754,7 @@ if finenv.UI():IsOnWindows() then
 end
 ```
 
-### process.launch
+### process.launch\*
 
 Launches a process with the input command line and returns immediately.
 
@@ -626,6 +779,56 @@ if finenv.UI():IsOnMac() then
     -- launch Safari and return immediately
     local success = process.launch("open /Applications/Safari.app")
 end
+```
+
+### process.list\_dir
+
+Returns a directory listing for the specified directory. 
+
+|Input Type|Description|
+|----------|-----------|
+|string|The directory to list encoded in UTF-8.|
+|(string)|Optional string that contains options for the listing command. These are OS-specific.|
+
+|Output Type|Description|
+|----------|-----------|
+|string|Output of the list command, encoded in either UTF-8 (macOS) or the default codepage (Windows).|
+
+This function uses `ls` on macOS and `dir` on Windows. This function is not restriced, so unverified code can use it to get a directory listing instead `process.execute` or `io.popen`, both of which are restricted.
+
+Example:
+
+```
+local osutils = require('luaosutils')
+local process = osutils.process
+
+-- get a file listing of the scripts running path
+local dir = process.list_dir(finenv.RunningLuaFolderPath())
+```
+
+### process.make\_dir
+
+Makes a new directory if it does not already exist.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The path of the directory to create encoded in UTF-8.|
+|(string)|Optional base directory path in which to create the new directory.|
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|True if the command was successfully launched.|
+
+You can specify the entire directory path to create in the first paremeter and omit the second. This function uses the `mkdir` command. This function is not restriced, so unverified code can use it to create a directory instead of `process.launch` or `os.execute`, both of which are restricted.
+
+Example:
+
+```
+local osutils = require('luaosutils')
+local process = osutils.process
+
+-- create a directory called "test" inside the script's folder path
+local dir = process.make_dir("test", finenv.RunningLuaFolderPath())
 ```
 
 ## The 'text' namespace
@@ -693,6 +896,16 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 
 # Version history
 
+2.2.0
+
+- Added `post` functions to the `internet` namespace, along with the option to specify html headers.
+- Rename `download_url` functions as `get`, but maintain `download_url` functions as aliases.
+- Windows version of `menu.find_item` now skips '&' on the search string as well as the menu item strings.
+- Prebuilt binaries compiled with Lua 5.4
+- Added a variant for unverified code that can be loaded with `require('luaosutils.restricted')`.
+- Added `launch_website` and `server_name` to the `internet` namespace.
+- Added `list_dir` and `make_dir` to the `process` namespace.
+
 2.1.1
 
 - Add explicit Objective-C memory management (macOS) to allow memory-safe embedding in RGP Lua.
@@ -712,4 +925,3 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 1.1.0
 
 - original release
-	

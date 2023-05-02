@@ -38,10 +38,12 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\lua-source\config\LuaVersion.props" />
     <Import Project="..\config\SharedPropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\lua-source\config\LuaVersion.props" />
     <Import Project="..\config\SharedPropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -81,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\internet\luaosutils_callback_session.hpp" />
+    <ClInclude Include="..\src\internet\luaosutils_internet_lua.h" />
     <ClInclude Include="..\src\internet\luaosutils_internet_os.h" />
     <ClInclude Include="..\src\luaosutils.hpp" />
     <ClInclude Include="..\src\luaosutils_export.h" />

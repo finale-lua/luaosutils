@@ -10,6 +10,9 @@
 
 #include "menu/luaosutils_menu_os.h"
 
+namespace luaosutils
+{
+
 NSMenuItem* GetEnclosingMenuItemForMenu(const NSMenu * const subMenu)
 {
    NSMenu * superMenu = [subMenu supermenu];
@@ -114,7 +117,7 @@ menu_handle menu_get_item_submenu(menu_handle hMenu, int index)
       NSLog(@"Caught exception in menu_get_item_type: %@", exception);
    }
    return nullptr;
-
+   
 }
 
 std::string menu_get_item_text(menu_handle hMenu, int index)
@@ -190,7 +193,7 @@ int menu_insert_separator(menu_handle hMenu, int insertIndex)
          [menu addItem:[NSMenuItem separatorItem]];
       }
       return static_cast<int>(itemIndex);
-
+      
    } @catch (NSException *exception)
    {
       NSLog(@"Caught exception in menu_insert_separator: %@", exception);
@@ -302,4 +305,6 @@ bool menu_set_title(menu_handle hMenu, window_handle hWnd, const std::string& ne
       NSLog(@"Caught exception in menu_get_text: %@", exception);
    }
    return false;
+}
+
 }

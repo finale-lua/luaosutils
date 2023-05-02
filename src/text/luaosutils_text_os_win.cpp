@@ -13,6 +13,9 @@
 #include "text/luaosutils_text_os.h"
 #include "winutils/luaosutils_winutils.h"
 
+namespace luaosutils
+{
+
 bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
 {
 	const int inpSize = MultiByteToWideChar(fromCodepage, MB_ERR_INVALID_CHARS, text.c_str(), -1, nullptr, 0) - 1; // remove null-terminator
@@ -50,4 +53,6 @@ int text_get_default_codepage(std::string& errorMessage)
 int text_get_utf8_codepage()
 {
 	return CP_UTF8;
+}
+
 }

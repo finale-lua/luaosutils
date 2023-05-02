@@ -10,7 +10,12 @@
 #ifndef luaosutils_process_os_h
 #define luaosutils_process_os_h
 
+
+namespace luaosutils
+{
+
 bool process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput);
 bool process_launch(const std::string& cmd, const std::string& dir);
 
+}
 #endif /* luaosutils_process_os_h */

@@ -12,28 +12,64 @@
 #include "luaosutils.hpp"
 #include "internet/luaosutils_internet_os.h"
 
-OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_callback callback)
+namespace luaosutils
+{
+
+OSSESSION_ptr https_request(const std::string& requestType, const std::string &urlString, const std::string& postData,
+                            const HeadersMap& headers, double timeout, lua_callback callback)
 {
    __block bool inProgress = true; // matters only in the synchronous version of this routine
    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:urlString.c_str()]];
-   NSURLSessionDataTask* sessionTask = [[NSURLSession sharedSession] dataTaskWithURL:url
-      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
-      {
-         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-         NSLog(@"NSURLSessionDataTask response status code: %ld", (long)[httpResponse statusCode]);
-         if (! inProgress) return;
-         auto codeBlock = ^{
-            if (error)
-               callback(false, [[error localizedDescription] UTF8String]);
-            else
-               callback(true, std::string(static_cast<const char *>([data bytes]), [data length]));
-         };
-         if (timeout < 0)
-            dispatch_async(dispatch_get_main_queue(), codeBlock); // async calls must run on main thread because Lua is not thread-safe
-         else
-            codeBlock();
-         inProgress = false;
-      }];
+   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+   NSString *method = [NSString stringWithUTF8String:requestType.c_str()];
+   
+   // Set the HTTP method based on the user's input
+   if ([method isEqualToString:@"get"])
+   {
+      request.HTTPMethod = @"GET";
+   }
+   else if ([method isEqualToString:@"post"])
+   {
+      request.HTTPMethod = @"POST";
+      NSData *postDataBytes = [[NSString stringWithUTF8String:postData.c_str()] dataUsingEncoding:NSUTF8StringEncoding];
+      [request setHTTPBody:postDataBytes];
+   }
+   else
+   {
+      NSLog(@"Invalid method: %@", method);
+      assert(false); // offensive programming, since this should never happen
+      return nil;
+   }
+   
+   // Set the HTTP headers if any
+   for (auto header : headers)
+   {
+      NSString *key = [NSString stringWithUTF8String:header.first.c_str()];
+      NSString *value = [NSString stringWithUTF8String:header.second.c_str()];
+      [request addValue:value forHTTPHeaderField:key];
+   }
+   
+   NSURLSessionDataTask* sessionTask = [[NSURLSession sharedSession] dataTaskWithRequest:request
+               completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
+                  {
+                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                     NSLog(@"NSURLSessionDataTask response status code: %ld", (long)[httpResponse statusCode]);
+                     if (! inProgress) return;
+                     auto codeBlock = ^{
+                        if (error)
+                        {
+                           NSLog(@"Https request completed with error: %@", [error localizedDescription]);
+                           callback(false, [[error localizedDescription] UTF8String]);
+                        }
+                        else
+                           callback([httpResponse statusCode] == kHTTPStatusCodeOK, std::string(static_cast<const char *>([data bytes]), [data length]));
+                     };
+                     if (timeout < 0)
+                        dispatch_async(dispatch_get_main_queue(), codeBlock); // async calls must run on main thread because Lua is not thread-safe
+                     else
+                        codeBlock();
+                     inProgress = false;
+                  }];
    if (! sessionTask)
    {
       callback(false, [[NSString stringWithFormat:@"Failed to create session for %@.", [url absoluteString]] UTF8String]);
@@ -42,7 +78,7 @@ OSSESSION_ptr download_url (const std::string &urlString, double timeout, lua_ca
    if ([sessionTask error])
    {
       callback(false, [[NSString stringWithFormat:@"Failed to create session for %@: %@",
-                           [url absoluteString], [[sessionTask error] localizedDescription]] UTF8String]);
+                        [url absoluteString], [[sessionTask error] localizedDescription]] UTF8String]);
       return nil;
    }
    [sessionTask resume];
@@ -76,29 +112,29 @@ void cancel_session(OSSESSION_ptr session)
 
 static NSModalResponse InternalRunAlertPanel(NSAlertStyle style, NSString *title, NSString *msgFormat, NSString *defaultButton, NSString *alternateButton, NSString *otherButton)
 {
-    NSModalResponse retVal = NSModalResponseAbort;
-    NSAlert * alert = nil;
-    @try
-    {
-        alert = [[NSAlert alloc] init];
-        if (style >= 0) alert.alertStyle = style;
-        alert.informativeText = msgFormat;
-        alert.messageText = title;
-        [alert addButtonWithTitle: defaultButton];
-        if (alternateButton) [alert addButtonWithTitle: alternateButton];
-        if (otherButton) [alert addButtonWithTitle: otherButton];
-        retVal = [alert runModal];
-    }
-    @catch ( NSException *exc )
-    {
-       NSLog (@"%@ %@", [exc name], [exc reason]);
-    } @finally
-    {
+   NSModalResponse retVal = NSModalResponseAbort;
+   NSAlert * alert = nil;
+   @try
+   {
+      alert = [[NSAlert alloc] init];
+      if (style >= 0) alert.alertStyle = style;
+      alert.informativeText = msgFormat;
+      alert.messageText = title;
+      [alert addButtonWithTitle: defaultButton];
+      if (alternateButton) [alert addButtonWithTitle: alternateButton];
+      if (otherButton) [alert addButtonWithTitle: otherButton];
+      retVal = [alert runModal];
+   }
+   @catch ( NSException *exc )
+   {
+      NSLog (@"%@ %@", [exc name], [exc reason]);
+   } @finally
+   {
 #if ! __has_feature(objc_arc)
-       [alert release];
+      [alert release];
 #endif
-    }
-    return retVal;
+   }
+   return retVal;
 }
 
 void error_message_box(const std::string &msg)
@@ -106,4 +142,13 @@ void error_message_box(const std::string &msg)
    NSString* messagestring = [NSString stringWithUTF8String:msg.c_str()];
    NSString* titlestring = @"Error";
    InternalRunAlertPanel(NSAlertStyleCritical, titlestring, messagestring, @"OK", nil, nil);
+}
+
+std::string server_name(const std::string &url)
+{
+   NSURL* nsUrl = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
+   const char * result = [nsUrl.host UTF8String];
+   return result ? result : "";
+}
+
 }

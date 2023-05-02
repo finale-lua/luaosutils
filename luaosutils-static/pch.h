@@ -9,12 +9,12 @@
 
 #include <string>
 #include <functional>
+#include <cassert>
 
 // add headers that you want to pre-compile here
 #include "windows.h"
 #include "wininet.h"
 
 #include "lua.hpp"
-#include "LuaBridge/LuaBridge.h"
 
 #endif //PCH_H

@@ -60,6 +60,9 @@
     <ClInclude Include="..\src\text\luaosutils_text_os.h">
       <Filter>Source Files\text</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\internet\luaosutils_internet_lua.h">
+      <Filter>Source Files\internet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

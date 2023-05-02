@@ -12,6 +12,9 @@
 
 #include "text/luaosutils_text_os.h"
 
+namespace luaosutils
+{
+
 bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, std::string& output, unsigned int toCodepage)
 {
    @try {
@@ -25,10 +28,10 @@ bool text_convert_encoding(const std::string& text, unsigned int fromCodepage, s
       NSString* theString = nil;
       BOOL usedLossyConversion = NO;
       [[maybe_unused]]BOOL determinedEncoding = [NSString stringEncodingForData:data
-                                encodingOptions:@{NSStringEncodingDetectionSuggestedEncodingsKey: @[@(nsFromEncoding)],
-                                                  NSStringEncodingDetectionUseOnlySuggestedEncodingsKey: @YES}
-                                convertedString:&theString
-                            usedLossyConversion:&usedLossyConversion];
+                                                                encodingOptions:@{NSStringEncodingDetectionSuggestedEncodingsKey: @[@(nsFromEncoding)],
+                                                                                  NSStringEncodingDetectionUseOnlySuggestedEncodingsKey: @YES}
+                                                                convertedString:&theString
+                                                            usedLossyConversion:&usedLossyConversion];
       
       /* Decide whether to do anything with `usedLossyConversion` and `determinedEncoding`. */
       if (! theString) return false;
@@ -52,4 +55,6 @@ int text_get_default_codepage(std::string& errorMessage)
 {
    errorMessage = "";
    return text_get_utf8_codepage();
+}
+
 }

@@ -1,6 +1,3 @@
 [submodule "lua-source"]
 	path = lua-source
 	url = git@github.com:finale-lua/lua-source.git
-[submodule "LuaBridge"]
-	path = LuaBridge
-	url = git@github.com:vinniefalco/LuaBridge.git
