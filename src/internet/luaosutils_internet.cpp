@@ -276,10 +276,23 @@ static const luaL_Reg internet_utils[] = {
    {NULL, NULL} // sentinel
 };
 
-void luaosutils_internet_create(lua_State *L, bool /*restricted*/)
+static const luaL_Reg internet_utils_restricted[] = {
+   {"download_url",        restricted_function},         // alias for backwards compatibility
+   {"download_url_sync",   restricted_function},         // alias for backwards compatibility
+   {"get",                 restricted_function},
+   {"get_sync",            restricted_function},
+   {"post",                restricted_function},
+   {"post_sync",           restricted_function},
+   {"launch_website",      luaosutils_launch_website},
+   {"server_name",         luaosutils_server_name},
+   {NULL, NULL} // sentinel
+};
+
+void luaosutils_internet_create(lua_State *L, bool restricted)
 {
    lua_newtable(L);  // create nested table
    
-   luaL_setfuncs(L, internet_utils, 0);   // add file methods to new metatable
+   const luaL_Reg* funcs = restricted ? internet_utils_restricted : internet_utils;
+   luaL_setfuncs(L, funcs, 0);            // add file methods to new metatable
    lua_setfield(L, -2, "internet");       // add the nested table to the parent table with the name
 }
