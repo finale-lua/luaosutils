@@ -269,8 +269,9 @@ local osutils = require('luaosutils')
 local menu = osutils.menu
 
 local main_window = finenv.GetFinaleMainWindow()
-local spacing_menu, spacing_index = menu.find_item(main_window, "Apply Note Spacing to")
-local new_spacing_menu = menu.insert_submenu("Spacing",  menu.get_top_level_menu(main_window), 4)
+local menu_bar = menu.get_top_level_menu(main_window)
+local spacing_menu, spacing_index = menu.find_item(menu_bar, "Apply Note Spacing to")
+local new_spacing_menu = menu.insert_submenu("Spacing",  menu_bar, 4)
 for i = 0, menu.get_item_count(spacing_menu)-1 do
     local move_result = menu.move_item(spacing_menu, 0, new_spacing_menu)
     print(move_result)
@@ -301,7 +302,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 
 -- add code the moves all items out of rgp_lua_menu
 
@@ -335,7 +337,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     -- rgp_lua_menu is the menu that contains the menu item for RGP Lua.
 end
@@ -362,8 +365,9 @@ Example:
 local osutils = require('luaosutils')
 local menu = osutils.menu
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua")
-if main_menu then
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua")
+if rgp_lua_menu then
     local command_id = menu.get_item_command_id(rgp_lua_menu, index)
 end
 ```
@@ -389,7 +393,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local number_of_items = menu.get_item_count(rgp_lua_menu)
 end
@@ -414,7 +419,8 @@ Example:
 local osutils = require('luaosutils')
 local menu = osutils.menu
 
-local main_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "Plug-ins")
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local main_menu, index = menu.find_item(menu_bar, "Plug-ins")
 if main_menu then
     local plugins_menu = menu.get_item_submenu(main_menu, index)
 end
@@ -444,7 +450,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local item_3_text = menu.get_item_text(rgp_lua_menu, 3)
 end
@@ -478,7 +485,8 @@ Example:
 local osutils = require('luaosutils')
 local menu = osutils.menu
 
-local main_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "Plug-ins")
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local main_menu, index = menu.find_item(menu_bar, "Plug-ins")
 if main_menu then
     local plugins_menu = menu.get_item_submenu(main_menu, index)
     for item = 0, menu.get_item_count(plugins_menu)-1 do
@@ -514,7 +522,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local menu_title = menu.get_title(rgp_lua_menu, finenv.GetFinaleMainWindow())
 end
@@ -563,7 +572,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local submenu, submenu_index = menu.insert_submenu("Articulations", rgp_lua_menu, 3)
 end
@@ -593,7 +603,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local submenu, submenu_index = menu.insert_submenu("Articulations", rgp_lua_menu, 3)
 end
@@ -627,7 +638,7 @@ local menu = osutils.menu
 local min_search_index = 6
 
 local finale_menu = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local rgp_lua_menu, index = menu.find_item(finale_menu, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
 	 -- move the RGP Lua configuration menu option to the end of the Finale menu.
     menu.move_item(rgp_lua_menu, index, finale_menu)
@@ -682,7 +693,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local success = menu.set_item_text(rgp_lua_menu, index, "Lua on Finale...")
 end
@@ -713,7 +725,8 @@ local menu = osutils.menu
  -- Specify the minimum 0-based index of Finale's Plug-Ins menu in the top-level application menu.
 local min_search_index = 6
 
-local rgp_lua_menu, index = menu.find_item(finenv.GetFinaleMainWindow(), "RGP Lua...", min_search_index)
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_index)
 if rgp_lua_menu then
     local success = menu.set_title(rgp_lua_menu, finenv.GetFinaleMainWindow(), "Lua on Finale...")
 end
