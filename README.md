@@ -45,7 +45,7 @@ The callback function has the following parameters.
 
 ##### Synchronous calls
 
-With synchronous calls, you supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small replies where you can limit the timeout to 1 or 2 seconds. Synchronous calls block Finale's user interface.
+With synchronous calls, you supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small replies where you can limit the timeout to a few seconds. Synchronous calls block Finale's user interface.
 
 Synchronous function names have a `_sync` prefix.
 
@@ -259,7 +259,7 @@ These functions use the following os-specific types. They appear in Lua as opaqu
 
 |Type|Description|
 |----|-----------|
-|menu_handle|os-assigned value that provides acces to the menu|
+|menu_handle|os-assigned value that provides access to the menu|
 |window_handle|handle (`HWND`) of a window containing a top-level menu (Windows) or `nil` (macOS)|
 
 Here is an example script that uses the menu functions to move Finale's Music Spacing options to a top-level menu called "Spacing". (See `test/test-menubuild-luaosutil.lua` in this repository.)
@@ -351,7 +351,7 @@ Returns the command-id of the specified menu item or `nil` if none.
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|number|The index of the submenu item.|
+|number|The 0-based index of the submenu item.|
 
 |Output Type|Description|
 |----------|-----------|
@@ -369,6 +369,7 @@ local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
 local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua")
 if rgp_lua_menu then
     local command_id = menu.get_item_command_id(rgp_lua_menu, index)
+    finenv.UI():ExecuteOSMenuCommand(command_id) -- opens the RGP Lua configuration window
 end
 ```
 
@@ -402,12 +403,12 @@ end
 
 ### menu.get\_item\_submenu
 
-Returns the text of the specified menu item.
+Returns the submenu of the specified menu item, if it exists.
 
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|number|The index of the submenu item.|
+|number|The 0-based index of the submenu item.|
 
 |Output Type|Description|
 |----------|-----------|
@@ -433,7 +434,7 @@ Returns the text of the specified menu item.
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|number|The index of the menu item.|
+|number|The 0-based index of the menu item.|
 
 |Output Type|Description|
 |----------|-----------|
@@ -459,12 +460,12 @@ end
 
 ### menu.get\_item\_type
 
-Returns the text of the specified menu item.
+Returns the type of the specified menu item.
 
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|number|The index of the submenu item.|
+|number|The 0-based index of the submenu item.|
 
 |Output Type|Description|
 |----------|-----------|
@@ -557,7 +558,7 @@ Inserts a menu separator at the specified index.
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|(number)|The index where to insert the separator. If omitted, the separator is appended at the end.|
+|(number)|The 0-based index where to insert the separator. If omitted, the separator is appended at the end.|
 
 |Output Type|Description|
 |----------|-----------|
@@ -587,7 +588,7 @@ Inserts a new submenu at the specified index.
 |----------|-----------|
 |string|Title of the new submenu encoded UTF-8.|
 |menu_handle|Handle of the menu in which to insert the new submenu.|
-|(number)|The index where to insert the new submenu. If omitted, the submenu is appended at the end.|
+|(number)|The 0-based index where to insert the new submenu. If omitted, the submenu is appended at the end.|
 
 |Output Type|Description|
 |----------|-----------|
@@ -617,9 +618,9 @@ Moves a menu item from one menu location to another.
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the source menu.|
-|number|The index of the source menu item.|
+|number|The 0-based index of the source menu item.|
 |menu_handle|Handle to the target menu.|
-|(number)|Optional index of the target menu item. If omitted, the item is appended to the end of the menu.|
+|(number)|Optional 0-based index of the target menu item. If omitted, the item is appended to the end of the menu.|
 
 |Output Type|Description|
 |----------|-----------|
@@ -675,7 +676,7 @@ Changes the text of the specified menu item to the new value.
 |Input Type|Description|
 |----------|-----------|
 |menu_handle|Handle to the menu.|
-|number|The index of the menu item.|
+|number|The 0-based index of the menu item.|
 |string|The new text of menu item (UTF-8 encoding).|
 
 |Output Type|Description|
