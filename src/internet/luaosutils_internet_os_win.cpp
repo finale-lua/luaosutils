@@ -168,7 +168,7 @@ static void HandleThreadResult(win_request_context* session, DWORD result, bool 
          if (!exitResult)
             session->callbackFunction(false, GetStringFromLastError(GetLastError(), session->readError));
          else if (threadResult)
-            session->callbackFunction(false, "Download thread failed to download the file.");
+            session->callbackFunction(false, "Luaosutils download thread failed to complete the request.");
          else
             session->callbackFunction(session->statusCode == kHTTPStatusCodeOK, session->buffer);
          break;
@@ -266,11 +266,19 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string& u
          std::string contentLength = std::to_string(postData.size());
          HttpAddRequestHeadersA(session->hRequest, ("Content-Length: " + contentLength).c_str(), static_cast<DWORD>(contentLength.size()), HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
       }
-      HttpSendRequest(session->hRequest, NULL, 0, const_cast<char*>(postData.c_str()), static_cast<DWORD>(postData.size()));
+      if (!HttpSendRequest(session->hRequest, NULL, 0, const_cast<char*>(postData.c_str()), static_cast<DWORD>(postData.size())))
+      {
+          callback(false, GetStringFromLastError(GetLastError(), true));
+          return nullptr;
+      }
    }
    else if (requestType == "get")
    {
-      HttpSendRequest(session->hRequest, NULL, 0, NULL, 0);
+       if (!HttpSendRequest(session->hRequest, NULL, 0, NULL, 0))
+       {
+          callback(false, GetStringFromLastError(GetLastError(), true));
+          return nullptr;
+       }
    }
    else
    {
