@@ -121,15 +121,20 @@ static int luaosutils_internet_get(lua_State *L)
    auto headers = get_lua_parameter<luaosutils::HeadersMap>(L, 3, LUA_TTABLE, luaosutils::HeadersMap());
    
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
-   
+      
    const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("get", urlString, "", headers, -1,
-         [sessionID](bool success, const std::string &urlResult) -> void
+         [sessionID, L, callback](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
             {
                call_lua_function(*session, success, urlResult);
                session->set_os_session(nullptr);
+            }
+            else
+            {
+               luaosutils::callback_session temp(L, callback, luaosutils::callback_session::get_new_session_id());
+               call_lua_function(temp, success, urlResult);
             }
          });
 
@@ -190,7 +195,7 @@ int luaosutils_internet_post(lua_State *L)
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
    
    const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("post", urlString, postData, headers, -1,
-         [sessionID](bool success, const std::string &urlResult) -> void
+         [sessionID, L, callback](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
@@ -198,7 +203,12 @@ int luaosutils_internet_post(lua_State *L)
                call_lua_function(*session, success, urlResult);
                session->set_os_session(nullptr);
             }
-         });
+            else
+            {
+               luaosutils::callback_session temp(L, callback, luaosutils::callback_session::get_new_session_id());
+               call_lua_function(temp, success, urlResult);
+            }
+      });
 
    if (os_session)
    {
