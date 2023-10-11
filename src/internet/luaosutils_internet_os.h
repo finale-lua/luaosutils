@@ -67,7 +67,7 @@ struct win_request_context
       if (hInternet) InternetCloseHandle(hInternet);
    }
 
-   win_request_context* get_context_from_timer(UINT_PTR timerID)
+   static win_request_context* get_context_from_timer(UINT_PTR timerID)
    {
       auto it = get_timer_map().find(timerID);
       if (it == get_timer_map().end()) return nullptr;
@@ -76,7 +76,7 @@ struct win_request_context
 
    UINT_PTR get_timer_id() const { return timerID; }
 
-   bool win_request_context::set_timer_id(UINT_PTR id)
+   bool set_timer_id(UINT_PTR id)
    {
       if (timerID)
       {

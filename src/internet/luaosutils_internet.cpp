@@ -256,6 +256,13 @@ int luaosutils_internet_post_sync(lua_State *L)
    return 2;
 }
 
+static int luaosutils_internet_cancel_session(lua_State* L)
+{
+   auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA);
+   if (session) session->cancel();
+   return 0;
+}
+
 static int luaosutils_server_name(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
@@ -281,6 +288,7 @@ static const luaL_Reg internet_utils[] = {
    {"get_sync",            luaosutils_internet_get_sync},
    {"post",                luaosutils_internet_post},
    {"post_sync",           luaosutils_internet_post_sync},
+   {"cancel_session",      luaosutils_internet_cancel_session},
    {"launch_website",      luaosutils_launch_website},
    {"server_name",         luaosutils_server_name},
    {NULL, NULL} // sentinel
@@ -293,6 +301,7 @@ static const luaL_Reg internet_utils_restricted[] = {
    {"get_sync",            restricted_function},
    {"post",                restricted_function},
    {"post_sync",           restricted_function},
+   {"cancel_session",      restricted_function},
    {"launch_website",      luaosutils_launch_website},
    {"server_name",         luaosutils_server_name},
    {NULL, NULL} // sentinel

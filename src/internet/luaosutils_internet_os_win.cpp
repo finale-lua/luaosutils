@@ -350,7 +350,8 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string& u
       if (!timerID)
          callback(false, GetStringFromLastError(GetLastError()));
       session->set_timer_id(timerID);
-      return session->get_timer_id() ? session : nullptr;
+      assert(session->get_timer_id());
+      return session;
    }
 
    return nullptr;
