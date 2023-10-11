@@ -21,22 +21,17 @@ namespace luaosutils
 
 
 win_request_context::win_request_context(lua_callback callback) :
-            callbackFunction(callback),
-            hInternet(0), hConnect(0), hRequest(0), hThread(0),
-            threadShouldHalt(false), readError(false), timerID(0),
-            statusCode(0)
+            callbackFunction(callback), bufferReserve(false),
+            hInternet(0), hConnect(0), hRequest(0), hEvent(0),
+            readErrorCode(0), timerID(0), statusCode(0)
 {
+   hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 win_request_context::~win_request_context()
 {
    this->SetTimerID(0);
-   if (hThread)
-   {
-      this->threadShouldHalt = true;
-      WaitForSingleObject(hThread, INFINITE);
-      ::CloseHandle(hThread);
-   }
+   if (hEvent) CloseHandle(hEvent);
    if (hRequest) InternetCloseHandle(hRequest);
    if (hConnect) InternetCloseHandle(hConnect);
    if (hInternet) InternetCloseHandle(hInternet);
@@ -105,10 +100,10 @@ inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = fal
    return "No error message.";
 }
 
-static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
+static void ReserveBuffer(win_request_context* session)
 {
-   auto session = reinterpret_cast<win_request_context*>(lpParameter);
-
+   if (session->bufferReserve) return;
+   session->bufferReserve = -1; // block further attempts to access it.
    CHAR lengthAsText[256];
    DWORD sizeLength = sizeof(lengthAsText);
    if (HttpQueryInfoA(session->hRequest, HTTP_QUERY_CONTENT_LENGTH, lengthAsText, &sizeLength, 0))
@@ -116,23 +111,34 @@ static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
       lengthAsText[(std::min)((size_t)sizeLength, sizeof(lengthAsText) - 1)] = 0;
       DWORD length = atoi(lengthAsText);
       if (length)
+      {
          session->buffer.reserve(length);
+         session->bufferReserve = length;
+      }
    }
+}
 
+static bool ReadResponseAndTerminate(win_request_context* session)
+{
+   ReserveBuffer(session);
    while (true)
    {
+      DWORD bytesAvailable = 0;
+      if (!InternetQueryDataAvailable(session->hRequest, &bytesAvailable, 0, 0))
+      {
+         session->readErrorCode = GetLastError();
+         return false;
+      }
       DWORD numBytesRead = 0;
       char buffer[4096];
-      BOOL result = InternetReadFile(session->hRequest, buffer, sizeof(buffer), &numBytesRead);
+      BOOL result = InternetReadFile(session->hRequest, buffer, (std::min<DWORD>)(sizeof(buffer), bytesAvailable), &numBytesRead);
       if (!result)
       {
-         session->readError = true;
-         return -1;
+         session->readErrorCode = GetLastError();
+         return false;
       }
       if (!numBytesRead)
          break;
-      if (session->threadShouldHalt)
-         return -1;
       session->buffer.append(buffer, numBytesRead);
    }
 
@@ -151,24 +157,20 @@ static DWORD RunWindowsThread(_In_ LPVOID lpParameter)
    InternetCloseHandle(session->hInternet);
    session->hInternet = NULL;
 
-   return 0;
+   return true;
 }
 
-static void HandleThreadResult(win_request_context* session, DWORD result, bool errorOnTimeout)
+static void HandleRequestResult(win_request_context* session, DWORD result, bool errorOnTimeout)
 {
-   if (!errorOnTimeout || result != WAIT_TIMEOUT)
+   if (errorOnTimeout || result != WAIT_TIMEOUT)
       session->SetTimerID(0); // kill timer if there is one
 
    switch (result)
    {
       case WAIT_OBJECT_0:
       {
-         DWORD threadResult = 0;
-         BOOL exitResult = GetExitCodeThread(session->hThread, &threadResult);
-         if (!exitResult)
-            session->callbackFunction(false, GetStringFromLastError(GetLastError(), session->readError));
-         else if (threadResult)
-            session->callbackFunction(false, "Luaosutils download thread failed to complete the request.");
+         if (session->readErrorCode)
+            session->callbackFunction(false, GetStringFromLastError(session->readErrorCode, true));
          else
             session->callbackFunction(session->statusCode == kHTTPStatusCodeOK, session->buffer);
          break;
@@ -177,6 +179,13 @@ static void HandleThreadResult(win_request_context* session, DWORD result, bool 
       case WAIT_TIMEOUT:
          if (errorOnTimeout)
             session->callbackFunction(false, "Request timed out.");
+         break;
+
+      case WAIT_FAILED:
+         if (session->readErrorCode)
+            session->callbackFunction(false, GetStringFromLastError(session->readErrorCode, true));
+         else
+            session->callbackFunction(false, GetStringFromLastError(GetLastError(), false));
          break;
 
       default:
@@ -190,10 +199,10 @@ static void HandleThreadResult(win_request_context* session, DWORD result, bool 
 static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
 {
    win_request_context* session = win_request_context::get_context_from_timer(idEvent);
-   assert(session && session->hThread);
-   DWORD result = WaitForSingleObject(session->hThread, 0);
-   HandleThreadResult(session, result, false);
-   // HandleThreadResult may have destroyed our session, so do not reference it again.
+   assert(session && session->hEvent);
+   DWORD result = WaitForSingleObject(session->hEvent, 0);
+   HandleRequestResult(session, result, false);
+   // HandleRequestResult may have destroyed our session, so do not reference it again.
 }
 
 void SplitUrl(const std::string& url, std::string& host, std::string& path)
@@ -216,15 +225,53 @@ void SplitUrl(const std::string& url, std::string& host, std::string& path)
    }
 }
 
+void CALLBACK WinINetCallback(HINTERNET hInternet, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength)
+{
+   auto session = reinterpret_cast<win_request_context*>(dwContext);
+
+   switch (dwInternetStatus)
+   {
+      case INTERNET_STATUS_REQUEST_COMPLETE:
+      {
+         INTERNET_ASYNC_RESULT* pResult = reinterpret_cast<INTERNET_ASYNC_RESULT*>(lpvStatusInformation);
+         if (pResult->dwError == ERROR_SUCCESS)
+         {
+            if (!ReadResponseAndTerminate(session))
+            {
+               if (session->readErrorCode == ERROR_IO_PENDING)
+               {
+                  //session->readErrorCode = 0;
+                  //return;
+               }
+            }
+         }
+         else
+         {
+            // Read error occurred
+            session->readErrorCode = pResult->dwError;
+         }
+         // Signal completion and return
+         SetEvent(session->hEvent);
+         break;
+      }
+   }
+}
+
 OSSESSION_ptr https_request(const std::string& requestType, const std::string& urlString, const std::string& postData,
                               const HeadersMap& headers, double timeout, lua_callback callback)
 {
    OSSESSION_ptr session = OSSESSION_ptr(new win_request_context(callback));
 
-   session->hInternet = InternetOpen(TEXT("Luaosutils WinInet Downloader"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+   session->hInternet = InternetOpen(TEXT("Luaosutils WinInet Downloader"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, INTERNET_FLAG_ASYNC);
    if (!session->hInternet)
    {
       callback(false, GetStringFromLastError(GetLastError(), true));
+      return nullptr;
+   }
+
+   if (InternetSetStatusCallback(session->hInternet, WinINetCallback) == INTERNET_INVALID_STATUS_CALLBACK)
+   {
+      callback(false, "InternetSetStatusCallback failed with INTERNET_INVALID_STATUS_CALLBACK");
       return nullptr;
    }
 
@@ -232,21 +279,25 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string& u
    std::string path;
    SplitUrl(urlString, host, path);
 
-   session->hConnect = InternetConnectA(session->hInternet, host.c_str(), INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+   session->hConnect = InternetConnectA(session->hInternet, host.c_str(), INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, (DWORD_PTR)session.get());
    if (!session->hConnect) {
       callback(false, GetStringFromLastError(GetLastError(), true));
       return nullptr;
    }
 
    DWORD dwOpenRequestFlags = INTERNET_FLAG_SECURE | INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE
-                           | INTERNET_FLAG_NO_UI | INTERNET_FLAG_NO_AUTH | INTERNET_FLAG_PRAGMA_NOCACHE
-                           | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_NO_AUTO_REDIRECT | INTERNET_FLAG_KEEP_CONNECTION;
-   session->hRequest = HttpOpenRequestA(session->hConnect, requestType == "get" ? "GET" : "POST", path.c_str(), NULL, NULL, NULL, dwOpenRequestFlags, 0);
+      | INTERNET_FLAG_NO_UI | INTERNET_FLAG_NO_AUTH | INTERNET_FLAG_PRAGMA_NOCACHE
+      | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_NO_AUTO_REDIRECT | INTERNET_FLAG_KEEP_CONNECTION;
+   session->hRequest = HttpOpenRequestA(session->hConnect, requestType == "get" ? "GET" : "POST", path.c_str(), NULL, NULL, NULL, dwOpenRequestFlags, (DWORD_PTR)session.get());
    if (!session->hRequest)
    {
       callback(false, GetStringFromLastError(GetLastError(), true));
       return nullptr;
    }
+
+   DWORD timeoutValue = 0; // 0 means no timeout or set to a large value
+   InternetSetOption(session->hRequest, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeoutValue, sizeof(DWORD));
+   InternetSetOption(session->hRequest, INTERNET_OPTION_CONNECT_TIMEOUT, &timeoutValue, sizeof(DWORD));
 
    for (auto& header : headers)
    {
@@ -266,19 +317,28 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string& u
          std::string contentLength = std::to_string(postData.size());
          HttpAddRequestHeadersA(session->hRequest, ("Content-Length: " + contentLength).c_str(), static_cast<DWORD>(contentLength.size()), HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
       }
-      if (!HttpSendRequest(session->hRequest, NULL, 0, const_cast<char*>(postData.c_str()), static_cast<DWORD>(postData.size())))
+      session->postData = postData;
+      if (!HttpSendRequest(session->hRequest, NULL, 0, session->postData.data(), static_cast<DWORD>(session->postData.size())))
       {
-          callback(false, GetStringFromLastError(GetLastError(), true));
-          return nullptr;
+         DWORD err = GetLastError();
+         if (err != ERROR_IO_PENDING)
+         {
+            callback(false, GetStringFromLastError(err, true));
+            return nullptr;
+         }
       }
    }
    else if (requestType == "get")
    {
-       if (!HttpSendRequest(session->hRequest, NULL, 0, NULL, 0))
-       {
-          callback(false, GetStringFromLastError(GetLastError(), true));
-          return nullptr;
-       }
+      if (!HttpSendRequest(session->hRequest, NULL, 0, NULL, 0))
+      {
+         DWORD err = GetLastError();
+         if (err != ERROR_IO_PENDING)
+         {
+            callback(false, GetStringFromLastError(err, true));
+            return nullptr;
+         }
+      }
    }
    else
    {
@@ -286,17 +346,10 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string& u
       return nullptr;
    }
 
-   session->hThread = CreateThread(NULL, 0, &RunWindowsThread, session.get(), 0, NULL);
-   if (!session->hThread)
-   {
-      callback(false, GetStringFromLastError(GetLastError()));
-      return nullptr;
-   }
-
    if (timeout >= 0)
    {
-      DWORD result = WaitForSingleObject(session->hThread, lround(timeout*1000.0));
-      HandleThreadResult(session.get(), result, true);
+      DWORD result = WaitForSingleObject(session->hEvent, lround(timeout*1000.0));
+      HandleRequestResult(session.get(), result, true);
    }
    else
    {

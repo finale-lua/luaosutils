@@ -33,11 +33,12 @@ struct win_request_context
    HINTERNET hInternet;
    HINTERNET hConnect;
    HINTERNET hRequest;
-   HANDLE hThread;
+   HANDLE hEvent;
    DWORD statusCode;
-   bool threadShouldHalt;
-   bool readError;
+   DWORD readErrorCode;
+   LONG bufferReserve;
    std::string buffer;
+   std::string postData;
    
    win_request_context(lua_callback callback);
    ~win_request_context();
