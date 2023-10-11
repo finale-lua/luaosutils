@@ -20,43 +20,6 @@
 namespace luaosutils
 {
 
-
-win_request_context::win_request_context(lua_callback callback) :
-            state(win_request_state::SEND),
-            callbackFunction(callback)
-{
-   hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-}
-
-win_request_context::~win_request_context()
-{
-   this->set_timer_id(0);
-   if (hEvent) CloseHandle(hEvent);
-   if (hRequest) InternetCloseHandle(hRequest);
-   if (hConnect) InternetCloseHandle(hConnect);
-   if (hInternet) InternetCloseHandle(hInternet);
-}
-
-win_request_context* win_request_context::get_context_from_timer(UINT_PTR timerID)
-{
-   auto it = getTimerMap().find(timerID);
-   if (it == getTimerMap().end()) return nullptr;
-   return it->second;
-}
-
-bool win_request_context::set_timer_id(UINT_PTR id)
-{
-   if (timerID)
-   {
-      ::KillTimer(NULL, timerID);
-      getTimerMap().erase(timerID);
-   }
-   if (id)
-      getTimerMap().emplace(id, this);
-   this->timerID = id;
-   return (id != 0);
-}
-
 inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = false)
 {
    LPSTR ptr = nullptr;
@@ -269,7 +232,7 @@ static void HandleRequestResult(win_request_context* session, DWORD result, bool
 static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
 {
    win_request_context* session = win_request_context::get_context_from_timer(idEvent);
-   assert(session && session->hEvent);
+   assert(session->hEvent);
    DWORD result = WaitForSingleObject(session->hEvent, 0);
    HandleRequestResult(session, result, false);
    // HandleRequestResult may have destroyed our session, so do not reference it again.
@@ -387,7 +350,8 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string& u
       if (!timerID)
          callback(false, GetStringFromLastError(GetLastError()));
       session->set_timer_id(timerID);
-      return session->get_timer_id() ? session : nullptr;
+      assert(session->get_timer_id());
+      return session;
    }
 
    return nullptr;
