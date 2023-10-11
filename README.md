@@ -229,6 +229,27 @@ if download_successful then
 end
 ```
 
+### internet.close\_session
+
+Closes the session for a pending asynchronous request. You callback will not be called
+after calling this function. It is not necessary to call this if your script is ending,
+but you might call it if you are closing a window that has the callback procedure while
+retaining your Lua session.
+
+|Input Type|Description|
+|----------|-----------|
+|session|May be nil, and then the function does nothing.|
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+local post_data = "<your post data> (maybe JSON?)"
+local session = internet.post_sync("https://mysite.com", post_data , function(success, data) end)
+internet.close_session(session) -- no need to check for nil here
+```
+
+
 ### internet.server\_name
 
 Returns the servername contained within the specified URL.
@@ -915,6 +936,7 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 - Updated to use Lua 5.4.6.
 - Modified Windows HTTP functions to use asynchronous WinINet calls.
 - General cleanup of internet utilities.
+- Added `internet.close_session` function.
 
 2.2.0
 

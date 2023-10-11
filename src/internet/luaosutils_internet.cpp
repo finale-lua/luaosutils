@@ -258,7 +258,7 @@ int luaosutils_internet_post_sync(lua_State *L)
 
 static int luaosutils_internet_cancel_session(lua_State* L)
 {
-   auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA);
+   auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA, nullptr);
    if (session) session->cancel();
    return 0;
 }
