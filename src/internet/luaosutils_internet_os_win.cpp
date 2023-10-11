@@ -7,6 +7,7 @@
 //  (Usage permitted by MIT License. See LICENSE file in this repository.)
 //
 #include <algorithm>
+#include <cassert>
 
 #include <windows.h>
 #include <wininet.h>
@@ -23,7 +24,7 @@ namespace luaosutils
 win_request_context::win_request_context(lua_callback callback) :
             callbackFunction(callback), bufferReserve(false),
             hInternet(0), hConnect(0), hRequest(0), hEvent(0),
-            readErrorCode(0), timerID(0), statusCode(0)
+            readErrorCode(0), timerID(0), statusCode(0), numBytesRead(0)
 {
    hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
@@ -55,6 +56,15 @@ bool win_request_context::SetTimerID(UINT_PTR id)
       getTimerMap().emplace(id, this);
    this->timerID = id;
    return (id != 0);
+}
+
+bool win_request_context::process_read_complete()
+{
+   if (!this->numBytesRead)
+      return true;
+   this->buffer.append(this->readBuf.data(), this->numBytesRead);
+   this->readBuf.clear();
+   return false;
 }
 
 inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = false)
@@ -123,23 +133,17 @@ static bool ReadResponseAndTerminate(win_request_context* session)
    ReserveBuffer(session);
    while (true)
    {
-      DWORD bytesAvailable = 0;
-      if (!InternetQueryDataAvailable(session->hRequest, &bytesAvailable, 0, 0))
-      {
-         session->readErrorCode = GetLastError();
-         return false;
-      }
-      DWORD numBytesRead = 0;
-      char buffer[4096];
-      BOOL result = InternetReadFile(session->hRequest, buffer, (std::min<DWORD>)(sizeof(buffer), bytesAvailable), &numBytesRead);
+      assert(session->readBuf.size() == 0);
+      session->numBytesRead = 0;
+      session->readBuf.resize(4096);
+      BOOL result = InternetReadFile(session->hRequest, session->readBuf.data(), static_cast<DWORD>(session->readBuf.size()), &session->numBytesRead);
       if (!result)
       {
          session->readErrorCode = GetLastError();
          return false;
       }
-      if (!numBytesRead)
+      if (session->process_read_complete())
          break;
-      session->buffer.append(buffer, numBytesRead);
    }
 
    DWORD statusCodeSize = sizeof(session->statusCode);
@@ -236,12 +240,16 @@ void CALLBACK WinINetCallback(HINTERNET hInternet, DWORD_PTR dwContext, DWORD dw
          INTERNET_ASYNC_RESULT* pResult = reinterpret_cast<INTERNET_ASYNC_RESULT*>(lpvStatusInformation);
          if (pResult->dwError == ERROR_SUCCESS)
          {
+            if (session->readBuf.size())
+               session->process_read_complete();
+            // always call ReadResponseAndTerminate one last time, even if the read was complete.
+            // this lets the function finish the other side of the read loop.
             if (!ReadResponseAndTerminate(session))
             {
                if (session->readErrorCode == ERROR_IO_PENDING)
                {
-                  //session->readErrorCode = 0;
-                  //return;
+                  session->readErrorCode = 0;
+                  return;
                }
             }
          }

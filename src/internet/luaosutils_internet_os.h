@@ -39,9 +39,13 @@ struct win_request_context
    LONG bufferReserve;
    std::string buffer;
    std::string postData;
+   std::vector<CHAR> readBuf;
+   DWORD numBytesRead;
    
    win_request_context(lua_callback callback);
    ~win_request_context();
+
+   bool process_read_complete();
    
    static win_request_context* get_context_from_timer(UINT_PTR timerID);
    
