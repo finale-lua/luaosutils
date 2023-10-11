@@ -88,7 +88,7 @@ static void call_lua_function(luaosutils::callback_session &session, Args... arg
    }
 }
 
-static void create_luaosutils_callback_session(lua_State *L, luaosutils::OSSESSION_ptr os_session,
+static void create_luaosutils_callback_session(lua_State *L, luaosutils::OSSESSION_ptr& os_session,
            int callback, luaosutils::callback_session::id_type sessionID)
 {
    luaosutils::callback_session* session = new (lua_newuserdata(L, sizeof(luaosutils::callback_session)))
@@ -96,7 +96,7 @@ static void create_luaosutils_callback_session(lua_State *L, luaosutils::OSSESSI
    session->set_os_session(os_session);
    // Create a metatable for the userdata through that object can be accessed with "gc". That means we get called when Lua state closes.
    lua_newtable(L);
-   lua_pushstring(L, "gc");
+   lua_pushstring(L, "__gc");
    lua_pushcfunction(L, [](lua_State* L)
    {
       auto udata = (luaosutils::callback_session*)lua_touserdata(L, 1);
@@ -122,14 +122,14 @@ static int luaosutils_internet_get(lua_State *L)
    
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
       
-   const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("get", urlString, "", headers, -1,
+   luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("get", urlString, "", headers, -1,
          [sessionID, L, callback](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
             {
                call_lua_function(*session, success, urlResult);
-               session->set_os_session(nullptr);
+               session->cancel();
             }
             else
             {
@@ -194,14 +194,14 @@ int luaosutils_internet_post(lua_State *L)
    
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
    
-   const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("post", urlString, postData, headers, -1,
+   luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("post", urlString, postData, headers, -1,
          [sessionID, L, callback](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
             {
                call_lua_function(*session, success, urlResult);
-               session->set_os_session(nullptr);
+               session->cancel();
             }
             else
             {
