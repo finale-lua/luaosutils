@@ -22,16 +22,15 @@ namespace luaosutils
 
 
 win_request_context::win_request_context(lua_callback callback) :
-            callbackFunction(callback), bufferReserve(false),
-            hInternet(0), hConnect(0), hRequest(0), hEvent(0),
-            readErrorCode(0), timerID(0), statusCode(0), numBytesRead(0)
+            state(win_request_state::SEND),
+            callbackFunction(callback)
 {
    hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 win_request_context::~win_request_context()
 {
-   this->SetTimerID(0);
+   this->set_timer_id(0);
    if (hEvent) CloseHandle(hEvent);
    if (hRequest) InternetCloseHandle(hRequest);
    if (hConnect) InternetCloseHandle(hConnect);
@@ -45,7 +44,7 @@ win_request_context* win_request_context::get_context_from_timer(UINT_PTR timerI
    return it->second;
 }
 
-bool win_request_context::SetTimerID(UINT_PTR id)
+bool win_request_context::set_timer_id(UINT_PTR id)
 {
    if (timerID)
    {
@@ -56,15 +55,6 @@ bool win_request_context::SetTimerID(UINT_PTR id)
       getTimerMap().emplace(id, this);
    this->timerID = id;
    return (id != 0);
-}
-
-bool win_request_context::process_read_complete()
-{
-   if (!this->numBytesRead)
-      return true;
-   this->buffer.append(this->readBuf.data(), this->numBytesRead);
-   this->readBuf.clear();
-   return false;
 }
 
 inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = false)
@@ -110,10 +100,24 @@ inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = fal
    return "No error message.";
 }
 
-static void ReserveBuffer(win_request_context* session)
+static DWORD OnSendRequest(win_request_context* session)
 {
-   if (session->bufferReserve) return;
-   session->bufferReserve = -1; // block further attempts to access it.
+   assert(session->state == win_request_state::SEND);
+   session->state = win_request_state::ALLOCATE;
+
+   LPVOID postData = (session->postData.size()) ? session->postData.data() : NULL;
+   DWORD postDataSize = postData ? static_cast<DWORD>(session->postData.size()) : 0;
+   BOOL success = HttpSendRequest(session->hRequest, NULL, 0, postData, postDataSize);
+   if (!success) return GetLastError();
+
+   return ERROR_SUCCESS;
+}
+
+static DWORD OnAllocateBuffer(win_request_context* session)
+{
+   assert(session->state == win_request_state::ALLOCATE);
+   session->state = win_request_state::READ_CHUNK;
+
    CHAR lengthAsText[256];
    DWORD sizeLength = sizeof(lengthAsText);
    if (HttpQueryInfoA(session->hRequest, HTTP_QUERY_CONTENT_LENGTH, lengthAsText, &sizeLength, 0))
@@ -126,32 +130,52 @@ static void ReserveBuffer(win_request_context* session)
          session->bufferReserve = length;
       }
    }
+
+   return ERROR_SUCCESS;
 }
 
-static bool ReadResponseAndTerminate(win_request_context* session)
+static DWORD OnReadChunk(win_request_context* session)
 {
-   ReserveBuffer(session);
-   while (true)
+   assert(session->state == win_request_state::READ_CHUNK);
+   session->state = win_request_state::CHUNK_COMPLETE;
+
+   assert(session->readBuf.size() == 0);
+   session->readBuf.resize(4096);
+   session->numBytesRead = 0;
+   BOOL result = InternetReadFile(session->hRequest, session->readBuf.data(), static_cast<DWORD>(session->readBuf.size()), &session->numBytesRead);
+   if (!result) return GetLastError();
+
+   return ERROR_SUCCESS;
+}
+
+static DWORD OnChunkComplete(win_request_context* session)
+{
+   assert(session->state == win_request_state::CHUNK_COMPLETE);
+
+   assert(session->readBuf.size() >= session->numBytesRead);
+   if (!session->numBytesRead)
+      session->state = win_request_state::TERMINATE;
+   else
    {
-      assert(session->readBuf.size() == 0);
-      session->numBytesRead = 0;
-      session->readBuf.resize(4096);
-      BOOL result = InternetReadFile(session->hRequest, session->readBuf.data(), static_cast<DWORD>(session->readBuf.size()), &session->numBytesRead);
-      if (!result)
-      {
-         session->readErrorCode = GetLastError();
-         return false;
-      }
-      if (session->process_read_complete())
-         break;
+      session->buffer.append(session->readBuf.data(), session->numBytesRead);
+      session->state = win_request_state::READ_CHUNK;
    }
+   session->readBuf.clear();
+
+   return ERROR_SUCCESS;
+}
+
+static DWORD OnTerminate(win_request_context* session)
+{
+   assert(session->state == win_request_state::TERMINATE);
+   session->state = win_request_state::COMPLETE;
 
    DWORD statusCodeSize = sizeof(session->statusCode);
    BOOL result = HttpQueryInfoA(session->hRequest, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, &session->statusCode, &statusCodeSize, NULL);
    if (!result)
    {
       session->statusCode = 0;
-      session->buffer = GetStringFromLastError(GetLastError(), true);
+      session->readErrorCode = GetLastError();
    }
 
    InternetCloseHandle(session->hRequest);
@@ -161,13 +185,55 @@ static bool ReadResponseAndTerminate(win_request_context* session)
    InternetCloseHandle(session->hInternet);
    session->hInternet = NULL;
 
-   return true;
+   return ERROR_SUCCESS;
+}
+
+static void ProcessRequest(win_request_context* session, DWORD errorCode)
+{
+   while (errorCode == ERROR_SUCCESS && session->state != win_request_state::COMPLETE)
+   {
+      switch (session->state)
+      {
+         case win_request_state::SEND:
+            errorCode = OnSendRequest(session);
+            break;
+ 
+         case win_request_state::ALLOCATE:
+            errorCode = OnAllocateBuffer(session);
+            break;
+
+         case win_request_state::READ_CHUNK:
+            errorCode = OnReadChunk(session);
+            break;
+
+         case win_request_state::CHUNK_COMPLETE:
+            errorCode = OnChunkComplete(session);
+            break;
+
+         case win_request_state::TERMINATE:
+            errorCode = OnTerminate(session);
+            break;
+
+         case win_request_state::COMPLETE:
+            break;
+      }
+   }
+
+   if (errorCode == ERROR_IO_PENDING)
+      return;
+
+   // if we get here, everything is finished.
+
+   if (errorCode != ERROR_SUCCESS)
+      session->readErrorCode = errorCode;
+
+   SetEvent(session->hEvent);
 }
 
 static void HandleRequestResult(win_request_context* session, DWORD result, bool errorOnTimeout)
 {
    if (errorOnTimeout || result != WAIT_TIMEOUT)
-      session->SetTimerID(0); // kill timer if there is one
+      session->set_timer_id(0); // kill timer if there is one
 
    switch (result)
    {
@@ -197,7 +263,7 @@ static void HandleRequestResult(win_request_context* session, DWORD result, bool
          break;
    }
 
-   // if we called the callbackFunction, it destroyed our session, so do not reference it again.
+   // if we called the callbackFunction, it may have destroyed our session, so do not reference it again.
 }
 
 static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
@@ -211,8 +277,7 @@ static void CALLBACK __TimerProc(HWND, UINT, UINT_PTR idEvent, DWORD)
 
 void SplitUrl(const std::string& url, std::string& host, std::string& path)
 {
-   URL_COMPONENTSA urlComponents;
-   ZeroMemory(&urlComponents, sizeof(urlComponents));
+   URL_COMPONENTSA urlComponents{};
    urlComponents.dwStructSize = sizeof(urlComponents);
    urlComponents.dwHostNameLength = 1;
    urlComponents.dwUrlPathLength = 1;
@@ -238,28 +303,7 @@ void CALLBACK WinINetCallback(HINTERNET hInternet, DWORD_PTR dwContext, DWORD dw
       case INTERNET_STATUS_REQUEST_COMPLETE:
       {
          INTERNET_ASYNC_RESULT* pResult = reinterpret_cast<INTERNET_ASYNC_RESULT*>(lpvStatusInformation);
-         if (pResult->dwError == ERROR_SUCCESS)
-         {
-            if (session->readBuf.size())
-               session->process_read_complete();
-            // always call ReadResponseAndTerminate one last time, even if the read was complete.
-            // this lets the function finish the other side of the read loop.
-            if (!ReadResponseAndTerminate(session))
-            {
-               if (session->readErrorCode == ERROR_IO_PENDING)
-               {
-                  session->readErrorCode = 0;
-                  return;
-               }
-            }
-         }
-         else
-         {
-            // Read error occurred
-            session->readErrorCode = pResult->dwError;
-         }
-         // Signal completion and return
-         SetEvent(session->hEvent);
+         ProcessRequest(session, pResult->dwError);
          break;
       }
    }
@@ -326,48 +370,24 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string& u
          HttpAddRequestHeadersA(session->hRequest, ("Content-Length: " + contentLength).c_str(), static_cast<DWORD>(contentLength.size()), HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
       }
       session->postData = postData;
-      if (!HttpSendRequest(session->hRequest, NULL, 0, session->postData.data(), static_cast<DWORD>(session->postData.size())))
-      {
-         DWORD err = GetLastError();
-         if (err != ERROR_IO_PENDING)
-         {
-            callback(false, GetStringFromLastError(err, true));
-            return nullptr;
-         }
-      }
    }
-   else if (requestType == "get")
-   {
-      if (!HttpSendRequest(session->hRequest, NULL, 0, NULL, 0))
-      {
-         DWORD err = GetLastError();
-         if (err != ERROR_IO_PENDING)
-         {
-            callback(false, GetStringFromLastError(err, true));
-            return nullptr;
-         }
-      }
-   }
-   else
-   {
-      assert(false); // offensive programming: we should not get here
-      return nullptr;
-   }
+
+   ProcessRequest(session.get(), ERROR_SUCCESS);
 
    if (timeout >= 0)
    {
-      DWORD result = WaitForSingleObject(session->hEvent, lround(timeout*1000.0));
+      DWORD result = WaitForSingleObject(session->hEvent, std::lround(timeout*1000.0));
       HandleRequestResult(session.get(), result, true);
    }
    else
    {
-      // Lua is not thread-safe, so we use a timer to check the thread,
+      // Lua is not thread-safe, so we use a timer to check the status of the request,
       // then call the callback from the main thread (where the timer runs).
       UINT_PTR timerID = ::SetTimer(NULL, 0, USER_TIMER_MINIMUM, &__TimerProc);
       if (!timerID)
          callback(false, GetStringFromLastError(GetLastError()));
-      session->SetTimerID(timerID);
-      return session->TimerID() ? session : nullptr;
+      session->set_timer_id(timerID);
+      return session->get_timer_id() ? session : nullptr;
    }
 
    return nullptr;
