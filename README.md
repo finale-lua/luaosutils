@@ -910,6 +910,11 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 
 # Version history
 
+2.2.1
+
+- Updated to use Lua 5.4.6.
+- Modified Windows HTTP functions to use asynchronous WinINet calls.
+
 2.2.0
 
 - Added `post` functions to the `internet` namespace, along with the option to specify html headers.
