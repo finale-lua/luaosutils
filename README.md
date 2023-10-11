@@ -914,6 +914,7 @@ local utf8_codepage = text.get_utf8_codepage() -- almost certainly will be 65001
 
 - Updated to use Lua 5.4.6.
 - Modified Windows HTTP functions to use asynchronous WinINet calls.
+- General cleanup of internet utilities.
 
 2.2.0
 
