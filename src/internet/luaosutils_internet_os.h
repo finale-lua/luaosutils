@@ -161,17 +161,8 @@ struct mac_request_context
 private:
    size_t _id{};
    
-   static std::mutex& get_id_mutex()
-   {
-      static std::mutex idMutex;
-      return idMutex;
-   }
-   
-   static std::map<size_t, mac_request_context*>& get_id_map()
-   {
-      static std::map<size_t, mac_request_context*> idMap;
-      return idMap;
-   }
+   static std::mutex& get_id_mutex();
+   static std::map<size_t, mac_request_context*>& get_id_map();
 
    static size_t get_new_id() // this should always be used to calculate the id
    {

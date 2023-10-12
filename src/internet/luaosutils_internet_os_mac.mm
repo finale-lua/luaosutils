@@ -15,6 +15,23 @@
 namespace luaosutils
 {
 
+// WARNING:  get_id_mutex() and get_id_map() must be defined here
+//             and not in the header, because when RGPLua includes
+//             the header, it is not objective-c. Leaving these
+//             functions in the header causes the XCode linker to
+//             emit warnings when optimizing for Release.
+std::mutex& mac_request_context::get_id_mutex()
+{
+   static std::mutex idMutex;
+   return idMutex;
+}
+
+std::map<size_t, mac_request_context*>& mac_request_context::get_id_map()
+{
+   static std::map<size_t, mac_request_context*> idMap;
+   return idMap;
+}
+
 OSSESSION_ptr https_request(const std::string& requestType, const std::string &urlString, const std::string& postData,
                             const HeadersMap& headers, double timeout, lua_callback callback)
 {
