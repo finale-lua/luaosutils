@@ -141,7 +141,7 @@ int push_lua_args(lua_State* L, Arg arg, Args... args) {
 }
 
 template<typename T>
-T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt)
+T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt, const char* metatableKey = nullptr)
 {
    const int type = lua_type(L, param_number);
    if (type == LUA_TNIL || type == LUA_TNONE)
@@ -151,13 +151,15 @@ T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::opti
    }
    if (type != expected_type)
    {
-      const char* expected_type_name = lua_typename(L, expected_type);
+      const char* expected_type_name = metatableKey ? metatableKey : lua_typename(L, expected_type);
       const char* actual_type_name = lua_typename(L, type);
       luaL_error(L, "param %d expected %s, got %s", param_number, expected_type_name, actual_type_name);
    }
    if constexpr (std::is_convertible<T, void*>::value)
    {
-      T ptr = reinterpret_cast<T>(lua_touserdata(L, param_number));
+      T ptr = (metatableKey)
+               ? reinterpret_cast<T>(luaL_checkudata(L, param_number, metatableKey))
+               : reinterpret_cast<T>(lua_touserdata(L, param_number));
       return ptr;
    }
    else
