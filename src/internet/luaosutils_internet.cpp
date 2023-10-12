@@ -94,16 +94,19 @@ static void create_luaosutils_callback_session(lua_State *L, luaosutils::OSSESSI
    luaosutils::callback_session* session = new (lua_newuserdata(L, sizeof(luaosutils::callback_session)))
                                  luaosutils::callback_session(L, callback, sessionID);
    session->set_os_session(os_session);
+
    // Create a metatable for the userdata through that object can be accessed with "gc". That means we get called when Lua state closes.
-   lua_newtable(L);
-   lua_pushstring(L, "__gc");
-   lua_pushcfunction(L, [](lua_State* L)
+   if (luaL_newmetatable(L, luaosutils::kSessionMetatableKey))
    {
-      auto udata = (luaosutils::callback_session*)lua_touserdata(L, 1);
-      udata->~callback_session();
-      return 0;
-   });
-   lua_settable(L, -3);
+      lua_pushstring(L, "__gc");
+      lua_pushcfunction(L, [](lua_State* L) -> int
+                        {
+         auto udata = (luaosutils::callback_session*)lua_touserdata(L, 1);
+         udata->~callback_session();
+         return 0;
+      });
+      lua_settable(L, -3);
+   }
    lua_setmetatable(L, -2);
 }
 
@@ -258,9 +261,10 @@ int luaosutils_internet_post_sync(lua_State *L)
 
 static int luaosutils_internet_cancel_session(lua_State* L)
 {
-   auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA, nullptr);
+   auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA, nullptr, luaosutils::kSessionMetatableKey);
    if (session) session->cancel();
-   return 0;
+   lua_pushnil(L);
+   return 1;
 }
 
 static int luaosutils_server_name(lua_State *L)

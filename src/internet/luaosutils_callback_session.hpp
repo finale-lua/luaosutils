@@ -19,6 +19,8 @@
 namespace luaosutils
 {
 
+constexpr const char (&kSessionMetatableKey)[] = "luaosutils_callback_session";
+
 /** \brief This class is used to guarantee that a Lua state is still active when a callback occurs.
  * A userdata of it is returned to Lua and the session stays active as long as
  * the Lua script maintains the returned value in scope. If the Lua state is closed,
