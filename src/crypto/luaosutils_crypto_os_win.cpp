@@ -7,7 +7,6 @@
 #include <string>
 #include <fstream>
 
-//#include <wincrypt.h>
 #include <bcrypt.h>
 
 #include "crypto/luaosutils_crypto_os.h"
@@ -69,9 +68,10 @@ encryptBuffer calc_crypto_key(const encryptBuffer& seedValue, const encryptBuffe
    encryptBuffer key(cryptoKeyLength);
    const uint8_t* pSalt = salt.size() ? salt.data() : nullptr;
    
-   // stoopid WinAPI can't take const salt, so effing copy it
+   // stoopid WinAPI can't take const salt or seed, so effing copy them
    encryptBuffer salty = salt;
    uint8_t* pSalty = salty.size() ? salty.data() : nullptr;
+   encryptBuffer seedy = seedValue;
    
    // Open a handle to the RNG algorithm
    BCRYPT_ALG_HANDLE rgnHandle = NULL;
@@ -79,8 +79,8 @@ encryptBuffer calc_crypto_key(const encryptBuffer& seedValue, const encryptBuffe
    if (BCRYPT_SUCCESS(BCryptOpenAlgorithmProvider(&rgnHandle, BCRYPT_SHA256_ALGORITHM, NULL, BCRYPT_ALG_HANDLE_HMAC_FLAG)))
    {
       // Generate the key using PBKDF2 with SHA-256
-      NTSTATUS status =  BCryptDeriveKeyPBKDF2(rgnHandle, reinterpret_cast<PUCHAR>(seedValue.data()), static_cast<ULONG>(seedValue.size()),
-                            reinterpret_cast<const PUCHAR>(pSalty), static_cast<ULONG>(salty.size()), kIterations, key.data(), keyLength, 0);
+      NTSTATUS status =  BCryptDeriveKeyPBKDF2(rgnHandle, reinterpret_cast<PUCHAR>(seedy.data()), static_cast<ULONG>(seedy.size()),
+                            reinterpret_cast<const PUCHAR>(pSalty), static_cast<ULONG>(salty.size()), cryptoKeyIterations, key.data(), cryptoKeyLength, 0);
       if (!BCRYPT_SUCCESS(status))
       {
 #ifdef _DEBUG
@@ -139,19 +139,19 @@ encryptBuffer encrypt(const encryptBuffer& key, const std::string& plaintext, en
       ULONG res = 0;
       if (!BCRYPT_SUCCESS(BCryptGetProperty(hAlgorithm, BCRYPT_BLOCK_LENGTH, reinterpret_cast<BYTE*>(&block_len), sizeof(block_len), &res, 0)))
          throw std::runtime_error("Failed to get block length property");
-      iv = getSomeSalt(block_len);
+      iv = luaosutils::calc_randomized_data(block_len);
       /* BCryptEncrypt modifies iv parameter, so we need to make copy */
       encryptBuffer iv_copy = iv;
       // Determine the size of the encrypted data
-      ULONG dwDataLen = static_cast<ULONG>(data.length());
+      ULONG dwDataLen = static_cast<ULONG>(plaintext.length());
       ULONG dwResultLen = 0;
-      if (!BCRYPT_SUCCESS(BCryptEncrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(data.data())), dwDataLen, NULL,
+      if (!BCRYPT_SUCCESS(BCryptEncrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(plaintext.data())), dwDataLen, NULL,
                iv_copy.data(), static_cast<ULONG>(iv_copy.size()), NULL, 0, &dwResultLen, BCRYPT_BLOCK_PADDING)))
          throw std::runtime_error("Failed to determine size of encrypted data");
       // Resize the encryptedData buffer
       encryptedData.resize(dwResultLen);
       // Encrypt the data
-      if (!BCRYPT_SUCCESS(BCryptEncrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(data.data())), dwDataLen, NULL,
+      if (!BCRYPT_SUCCESS(BCryptEncrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(plaintext.data())), dwDataLen, NULL,
                iv_copy.data(), static_cast<ULONG>(iv_copy.size()), encryptedData.data(), dwResultLen, &dwResultLen, BCRYPT_BLOCK_PADDING)))
          throw std::runtime_error("Failed to encrypt data");
    }
@@ -176,9 +176,6 @@ std::string decrypt(const encryptBuffer& key, const encryptBuffer& cyphertext, c
    BCRYPT_ALG_HANDLE hAlgorithm = NULL;
    BCRYPT_KEY_HANDLE hKey = NULL;
 
-   if (!iv.size())
-      return decryptString_deprecated(key, encryptedData);
-
    try
    {
       // Open a provider handle
@@ -196,18 +193,18 @@ std::string decrypt(const encryptBuffer& key, const encryptBuffer& cyphertext, c
       /* BCryptEncrypt modifies iv parameter, so we need to make copy */
       encryptBuffer iv_copy = iv;
       // Determine the size of the decrypted data
-      ULONG dwDataLen = static_cast<ULONG>(encryptedData.size());
+      ULONG dwDataLen = static_cast<ULONG>(cyphertext.size());
       ULONG dwResultLen = 0;
-      if (!BCRYPT_SUCCESS(BCryptDecrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(encryptedData.data())), dwDataLen, NULL,
+      if (!BCRYPT_SUCCESS(BCryptDecrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(cyphertext.data())), dwDataLen, NULL,
                iv_copy.data(), static_cast<ULONG>(iv_copy.size()), NULL, 0, &dwResultLen, BCRYPT_BLOCK_PADDING)))
          throw std::runtime_error("Failed to determine size of decrypted data");
       // Resize the encryptedData buffer
       decryptedData.resize(dwResultLen);
       // Encrypt the data
-      if (!BCRYPT_SUCCESS(BCryptDecrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(encryptedData.data())), dwDataLen, NULL,
+      if (!BCRYPT_SUCCESS(BCryptDecrypt(hKey, const_cast<BYTE*>(reinterpret_cast<const BYTE*>(cyphertext.data())), dwDataLen, NULL,
                iv_copy.data(), static_cast<ULONG>(iv_copy.size()), reinterpret_cast<BYTE*>(decryptedData.data()), dwResultLen, &dwResultLen, BCRYPT_BLOCK_PADDING)))
          throw std::runtime_error("Failed to decrypt data");
-      // Resize the encryptedData buffer
+      // Resize the decryptedData buffer
       decryptedData.resize(dwResultLen);
    }
    catch (std::runtime_error&)
