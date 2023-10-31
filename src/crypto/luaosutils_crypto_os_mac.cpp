@@ -58,5 +58,65 @@ encryptBuffer calc_crypto_key(const encryptBuffer& seedValue, const encryptBuffe
 
    return key;
 }
+
+encryptBuffer encrypt(const encryptBuffer& key, const std::string& plaintext, encryptBuffer& iv)
+{
+   // Convert the plaintext from a string to a byte array
+   const char* plaintextBytes = plaintext.c_str();
+   const size_t plaintextLength = plaintext.length();
    
+   // create the IV
+   iv = calc_randomized_data(kCCBlockSizeAES128);
+   
+   // Allocate space for the encrypted data
+   size_t encryptedLength = plaintextLength + kCCBlockSizeAES128;
+   std::unique_ptr<char[]> encryptedBytes(new char[encryptedLength]);
+   
+   size_t actualEncryptedLength = 0;
+   [[maybe_unused]]CCCryptorStatus
+   result = CCCrypt(kCCEncrypt,
+                    kCCAlgorithmAES,
+                    kCCOptionPKCS7Padding,
+                    key.data(),
+                    key.size(),
+                    iv.data(),
+                    plaintextBytes,
+                    plaintextLength,
+                    encryptedBytes.get(),
+                    encryptedLength,
+                    &actualEncryptedLength);
+   // Convert the encrypted byte array to a string and clean up
+   encryptBuffer encryptedString(encryptedBytes.get(), encryptedBytes.get() + actualEncryptedLength);
+   
+   return encryptedString;
+}
+
+std::string decrypt(const encryptBuffer& key, const encryptBuffer& cyphertext, const encryptBuffer& iv)
+{
+   const char* encryptedBytes = reinterpret_cast<const char*>(cyphertext.data());
+   const size_t encryptedLength = cyphertext.size();
+   
+   // Allocate space for the decrypted data
+   size_t decryptedLength = encryptedLength + kCCBlockSizeAES128;
+   std::unique_ptr<char[]> decryptedBytes(new char[decryptedLength]);
+   
+   size_t actualDecryptedLength = 0;
+   [[maybe_unused]]CCCryptorStatus
+   result = CCCrypt(kCCDecrypt,
+                    kCCAlgorithmAES,
+                    kCCOptionPKCS7Padding,
+                    key.data(),
+                    key.size(),
+                    iv.size() ? iv.data() : nullptr,
+                    encryptedBytes,
+                    encryptedLength,
+                    decryptedBytes.get(),
+                    decryptedLength,
+                    &actualDecryptedLength);
+   // Convert the decrypted byte array to a string and clean up
+   std::string decryptedString(decryptedBytes.get(), actualDecryptedLength);
+   
+   return decryptedString;
+}
+
 } //namespace
