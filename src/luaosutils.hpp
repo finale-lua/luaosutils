@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 2.2.1"
+#define LUAOSUTILS_VERSION "Luaosutils 2.3.0"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
@@ -67,6 +67,7 @@ inline int restricted_function(lua_State *L)
    return 0;
 }
 
+void luaosutils_crypto_create(lua_State *L);
 void luaosutils_internet_create(lua_State *L, bool restricted);
 void luaosutils_menu_create(lua_State *L, bool restricted);
 void luaosutils_process_create(lua_State *L, bool restricted);

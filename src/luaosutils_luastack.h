@@ -17,6 +17,7 @@
 #include <string>
 
 #include "lua.hpp"
+#include "crypto/luaosutils_crypto_utils.h"
 
 template<typename T>
 class LuaStack
@@ -101,6 +102,16 @@ private:
          return std::string(str, len);
       }
    };
+   
+   template<>
+   struct get_helper<luaosutils::encryptBuffer> {
+      static luaosutils::encryptBuffer get(lua_State* L, int index) {
+         const uint8_t* val = (const uint8_t*)lua_tolstring(L, index, nullptr);
+         if (val == nullptr) return luaosutils::encryptBuffer();
+         const size_t len = lua_rawlen(L, index);
+         return luaosutils::encryptBuffer(val, val + len);
+      }
+   };
 
    void push_impl(bool value) {
       lua_pushboolean(L, value);
@@ -124,6 +135,10 @@ private:
    
    void push_impl(const std::string& value) {
       lua_pushlstring(L, value.data(), value.size());
+   }
+   
+   void push_impl(const luaosutils::encryptBuffer& value) {
+      lua_pushlstring(L, (const char*)value.data(), value.size());
    }
 };
 

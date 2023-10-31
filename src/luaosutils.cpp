@@ -29,6 +29,7 @@ static int luaopen_luaosutils(lua_State *L, bool restricted, bool restrictMenus)
    luaL_newlib(L, funcs);
 #endif
    /* add nested tables */
+   luaosutils_crypto_create(L);
    luaosutils_internet_create(L, (g_restrictedOptions & kRestrictHttps) != 0);
    luaosutils_menu_create(L, (g_restrictedOptions & kRestrictMenus) != 0);
    luaosutils_process_create(L, (g_restrictedOptions & kRestrictExternal) != 0);
