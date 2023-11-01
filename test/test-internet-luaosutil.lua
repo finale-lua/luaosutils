@@ -16,10 +16,12 @@ if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT + finale.CMDMODKEY_SHIFT
     return
 end
 
+print("loading luaosutils")
 local osutils = require('luaosutils.restricted')
 local internet = osutils.internet
+print("loaded luaosutils")
 
-local async_call = false
+local async_call = true
 
 local headers = {
             ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
@@ -47,6 +49,8 @@ function callback(download_successful, urlcontents)
    end
    finenv.RetainLuaState = false
 end
+
+print("calling get")
 
 if async_call then
     g_session = internet.get(url, callback, headers)

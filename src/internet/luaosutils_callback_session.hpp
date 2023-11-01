@@ -70,8 +70,8 @@ public:
    /** \brief Destructor. Attempts to cancel session if there is one. */
    ~callback_session()
    {
-      luaL_unref(m_L, LUA_REGISTRYINDEX, m_function);
       get_active_sessions_mutex().lock();
+      luaL_unref(m_L, LUA_REGISTRYINDEX, m_function);
       _get_active_sessions().erase(m_ID);
       get_active_sessions_mutex().unlock();
    }
