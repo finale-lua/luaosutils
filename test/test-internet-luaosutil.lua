@@ -1,10 +1,13 @@
 function plugindef()
     finaleplugin.RequireDocument = false
     finaleplugin.LoadLuaOSUtils = false
+    finaleplugin.ExecuteExternalCode = true
     return "aaa - luautils internet test"
 end
-    
-require('mobdebug').start() -- for ZeroBrane Studio debugging
+
+if not finenv.ConsoleIsAvailable then
+    require('mobdebug').start() -- for ZeroBrane Studio debugging
+end
 
 print("RetainLuaState", finenv.RetainLuaState)
 
@@ -16,7 +19,7 @@ end
 local osutils = require('luaosutils.restricted')
 local internet = osutils.internet
 
-local async_call = true
+local async_call = false
 
 local headers = {
             ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
