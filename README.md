@@ -60,7 +60,7 @@ Converts a string of hexadecimal digits to the equivalent string of binary value
 ```lua
 local chars_string = "534d3af4"
 local bin_string = crypto.conv_chars_to_bin(chars_string)
-print (bin_string) -- prints "74657374", which is the hexadecimal representaion of the four letters.
+print (bin_string)
 ```
 
 ### crypto.calc\_randomized\_data
@@ -69,7 +69,7 @@ Returns a binary string of randomly initialized bytes. This is routine is useful
 
 |Input Type|Description|
 |----------|-----------|
-|integer|(optional) the number of randomized bytes to return. If omitted, returns a random number of bytes between 32 and 96. |
+|(integer)|The optional number of randomized bytes to return. If omitted, it returns a random number of bytes between 32 and 96. |
 
 |Output Type|Description|
 |----------|-----------|
@@ -201,7 +201,7 @@ The callback function has the following parameters.
 
 With synchronous calls, you supply a timeout, and the function fails if the timeout expires. The timeout cannot be less than zero. Do not use synchronous calls except for very small replies where you can limit the timeout to a few seconds. Synchronous calls block Finale's user interface.
 
-Synchronous function names have a `_sync` prefix.
+Synchronous function names have a `_sync` suffix.
 
 ##### HTTPS required
 
@@ -256,7 +256,7 @@ g_session = internet.get("https://mysite.com/myfile.zip", callback)
 finenv.RetainLuaState = true
 ```
 
-The test folder contains [`test-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
+The test folder contains [`test-internet-luaosutil.lua`](https://github.com/finale-lua/luaosutils/blob/main/test/test-internet-luaosutil.lua). This shows a working example that downloads the Google Mail icon to the folder where the script is running.
 
 This function is also aliased as `download_url` for backwards compatibility.
 
