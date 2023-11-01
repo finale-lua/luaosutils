@@ -82,6 +82,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\crypto\luaosutils_crypto_os.h" />
+    <ClInclude Include="..\src\crypto\luaosutils_crypto_utils.h" />
     <ClInclude Include="..\src\internet\luaosutils_callback_session.hpp" />
     <ClInclude Include="..\src\internet\luaosutils_internet_lua.h" />
     <ClInclude Include="..\src\internet\luaosutils_internet_os.h" />
@@ -95,6 +97,9 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\crypto\luaosutils_crypto.cpp" />
+    <ClCompile Include="..\src\crypto\luaosutils_crypto_os_win.cpp" />
+    <ClCompile Include="..\src\crypto\luaosutils_crypto_utils.cpp" />
     <ClCompile Include="..\src\internet\luaosutils_internet.cpp" />
     <ClCompile Include="..\src\internet\luaosutils_internet_os_win.cpp" />
     <ClCompile Include="..\src\luaosutils.cpp" />

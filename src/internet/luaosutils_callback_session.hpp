@@ -11,12 +11,15 @@
 #define luaosutils_callback_session_hpp
 
 #include <map>
+#include <mutex>
 
 #include "luaosutils.hpp"
 #include "internet/luaosutils_internet_os.h"
 
 namespace luaosutils
 {
+
+constexpr const char (&kSessionMetatableKey)[] = "luaosutils_callback_session";
 
 /** \brief This class is used to guarantee that a Lua state is still active when a callback occurs.
  * A userdata of it is returned to Lua and the session stays active as long as
@@ -41,6 +44,12 @@ private:
       return g_activeSessions;
    }
    
+   static std::mutex& get_active_sessions_mutex()
+   {
+      static std::mutex activeSessionsMutex;
+      return activeSessionsMutex;
+   }
+   
 public:
    /** \brief Constructor.
     *
@@ -51,26 +60,28 @@ public:
     * \param func A reference to a Lua callback function.
     * \param id A process-level unique instance identifier. Use #get_new_session_id to generate it.
     */
-   callback_session(lua_State* L, int func, id_type id) : m_L(L), m_function(func), m_ID(id), m_osSession(nullptr)
+   callback_session(lua_State* L, int func, id_type id) : m_L(L), m_function(func), m_ID(id)
    {
+      get_active_sessions_mutex().lock();
       _get_active_sessions().emplace(id, this);
+      get_active_sessions_mutex().unlock();
    }
    
    /** \brief Destructor. Attempts to cancel session if there is one. */
    ~callback_session()
    {
-#if OPERATING_SYSTEM == MAC_OS
-      if (this->os_session())
-         cancel_session(this->os_session());
-#endif
+      get_active_sessions_mutex().lock();
       luaL_unref(m_L, LUA_REGISTRYINDEX, m_function);
       _get_active_sessions().erase(m_ID);
+      get_active_sessions_mutex().unlock();
    }
    
    /** \brief Class-level function that generates a new value for use as a unique instance identifier. */
    static id_type get_new_session_id() // this should always be used to calculate the id
    {
+      static std::mutex mtx;
       static id_type sessionID = 0;
+      std::lock_guard<std::mutex> lock(mtx);
       return ++sessionID;
    }
    
@@ -80,11 +91,18 @@ public:
    /** \brief Returns the Lua function for this instance. */
    int function() { return m_function; }
    
-   /** \brief Returns the OS session pointer for this instance. */
-   OSSESSION_ptr os_session() const { return m_osSession; }
+   ///** \brief Returns the OS session pointer for this instance. */
+   //OSSESSION* os_session() const { return m_osSession.get(); }
    
    /** \brief Sets the OS session pointer for this instance. */
-   void set_os_session(OSSESSION_ptr session) { m_osSession = session; }
+   void set_os_session(OSSESSION_ptr& session)
+   {
+      if (m_osSession.get() != session.get())
+         m_osSession = std::move(session);
+   }
+   
+   /** \brief Lua-callable function that cancels any running request. */
+   void cancel() { m_osSession = nullptr; }
    
    /** \brief Class-level function that finds a running session from its unique instance identifier.
     *

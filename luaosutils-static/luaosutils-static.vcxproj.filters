@@ -28,6 +28,9 @@
     <Filter Include="Source Files\text">
       <UniqueIdentifier>{ac22bf54-154c-44dc-aaf7-50cfec5604f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\crypto">
+      <UniqueIdentifier>{ec396290-2a3d-4661-a70b-a28e0cec86dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -63,6 +66,12 @@
     <ClInclude Include="..\src\internet\luaosutils_internet_lua.h">
       <Filter>Source Files\internet</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\crypto\luaosutils_crypto_os.h">
+      <Filter>Source Files\crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\crypto\luaosutils_crypto_utils.h">
+      <Filter>Source Files\crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -94,6 +103,15 @@
     </ClCompile>
     <ClCompile Include="..\src\text\luaosutils_text_os_win.cpp">
       <Filter>Source Files\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\crypto\luaosutils_crypto.cpp">
+      <Filter>Source Files\crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\crypto\luaosutils_crypto_os_win.cpp">
+      <Filter>Source Files\crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\crypto\luaosutils_crypto_utils.cpp">
+      <Filter>Source Files\crypto</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

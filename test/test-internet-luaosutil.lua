@@ -1,10 +1,13 @@
 function plugindef()
     finaleplugin.RequireDocument = false
     finaleplugin.LoadLuaOSUtils = false
+    finaleplugin.ExecuteExternalCode = true
     return "aaa - luautils internet test"
 end
-    
-require('mobdebug').start() -- for ZeroBrane Studio debugging
+
+if not finenv.ConsoleIsAvailable then
+    require('mobdebug').start() -- for ZeroBrane Studio debugging
+end
 
 print("RetainLuaState", finenv.RetainLuaState)
 
@@ -13,8 +16,10 @@ if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT + finale.CMDMODKEY_SHIFT
     return
 end
 
+print("loading luaosutils")
 local osutils = require('luaosutils.restricted')
 local internet = osutils.internet
+print("loaded luaosutils")
 
 local async_call = true
 
@@ -44,6 +49,8 @@ function callback(download_successful, urlcontents)
    end
    finenv.RetainLuaState = false
 end
+
+print("calling get")
 
 if async_call then
     g_session = internet.get(url, callback, headers)

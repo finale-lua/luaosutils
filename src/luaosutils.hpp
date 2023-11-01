@@ -10,7 +10,7 @@
 #ifndef luaosutils_hpp
 #define luaosutils_hpp
 
-#define LUAOSUTILS_VERSION "Luaosutils 2.2.0"
+#define LUAOSUTILS_VERSION "Luaosutils 2.3.0"
 
 #define MAC_OS       1         /* Macintosh operating system */
 #define WINDOWS      2         /* Microsoft Windows (MS-DOS) */
@@ -63,13 +63,14 @@ inline void add_constant(lua_State *L, const char* const_name, int value, int ta
 
 inline int restricted_function(lua_State *L)
 {
-   luaL_error(L, "trusted code is required to run this function");
+   luaL_error(L, "the current permissions environment does not allow this function to run");
    return 0;
 }
 
+void luaosutils_crypto_create(lua_State *L);
 void luaosutils_internet_create(lua_State *L, bool restricted);
 void luaosutils_menu_create(lua_State *L, bool restricted);
 void luaosutils_process_create(lua_State *L, bool restricted);
-void luaosutils_text_create(lua_State *L, bool restricted);
+void luaosutils_text_create(lua_State *L);
 
 #endif // luaosutils_hpp

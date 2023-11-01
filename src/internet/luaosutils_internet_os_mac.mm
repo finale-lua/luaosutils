@@ -15,10 +15,26 @@
 namespace luaosutils
 {
 
+// WARNING:  get_id_mutex() and get_id_map() must be defined here
+//             and not in the header, because when RGPLua includes
+//             the header, it is not objective-c. Leaving these
+//             functions in the header causes the XCode linker to
+//             emit warnings when optimizing for Release.
+std::mutex& mac_request_context::get_id_mutex()
+{
+   static std::mutex idMutex;
+   return idMutex;
+}
+
+std::map<size_t, mac_request_context*>& mac_request_context::get_id_map()
+{
+   static std::map<size_t, mac_request_context*> idMap;
+   return idMap;
+}
+
 OSSESSION_ptr https_request(const std::string& requestType, const std::string &urlString, const std::string& postData,
                             const HeadersMap& headers, double timeout, lua_callback callback)
 {
-   __block bool inProgress = true; // matters only in the synchronous version of this routine
    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:urlString.c_str()]];
    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
    NSString *method = [NSString stringWithUTF8String:requestType.c_str()];
@@ -49,26 +65,44 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string &u
       [request addValue:value forHTTPHeaderField:key];
    }
    
+   OSSESSION_ptr session = OSSESSION_ptr(new mac_request_context(callback));
+   size_t sessionId = session->get_id();
+   
+
    NSURLSessionDataTask* sessionTask = [[NSURLSession sharedSession] dataTaskWithRequest:request
                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
                   {
                      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
                      NSLog(@"NSURLSessionDataTask response status code: %ld", (long)[httpResponse statusCode]);
-                     if (! inProgress) return;
+                     mac_request_context* pSession = luaosutils::mac_request_context::get_context_from_id(sessionId);
+                     if (!pSession)
+                     {
+                        NSLog(@"Completion handler called but session was gone. (User likely canceled it.)");
+                        return;
+                     }
+                     if (error)
+                     {
+                        NSLog(@"Https request completed with error: %@", [error localizedDescription]);
+                        pSession->success = false;
+                        pSession->buffer = [[error localizedDescription] UTF8String];
+                     }
+                     else
+                     {
+                        pSession->success = [httpResponse statusCode] == kHTTPStatusCodeOK;
+                        pSession->buffer = std::string(static_cast<const char *>([data bytes]), [data length]);
+                     }
                      auto codeBlock = ^{
-                        if (error)
+                        mac_request_context* pSessionBlock = luaosutils::mac_request_context::get_context_from_id(sessionId);
+                        if (!pSessionBlock)
                         {
-                           NSLog(@"Https request completed with error: %@", [error localizedDescription]);
-                           callback(false, [[error localizedDescription] UTF8String]);
+                           NSLog(@"Async completion handler called but session was gone. (User likely canceled it.)");
+                           return;
                         }
-                        else
-                           callback([httpResponse statusCode] == kHTTPStatusCodeOK, std::string(static_cast<const char *>([data bytes]), [data length]));
+                        pSessionBlock->sessionTask = nil; // no need to try to cancel it here, because it's finished.
+                        pSessionBlock->complete_request();
                      };
                      if (timeout < 0)
-                        dispatch_async(dispatch_get_main_queue(), codeBlock); // async calls must run on main thread because Lua is not thread-safe
-                     else
-                        codeBlock();
-                     inProgress = false;
+                        dispatch_async(dispatch_get_main_queue(), codeBlock); // async calls must call back on the main thread because Lua is not thread-safe
                   }];
    if (! sessionTask)
    {
@@ -81,33 +115,37 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string &u
                         [url absoluteString], [[sessionTask error] localizedDescription]] UTF8String]);
       return nil;
    }
+   session->sessionTask = (__bridge void *)(sessionTask);
    [sessionTask resume];
    if (timeout >= 0)
    {
       NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-      while (inProgress)
+      while (! [[sessionTask progress] isFinished])
       {
-         [NSThread sleepForTimeInterval:0.05]; // minimum timeout value
          if ([NSDate timeIntervalSinceReferenceDate] >= (startTime + timeout))
          {
             if (! [[sessionTask progress] isFinished])
             {
-               inProgress = false;
                [sessionTask cancel];
-               callback(false, "Request timed out.");
+               session->sessionTask = nil;
+               session->success = false;
+               session->buffer = "Request timed out.";
+               break;
             }
          }
+         [NSThread sleepForTimeInterval:0.05]; // minimum timeout value
       }
-      sessionTask = nil;
+      session->complete_request();
+      return nil;
    }
-   return (__bridge void *)(sessionTask);
+   return session;
 }
 
-void cancel_session(OSSESSION_ptr session)
+void cancel_session(void* sessionTask)
 {
-   NSURLSessionDataTask* nssession = (__bridge NSURLSessionDataTask*)session;
-   if (! [[nssession progress] isFinished])
-      [nssession cancel];
+   NSURLSessionDataTask* nsSession = (__bridge NSURLSessionDataTask*)sessionTask;
+   if (nsSession && ! [[nsSession progress] isFinished])
+      [nsSession cancel];
 }
 
 static NSModalResponse InternalRunAlertPanel(NSAlertStyle style, NSString *title, NSString *msgFormat, NSString *defaultButton, NSString *alternateButton, NSString *otherButton)
@@ -151,4 +189,4 @@ std::string server_name(const std::string &url)
    return result ? result : "";
 }
 
-}
+} // namespace luaosutils

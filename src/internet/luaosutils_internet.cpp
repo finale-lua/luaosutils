@@ -88,22 +88,25 @@ static void call_lua_function(luaosutils::callback_session &session, Args... arg
    }
 }
 
-static void create_luaosutils_callback_session(lua_State *L, luaosutils::OSSESSION_ptr os_session,
+static void create_luaosutils_callback_session(lua_State *L, luaosutils::OSSESSION_ptr& os_session,
            int callback, luaosutils::callback_session::id_type sessionID)
 {
    luaosutils::callback_session* session = new (lua_newuserdata(L, sizeof(luaosutils::callback_session)))
                                  luaosutils::callback_session(L, callback, sessionID);
    session->set_os_session(os_session);
+
    // Create a metatable for the userdata through that object can be accessed with "gc". That means we get called when Lua state closes.
-   lua_newtable(L);
-   lua_pushstring(L, "gc");
-   lua_pushcfunction(L, [](lua_State* L)
+   if (luaL_newmetatable(L, luaosutils::kSessionMetatableKey))
    {
-      auto udata = (luaosutils::callback_session*)lua_touserdata(L, 1);
-      udata->~callback_session();
-      return 0;
-   });
-   lua_settable(L, -3);
+      lua_pushstring(L, "__gc");
+      lua_pushcfunction(L, [](lua_State* L) -> int
+                        {
+         auto udata = (luaosutils::callback_session*)lua_touserdata(L, 1);
+         udata->~callback_session();
+         return 0;
+      });
+      lua_settable(L, -3);
+   }
    lua_setmetatable(L, -2);
 }
 
@@ -121,15 +124,20 @@ static int luaosutils_internet_get(lua_State *L)
    auto headers = get_lua_parameter<luaosutils::HeadersMap>(L, 3, LUA_TTABLE, luaosutils::HeadersMap());
    
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
-   
-   const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("get", urlString, "", headers, -1,
-         [sessionID](bool success, const std::string &urlResult) -> void
+      
+   luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("get", urlString, "", headers, -1,
+         [sessionID, L, callback](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
             {
                call_lua_function(*session, success, urlResult);
-               session->set_os_session(nullptr);
+               session->cancel();
+            }
+            else
+            {
+               luaosutils::callback_session temp(L, callback, luaosutils::callback_session::get_new_session_id());
+               call_lua_function(temp, success, urlResult);
             }
          });
 
@@ -189,16 +197,21 @@ int luaosutils_internet_post(lua_State *L)
    
    luaosutils::callback_session::id_type sessionID = luaosutils::callback_session::get_new_session_id();
    
-   const luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("post", urlString, postData, headers, -1,
-         [sessionID](bool success, const std::string &urlResult) -> void
+   luaosutils::OSSESSION_ptr os_session = luaosutils::https_request("post", urlString, postData, headers, -1,
+         [sessionID, L, callback](bool success, const std::string &urlResult) -> void
          {
             luaosutils::callback_session* session = luaosutils::callback_session::get_session_for_id(sessionID);
             if (session)
             {
                call_lua_function(*session, success, urlResult);
-               session->set_os_session(nullptr);
+               session->cancel();
             }
-         });
+            else
+            {
+               luaosutils::callback_session temp(L, callback, luaosutils::callback_session::get_new_session_id());
+               call_lua_function(temp, success, urlResult);
+            }
+      });
 
    if (os_session)
    {
@@ -246,6 +259,14 @@ int luaosutils_internet_post_sync(lua_State *L)
    return 2;
 }
 
+static int luaosutils_internet_cancel_session(lua_State* L)
+{
+   auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA, nullptr, luaosutils::kSessionMetatableKey);
+   if (session) session->cancel();
+   lua_pushnil(L);
+   return 1;
+}
+
 static int luaosutils_server_name(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
@@ -271,15 +292,30 @@ static const luaL_Reg internet_utils[] = {
    {"get_sync",            luaosutils_internet_get_sync},
    {"post",                luaosutils_internet_post},
    {"post_sync",           luaosutils_internet_post_sync},
+   {"cancel_session",      luaosutils_internet_cancel_session},
    {"launch_website",      luaosutils_launch_website},
    {"server_name",         luaosutils_server_name},
    {NULL, NULL} // sentinel
 };
 
-void luaosutils_internet_create(lua_State *L, bool /*restricted*/)
+static const luaL_Reg internet_utils_restricted[] = {
+   {"download_url",        restricted_function},         // alias for backwards compatibility
+   {"download_url_sync",   restricted_function},         // alias for backwards compatibility
+   {"get",                 restricted_function},
+   {"get_sync",            restricted_function},
+   {"post",                restricted_function},
+   {"post_sync",           restricted_function},
+   {"cancel_session",      restricted_function},
+   {"launch_website",      luaosutils_launch_website},
+   {"server_name",         luaosutils_server_name},
+   {NULL, NULL} // sentinel
+};
+
+void luaosutils_internet_create(lua_State *L, bool restricted)
 {
    lua_newtable(L);  // create nested table
    
-   luaL_setfuncs(L, internet_utils, 0);   // add file methods to new metatable
+   const luaL_Reg* funcs = restricted ? internet_utils_restricted : internet_utils;
+   luaL_setfuncs(L, funcs, 0);            // add file methods to new metatable
    lua_setfield(L, -2, "internet");       // add the nested table to the parent table with the name
 }

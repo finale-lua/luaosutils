@@ -17,6 +17,7 @@
 #include <string>
 
 #include "lua.hpp"
+#include "crypto/luaosutils_crypto_utils.h"
 
 template<typename T>
 class LuaStack
@@ -101,6 +102,16 @@ private:
          return std::string(str, len);
       }
    };
+   
+   template<>
+   struct get_helper<luaosutils::encryptBuffer> {
+      static luaosutils::encryptBuffer get(lua_State* L, int index) {
+         const uint8_t* val = (const uint8_t*)lua_tolstring(L, index, nullptr);
+         if (val == nullptr) return luaosutils::encryptBuffer();
+         const size_t len = lua_rawlen(L, index);
+         return luaosutils::encryptBuffer(val, val + len);
+      }
+   };
 
    void push_impl(bool value) {
       lua_pushboolean(L, value);
@@ -125,6 +136,10 @@ private:
    void push_impl(const std::string& value) {
       lua_pushlstring(L, value.data(), value.size());
    }
+   
+   void push_impl(const luaosutils::encryptBuffer& value) {
+      lua_pushlstring(L, (const char*)value.data(), value.size());
+   }
 };
 
 // Base case for the recursive call
@@ -141,7 +156,7 @@ int push_lua_args(lua_State* L, Arg arg, Args... args) {
 }
 
 template<typename T>
-T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt)
+T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::optional<T> default_value = std::nullopt, const char* metatableKey = nullptr)
 {
    const int type = lua_type(L, param_number);
    if (type == LUA_TNIL || type == LUA_TNONE)
@@ -151,13 +166,15 @@ T get_lua_parameter(lua_State* L, int param_number, int expected_type, std::opti
    }
    if (type != expected_type)
    {
-      const char* expected_type_name = lua_typename(L, expected_type);
+      const char* expected_type_name = metatableKey ? metatableKey : lua_typename(L, expected_type);
       const char* actual_type_name = lua_typename(L, type);
       luaL_error(L, "param %d expected %s, got %s", param_number, expected_type_name, actual_type_name);
    }
    if constexpr (std::is_convertible<T, void*>::value)
    {
-      T ptr = reinterpret_cast<T>(lua_touserdata(L, param_number));
+      T ptr = (metatableKey)
+               ? reinterpret_cast<T>(luaL_checkudata(L, param_number, metatableKey))
+               : reinterpret_cast<T>(lua_touserdata(L, param_number));
       return ptr;
    }
    else

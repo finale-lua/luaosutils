@@ -68,7 +68,7 @@ static const luaL_Reg text_utils[] = {
    {NULL, NULL} // sentinel
 };
 
-void luaosutils_text_create(lua_State *L, bool /*restricted*/)
+void luaosutils_text_create(lua_State *L)
 {
    lua_newtable(L);  // create nested table
    
