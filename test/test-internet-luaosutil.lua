@@ -11,8 +11,9 @@ end
 
 print("RetainLuaState", finenv.RetainLuaState)
 
-if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT + finale.CMDMODKEY_SHIFT) then
+if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT) or finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_SHIFT) then
     finenv.RetainLuaState = false
+    print ("finenv.RetainLuaState set to "..tostring(finenv.RetainLuaState))
     return
 end
 
