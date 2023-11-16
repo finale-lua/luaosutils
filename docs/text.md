@@ -2,6 +2,12 @@
 
 The text namespace helps with managing text encoding. Since macOS operates entirely in UTF-16, text encoding is primarily a concern on Windows. For this reason the encoding value inputs are Windows codepage numbers. However, the `text` namespace is fully platform-independent. For many common codepages the same inputs achieve the same outputs on both platforms.
 
+## Functions
+
+- [`convert_encoding`](#textconvert_encoding) : Converts encoding from one codepage to another.
+- [`get_default_codepage`](#textget_default_codepage) : Gets the current default codepage.
+- [`get_utf8_codepage`](#textget_utf8_codepage) : Gets the `utf8` codepage value, so your script need not hardcode it.
+
 ### text.convert_encoding
 
 |Input Type|Description|
