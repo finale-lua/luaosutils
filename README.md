@@ -2,7 +2,7 @@
 
 Luaosutils is an ad-hoc collection of utility functions that access operating system features. It is written in C++ to be used with the Lua language. While the build projects are designed so that it is a simple drop-in to the Lua implementation running on Finale, it could be used with any Lua implementation if someone wants to take the time to develop the build process.
 
-A primary distinguishing feature of `luaosutils` is that it makes direct API calls on each supported operating system. Other Lua C-libraries tend to avoid OS-specific implementations wherever possible, but that is the whole point with this library. If you examine the `src` directory, you will find parallel implementation files for each operating system.
+A primary distinguishing feature of `luaosutils` is that it makes direct API calls on each supported operating system. Other Lua C-libraries tend to avoid OS-specific implementations wherever possible, but that is the whole point with this library. If you examine the `src` directory, you will find parallel implementation files for each operating system. This approach allows for zero external dependencies.
 
 # Installation
 
