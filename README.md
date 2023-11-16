@@ -27,11 +27,11 @@ This prevents the script from doing things such as changing application menus or
 
 Luaosutils groups related functions into namespaces. You can find more informations about each on the following documentation pages.
 
-- [`crypto`](docs/crypto) : Functions related to encoding and decoding strings and binary data.
-- `internet` : Functions for accessing resources on the internet with `https` calls.
-- `menu` : Functions for manipulating menu items.
-- `process` : Functions for launching other processes.
-- `text` : Functions for detecting and modifying text encoding of 8-bit character strings.
+- [`crypto`](docs/crypto.md) : Functions related to encoding and decoding strings and binary data.
+- [`internet`](docs/internet.md) : Functions for accessing resources on the internet with `https` calls.
+- [`menu`](docs/menu.md) : Functions for manipulating menu items.
+- [`process`](docs/process.md) : Functions for launching other processes.
+- [`text`](docs/text.md) : Functions for detecting and modifying text encoding of 8-bit character strings.
 
 # Version history
 
