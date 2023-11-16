@@ -1,9 +1,5 @@
 # The 'crypto' namespace
 
-This namespace provides access to OS-level cryptography routines. Most of the inputs and outputs are Lua strings, but some contain binary data and some contain hexadecimal digits (ASCII) representing binary data. The library also provides routines to convert between these two formats efficiently.
-
-## Functions
-
 - [`calc_crypto_key`](#cryptocalc_crypto_key) : Uses PBKDF2 with SHA-256 to create a key appropriate for encryption and decryption.
 - [`calc_file_hash`](#cryptocalc_file_hash) : Computes the SHA-512 hash for a file and returns it in a character string of hexadecimal digits.
 - [`calc_randomized_data`](#cryptocalc_randomized_data) : Returns a binary string of randomly initialized bytes.
@@ -11,6 +7,8 @@ This namespace provides access to OS-level cryptography routines. Most of the in
 - [`conv_chars_to_bin`](#cryptoconv_chars_to_bin) : Converts hexadecimal digits to a binary string.
 - [`decrypt`](#cryptodecrypt) : Uses AES encryption to decrypt the input cyphertext.
 - [`encrypt`](#cryptoencrypt) : Uses AES encryption to encrypt the input plaintext.
+
+This namespace provides access to OS-level cryptography routines. Most of the inputs and outputs are Lua strings, but some contain binary data and some contain hexadecimal digits (ASCII) representing binary data. The library also provides routines to convert between these two formats efficiently.
 
 ### crypto.conv\_bin\_to\_chars
 

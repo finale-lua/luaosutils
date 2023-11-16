@@ -1,5 +1,13 @@
 # The 'internet' namespace
 
+- [`close_session`](#internetclose_session) : Cancels a pending asynchronous request and closes its session.
+- [`get`](#internetget) : Sends HTTPS `GET` command and retrieves the response. (Asynchronous)
+- [`get_sync`](#internetget_sync): Sends HTTPS `GET` command and retrieves the response. (Synchronous)
+- [`launch_website`](#internetget_sync) : Launches a URL in the default browser.
+- [`post`](#internetpost) : Sends HTTPS `POST` command and retrieves the response. (Asynchronous)
+- [`post_sync`](#internetpost_sync): Sends HTTPS `POST` command and retrieves the response. (Synchronous)
+- [`server_name`](#internetserver_name) : Extracts the servername from a URL.
+
 This namespace provides functions to send `GET` or `POST` requests to web servers. The functions then return the full response in a Lua string. For asynchronous calls, the response is passed to a callback function.
 
 ##### Asynchronous calls
