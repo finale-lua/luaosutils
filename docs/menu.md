@@ -1,17 +1,33 @@
 # The 'menu' namespace
 
+- [`delete_submenu`](#menudelete_submenu) : Deletes the specified submenu item from its parent menu.
+- [`find_item`](#menufind_item) : Finds the enclosing menu for the specified menu item text.
+- [`get_item_command_id`](#menuget_item_command_id) : Returns the command-id of the specified menu item.
+- [`get_item_count`](#menuget_item_count) : Returns the number of menu items in the specified menu.
+- [`get_item_submenu`](#menuget_item_submenu) : Returns the submenu of the specified menu item.
+- [`get_item_text`](#menuget_item_text) : Returns the text of the specified menu item.
+- [`get_item_type`](#menuget_item_type) : Returns the type of the specified menu item.
+- [`get_title`](#menuget_title) : Returns the title of the specified menu.
+- [`get_top_level_menu`](#menuget_top_level_menu) : Returns a handle to the top-level menu.
+- [`insert_separator`](#menuinsert_separator) : Inserts a separator menu item.
+- [`insert_submenu`](#menuinsert_submenu) : Inserts a submenu.
+- [`move_item`](#menumove_item) : Moves a menu item from one location to another.
+- [`redraw`](#menuredraw) : Redraws the menu bar.
+- [`set_item_text`](#menuset_item_text) : Changes the text for a menu item.
+- [`set_title`](#menuset_title) : Sets the title of the specified menu.
+
 The `menu` namespace provides os-independent functions for manipulating menu items. For Finale this is particularly useful in the Plug-Ins menu, since by default Finale places all the plugins in a flat menu structure. These functions allow a script (executing at startup) to rearrange the plugin menus into a more usable menu tree.
 
 The Windows and macOS operating systems treat menus slightly differently. In macOS, the top-level menu is associated with the application, whereas in Windows any window can have a top-level menu. Finale for Windows runs in an MDI Client window, and for Lua on Finale it is recommended to use the function `finenv.GetFinaleMainWindow()` to get it. This function (available starting in RGP Lua 0.66) returns the MDI Client Window handle in Windows or `nil` in macOS.
 
-These functions use the following os-specific types. They appear in Lua as opaque userdata items. Lua scripts should only use them to pass to the menu functions in this library.
+These functions use the following os-specific types. They appear in Lua as opaque light userdata items. Lua scripts should only use them to pass to the menu functions in this library.
 
 |Type|Description|
 |----|-----------|
 |menu_handle|os-assigned value that provides access to the menu|
 |window_handle|handle (`HWND`) of a window containing a top-level menu (Windows) or `nil` (macOS)|
 
-Here is an example script that uses the menu functions to move Finale's Music Spacing options to a top-level menu called "Spacing". (See `test/test-menubuild-luaosutil.lua` in this repository.)
+Here is an example script that moves Finale's Music Spacing options to a top-level menu called "Spacing". (See [`test-menubuild-luaosutil.lua`](test/test-menubuild-luaosutil.lua) in this repository.)
 
 ```lua
 local osutils = require('luaosutils')
@@ -452,7 +468,7 @@ end
 
 ### menu.set\_title\*
 
-Returns the title of the specified menu.
+Sets the title of the specified menu.
 
 |Input Type|Description|
 |----------|-----------|
