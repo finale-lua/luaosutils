@@ -39,6 +39,10 @@ Luaosutils groups related functions into namespaces. You can find more informati
 
 # Version history
 
+2.3.1
+
+- Added optional custom error handler for when `luaosutils` is embedded.
+
 2.3.0
 
 - Added `crypto` namespace.

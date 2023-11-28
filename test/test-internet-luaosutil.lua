@@ -1,7 +1,8 @@
 function plugindef()
     finaleplugin.RequireDocument = false
-    finaleplugin.LoadLuaOSUtils = false
-    finaleplugin.ExecuteExternalCode = true
+    finaleplugin.LoadLuaOSUtils = true
+    finaleplugin.ExecuteExternalCode = false
+    finaleplugin.ExecuteHttpsCalls = true
     return "aaa - luautils internet test"
 end
 
@@ -18,9 +19,9 @@ if finenv.QueryInvokedModifierKeys(finale.CMDMODKEY_ALT) or finenv.QueryInvokedM
 end
 
 print("loading luaosutils")
-local osutils = require('luaosutils.restricted')
+local osutils = require('luaosutils')
 local internet = osutils.internet
-print("loaded luaosutils")
+print("loaded "..osutils._VERSION)
 
 local async_call = true
 

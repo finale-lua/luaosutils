@@ -62,14 +62,30 @@ static void LuaRun_AppendLineToOutput(lua_State * L, const char * str)
    lua_pop(L, 1); // pop the function from the stack
 }
 
+/** \brief Calls a callback function in Lua.
+ *
+ * \param session the callback session
+ * \param args the arguments to the Lua function to be called
+ */
 template<typename... Args>
 static void call_lua_function(luaosutils::callback_session &session, Args... args)
 {
    if (! luaosutils::callback_session::is_valid_session(&session)) // session has gone out of scope in Lua
       return;
+   int customErrfuncIndex = 0;
+   if (luaosutils_errfunc_callback)
+   {
+      lua_pushcfunction(session.state(), luaosutils_errfunc_callback);
+      customErrfuncIndex = lua_gettop(session.state());
+   }
    lua_rawgeti(session.state(), LUA_REGISTRYINDEX, session.function());
    int nArgs = push_lua_args(session.state(), args...);
-   int result = lua_pcall(session.state(), nArgs, 0, 0);
+   int result = lua_pcall(session.state(), nArgs, 0, customErrfuncIndex);
+   if (customErrfuncIndex)
+   {
+      lua_remove(session.state(), customErrfuncIndex);
+      customErrfuncIndex = 0;
+   }
    if (result != LUA_OK)
    {
       const char* errorMessage = lua_tostring(session.state(), -1);
