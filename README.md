@@ -41,7 +41,7 @@ Luaosutils groups related functions into namespaces. You can find more informati
 
 2.3.1
 
-- Added optional custom error handler for when `luaosutils` is embedded.
+- Added optional custom error handler for when `luaosutils` is embedded. (Not built.)
 
 2.3.0
 
