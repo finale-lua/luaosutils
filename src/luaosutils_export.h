@@ -32,5 +32,6 @@ LUAOSUTILS_EXPORT int luaopen_luaosutils_restricted(lua_State* L);
 
 /* luaosutils_set_permissions is only for embedded implementations */
 void luaosutils_set_permissions(const bool restrictHttps, const bool restrictMenus, const bool restrictExternal);
+extern lua_CFunction luaosutils_errfunc_callback;
 
 #endif /* luaosutils_export_h */

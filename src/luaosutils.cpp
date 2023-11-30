@@ -9,6 +9,8 @@
 
 #include "luaosutils.hpp"
 
+lua_CFunction luaosutils_errfunc_callback = nullptr;
+
 // note: these globals only affect
 constexpr static uint32_t kRestrictHttps = 0x0001;
 constexpr static uint32_t kRestrictMenus = 0x0002;
