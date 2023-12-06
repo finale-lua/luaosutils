@@ -295,7 +295,10 @@ static int luaosutils_launch_website(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
 
-   urlString = WINCODE("cmd /c start ") MACCODE("open ") + urlString;
+   if (urlString.size() > 0 && urlString[0] != '\"')
+      urlString = '\"' + urlString + '\"';
+
+   urlString = WINCODE("cmd /c start \"\" ") MACCODE("open ") + urlString;
    luaosutils::process_launch(urlString, "");
    
    return 0;
