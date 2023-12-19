@@ -189,4 +189,11 @@ std::string server_name(const std::string &url)
    return result ? result : "";
 }
 
+std::string url_escape(const std::string &input)
+{
+   NSString* nsinput = [NSString stringWithUTF8String:input.c_str()];
+   NSString *encoded = [nsinput stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
+   return [encoded UTF8String];
+}
+
 } // namespace luaosutils

@@ -185,6 +185,8 @@ void error_message_box(const std::string &msg);
 
 std::string server_name(const std::string &url);
 
+std::string url_escape(const std::string &input);
+
 }
 
 #endif /* luaosutils_os_h */
