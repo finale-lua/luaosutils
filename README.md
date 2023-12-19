@@ -39,6 +39,10 @@ Luaosutils groups related functions into namespaces. You can find more informati
 
 # Version history
 
+2.4.0
+
+- added `internet.url_escape`
+
 2.3.2
 
 - `internet.launch_website` now internally encloses the URL in quotes if it isn't already quoted. Some complicated URLs (such as Google spreadsheets) require quotes to launch correctly, especially on macOS.

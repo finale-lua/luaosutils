@@ -7,6 +7,7 @@
 - [`post`](#internetpost) : Sends HTTPS `POST` command and retrieves the response. (Asynchronous)
 - [`post_sync`](#internetpost_sync): Sends HTTPS `POST` command and retrieves the response. (Synchronous)
 - [`server_name`](#internetserver_name) : Extracts the servername from a URL.
+- [`url_escape`](#interneturl_escape) : Replaces non-transmissible characters with `%` codes.
 
 This namespace provides functions to send `GET` or `POST` requests to web servers. The functions then return the full response in a Lua string. For asynchronous calls, the response is passed to a callback function.
 
@@ -257,4 +258,27 @@ Example:
 local osutils = require('luaosutils')
 local internet = osutils.internet
 local host = internet.server_name("https://mysite.com") -- returns "mysite.com"
+```
+
+
+### internet.url\_escape
+
+Returns a string with non-transmissible characters converted to `%` codes.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The string to process.|
+
+|Output Type|Description|
+|----------|-----------|
+|string|Version of the string with non-url characters converted to codes or an empty string if error.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+local raw_string = "my string with spaces"
+local url_string = internet.url_escape(raw_string)
+print(url_string) -- prints "my%20string%20with%20spaces"
 ```
