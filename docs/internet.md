@@ -263,7 +263,12 @@ local host = internet.server_name("https://mysite.com") -- returns "mysite.com"
 
 ### internet.url\_escape
 
-Returns a string with non-transmissible characters converted to `%` codes.
+Returns a string with characters converted to percent codes as needed for URLs. Most such characters are encoded, including "%" and "#", so you should not pass in a string that has already been percent-encoded. Since the function uses OS-specific APIs, there are slight platform differences in encoding. Notably:
+
+- "?" is percent-encoded on Windows but not on macOS.
+- "/" is percent-encoded on Windows but not on macOS.
+
+The best way to use this function is to build a URL component by component. You can use the function to encode a component but the caller should append the control characters.
 
 |Input Type|Description|
 |----------|-----------|
