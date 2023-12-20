@@ -12,7 +12,6 @@
 #include <windows.h>
 #include <wininet.h>
 #include <shlwapi.h>
-#include <urlmon.h>
 
 #include "luaosutils.hpp"
 #include "winutils/luaosutils_winutils.h"
@@ -410,11 +409,12 @@ std::string url_escape(const std::string& input)
    auto inputW = utf8_to_WCHAR(input.c_str());
    std::wstring result(256, '\0');
    DWORD size = static_cast<DWORD>(result.size());
-   HRESULT hr = UrlEscapeW(inputW.c_str(), result.data(), &size, URL_ESCAPE_PERCENT);
+   constexpr DWORD flags = URL_ESCAPE_PERCENT | URL_ESCAPE_SEGMENT_ONLY | URL_ESCAPE_AS_UTF8;
+   HRESULT hr = UrlEscapeW(inputW.c_str(), result.data(), &size, flags);
    if (hr == E_POINTER)
    {
       result.resize(size);
-      hr = UrlEscapeW(inputW.c_str(), result.data(), &size, URL_ESCAPE_PERCENT);
+      hr = UrlEscapeW(inputW.c_str(), result.data(), &size, flags);
    }
    if (!SUCCEEDED(hr)) return "";
 
