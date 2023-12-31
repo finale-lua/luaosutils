@@ -140,12 +140,12 @@ bool process_launch(const std::string& cmd, const std::string& dir)
 
 void run_event_loop(double timeoutSeconds)
 {
-   DWORD waitTime = std::lround(timeoutSeconds * 1000.0);
-   DWORD elapsed = 0;
+   ULONGLONG waitTime = std::lround(timeoutSeconds * 1000.0);
+   ULONGLONG elapsed = 0;
    MSG msg{};
    DWORD result = 0;
-   DWORD start = GetTickCount64();
-   while ((result = ::MsgWaitForMultipleObjects(0, NULL, FALSE, waitTime - elapsed, QS_ALLINPUT)) != WAIT_FAILED)
+   ULONGLONG start = GetTickCount64();
+   while ((result = ::MsgWaitForMultipleObjects(0, NULL, FALSE, static_cast<DWORD>(waitTime - elapsed), QS_ALLINPUT)) != WAIT_FAILED)
    {
        if (result == WAIT_OBJECT_0)
        {
