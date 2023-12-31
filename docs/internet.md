@@ -1,6 +1,6 @@
 # The 'internet' namespace
 
-- [`close_session`](#internetclose_session) : Cancels a pending asynchronous request and closes its session.
+- [`cancel_session`](#internetcancel_session) : Cancels a pending asynchronous request and closes its session.
 - [`get`](#internetget) : Sends HTTPS `GET` command and retrieves the response. (Asynchronous)
 - [`get_sync`](#internetget_sync): Sends HTTPS `GET` command and retrieves the response. (Synchronous)
 - [`launch_website`](#internetlaunch_website) : Launches a URL in the default browser.
@@ -48,6 +48,32 @@ local headers = {
             ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
             ["Accept-Language"] = "en-US,en;q=0.9"
         }
+```
+
+### internet.cancel\_session
+
+Cancels and closes the session for a pending asynchronous request. You callback will not be called after calling this function. It is not necessary to call this if your script is ending,
+but you might call it if you are closing a window that has the callback procedure while
+retaining your Lua session.
+
+|Input Type|Description|
+|----------|-----------|
+|session|May be nil, and then the function does nothing.|
+
+|Output Type|Description|
+|----------|-----------|
+|nil|May be used to clear the script's session variable (see example).|
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+local post_data = "<your post data> (maybe JSON?)"
+local session = internet.post_sync("https://mysite.com", post_data , function(success, data) end)
+
+-- no need to check for nil here first.
+-- after calling the function, session is assigned to nil.
+session = internet.cancel_session(session)
 ```
 
 ### internet.get
@@ -212,33 +238,6 @@ if download_successful then
     fileout:close()
 end
 ```
-
-### internet.close\_session
-
-Cancels and closes the session for a pending asynchronous request. You callback will not be called after calling this function. It is not necessary to call this if your script is ending,
-but you might call it if you are closing a window that has the callback procedure while
-retaining your Lua session.
-
-|Input Type|Description|
-|----------|-----------|
-|session|May be nil, and then the function does nothing.|
-
-|Output Type|Description|
-|----------|-----------|
-|nil|May be used to clear the script's session variable (see example).|
-
-```lua
-local osutils = require('luaosutils')
-local internet = osutils.internet
-
-local post_data = "<your post data> (maybe JSON?)"
-local session = internet.post_sync("https://mysite.com", post_data , function(success, data) end)
-
--- no need to check for nil here first.
--- after calling the function, session is assigned to nil.
-session = internet.close_session(session)
-```
-
 
 ### internet.server\_name
 

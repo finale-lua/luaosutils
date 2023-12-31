@@ -16,6 +16,6 @@ namespace luaosutils
 
 bool process_execute(const std::string& cmd, const std::string& dir, std::string& processOutput);
 bool process_launch(const std::string& cmd, const std::string& dir);
-
+void run_event_loop(double timeoutSeconds);
 }
 #endif /* luaosutils_process_os_h */
