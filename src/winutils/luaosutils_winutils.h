@@ -40,12 +40,12 @@ inline std::string WCHAR_to_utf8(const WCHAR* inpstr)
 	return retval;
 }
 
-// this function converts and input string to utf8 if necessary
-inline std::string __char_to_utf8(const char* inpstr, UINT fallbackCodepage)
+// this function converts an input string to utf8 if necessary
+inline std::string __char_to_utf8(const char* inpstr, UINT fallbackCodepage = CP_ACP)
 {
 	int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
 	if (size > 0) return inpstr;
-	size = MultiByteToWideChar(CP_ACP, 0, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
+	size = MultiByteToWideChar(fallbackCodepage, 0, inpstr, -1, nullptr, 0) - 1; // remove null-terminator
 	if (size > 0)
 	{
 		std::basic_string<WCHAR> wInp;
@@ -62,15 +62,15 @@ inline std::string get_last_error_as_string()
 	if (errorMessageID == 0)
 		return std::string(); // no error message has been recorded
 
-	LPSTR messageBuffer = nullptr;
-	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&messageBuffer), 0, nullptr);
+	LPWSTR messageBuffer = nullptr;
+	size_t size = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&messageBuffer), 0, nullptr);
 
-	std::string message(messageBuffer, size);
+	std::wstring message(messageBuffer, size);
 
 	LocalFree(messageBuffer);
 
-	return message;
+	return WCHAR_to_utf8(message.c_str());
 }
 
 
