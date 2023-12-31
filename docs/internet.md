@@ -6,6 +6,7 @@
 - [`launch_website`](#internetlaunch_website) : Launches a URL in the default browser.
 - [`post`](#internetpost) : Sends HTTPS `POST` command and retrieves the response. (Asynchronous)
 - [`post_sync`](#internetpost_sync): Sends HTTPS `POST` command and retrieves the response. (Synchronous)
+- [`report_errors`](#internetreport_errors) : Sets whether the session should report errors to the user.
 - [`server_name`](#internetserver_name) : Extracts the servername from a URL.
 - [`url_escape`](#interneturl_escape) : Replaces non-transmissible characters with `%` codes.
 
@@ -52,7 +53,7 @@ local headers = {
         }
 ```
 
-### internet.cancel\_session
+### internet.cancel\_session*
 
 Cancels and closes the session for a pending asynchronous request. You callback will not be called after calling this function. It is not necessary to call this if your script is ending,
 but you might call it if you are closing a window that has the callback procedure while
@@ -71,7 +72,7 @@ local osutils = require('luaosutils')
 local internet = osutils.internet
 
 local post_data = "<your post data> (maybe JSON?)"
-local session = internet.post_sync("https://mysite.com", post_data , function(success, data) end)
+local session = internet.post("https://mysite.com", post_data , function(success, data) end)
 
 -- no need to check for nil here first.
 -- after calling the function, session is assigned to nil.
@@ -239,6 +240,30 @@ if download_successful then
     fileout:write(urlcontents)
     fileout:close()
 end
+```
+
+### internet.report\_errors*
+
+By default, errors that occur inside the async callback function are reported to the user in a popup dialog box. You can disable that behavior with this function. Use with caution, since disabling the error reporting could cause the script to fail silently. Generally, you should only set this if your script is known to be hosted by another script that is monitoring the return value.
+
+|Input Type|Description|
+|----------|-----------|
+|session|May be nil, and then the function does nothing.|
+|boolean|True means report errors. False means do not report errors.|
+
+|Output Type|Description|
+|----------|-----------|
+|none||
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+local post_data = "<your post data> (maybe JSON?)"
+local session = internet.post("https://mysite.com", post_data , function(success, data) end)
+
+-- do not report errors
+internet.report_errors(session, false)
 ```
 
 ### internet.server\_name
