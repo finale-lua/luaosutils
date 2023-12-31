@@ -20,8 +20,6 @@ namespace luaosutils
 using lua_callback = std::function<void (bool, const std::string&)>;
 using HeadersMap = std::map<std::string, std::string>;
 
-//static const int kHTTPStatusCodeOK = 200;
-
 #if OPERATING_SYSTEM == WINDOWS
 #include <wininet.h>
 
