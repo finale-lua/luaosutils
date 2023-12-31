@@ -42,6 +42,9 @@ Luaosutils groups related functions into namespaces. You can find more informati
 2.4.0
 
 - added `internet.url_escape`
+- added `internet.report_errors`
+- added `process.run_event_loop`
+- tightened up https error reporting
 
 2.3.2
 
