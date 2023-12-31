@@ -118,7 +118,8 @@ local dir = process.make_dir("test", finenv.RunningLuaFolderPath())
 
 ### process.run\_main\_thread
 
-Runs the main thread for the specified time period. This allows background tasks to complete such as redrawing controls and firing timers and callbacks. The user interface remains blocked, however.
+Runs the main thread for the specified time period. This allows background tasks to complete such as redrawing controls and firing timers and callbacks. On Windows, this
+function unblocks the UI. On macOS the UI remains blocked.
 
 |Input Type|Description|
 |----------|-----------|
