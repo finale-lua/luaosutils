@@ -4,6 +4,7 @@
 - [`launch`](#processlaunch) : Launches another process without waiting for it to complete.
 - [`list_dir`](#processlist_dir) : Lists the contents of a directory by executing the command to do so.
 - [`make_dir`](#processmake_dir) : Makes a new directory at a specified path by executing the command to do so.
+- [`run_main_thread`](#processrun_main_thread) : Runs the main thread for the specified time period in seconds.
 
 The `process` namespace offers functions to launch a separate process. The advantage of these APIs over the standard Lua APIs is that the process is launched *silently*. No console window appears on either macOS or Windows.
 
@@ -113,4 +114,25 @@ local process = osutils.process
 
 -- create a directory called "test" inside the script's folder path
 local dir = process.make_dir("test", finenv.RunningLuaFolderPath())
+```
+
+### process.run\_main\_thread
+
+Runs the main thread for the specified time period. This allows background tasks to complete such as redrawing controls and firing timers and callbacks. The user interface remains blocked, however.
+
+|Input Type|Description|
+|----------|-----------|
+|number|The time to run in seconds. This may be a fractional value down to millisecond resolution.|
+
+|Output Type|Description|
+|----------|-----------|
+|none||
+
+
+```
+local osutils = require('luaosutils')
+local process = osutils.process
+
+-- run the main thread for 100 milliseconds (1/10 second)
+local dir = process.run_main_thread(0.1)
 ```

@@ -15,7 +15,9 @@ This namespace provides functions to send `GET` or `POST` requests to web server
 
 Asynchronous calls are the recommended option. They return a session variable that you maintain until the request completes. You return control to Finale and leave its Lua state open either with `finenv.RetainLuaState = true` or a dialog box or both. The completion function then finishes whatever needs to be done while running in the background.
 
-The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your completion function runs when running in the background, because it blocks the UI.
+The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You *can* call `process.run_main_thread` in a loop while waiting, and your callback will eventually be called. However, since the user interface remains blocked, there is normally no advantage to doing this over a synchronous call. In fact, there is a potential disadvantage because synchronous calls unblock as soon as they finish whereas `run_event_loop` blocks for the full specified timeout period.
+
+If you are launching calls from a dialog box, you should definitely use asynchronous calls. Your dialog box keeps the script alive while yielding control back to the operating system to enable UI response and callbacks. Be mindful of how long your completion function runs when running in the background, because it blocks the UI.
 
 You must keep a reference to the session until the callback is called. Your request is aborted if the session variable goes out of scope and is garbage-collected. Your request is also aborted if the Lua state that created it is closed.
 
