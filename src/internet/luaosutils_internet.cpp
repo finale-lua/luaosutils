@@ -99,7 +99,8 @@ static void call_lua_function(luaosutils::callback_session &session, Args... arg
          lua_setfield(session.state(), -3, "RetainLuaState");
       }
 #endif // defined(LUAOSUTILS_RGPLUA_AWARE)
-      luaosutils::error_message_box(errorMessage);
+      if (session.report_errors())
+         luaosutils::error_message_box(errorMessage);
       lua_pop(session.state(), 1); // pop the error message from the stack
    }
 }
@@ -275,6 +276,14 @@ int luaosutils_internet_post_sync(lua_State *L)
    return 2;
 }
 
+static int luaosutils_internet_url_escape(lua_State* L)
+{
+   auto input = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
+   std::string result = luaosutils::url_escape(input);
+   LuaStack<std::string>(L).push(result);
+   return 1;
+}
+
 static int luaosutils_internet_cancel_session(lua_State* L)
 {
    auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA, nullptr, luaosutils::kSessionMetatableKey);
@@ -283,7 +292,15 @@ static int luaosutils_internet_cancel_session(lua_State* L)
    return 1;
 }
 
-static int luaosutils_server_name(lua_State *L)
+static int luaosutils_internet_report_errors(lua_State* L)
+{
+   auto session = get_lua_parameter<luaosutils::callback_session*>(L, 1, LUA_TUSERDATA, nullptr, luaosutils::kSessionMetatableKey);
+   auto state = get_lua_parameter<luaosutils::callback_session*>(L, 2, LUA_TBOOLEAN);
+   if (session) session->set_report_errors(state);
+   return 0;
+}
+
+static int luaosutils_internet_server_name(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
    std::string result = luaosutils::server_name(urlString);
@@ -291,7 +308,7 @@ static int luaosutils_server_name(lua_State *L)
    return 1;
 }
 
-static int luaosutils_launch_website(lua_State *L)
+static int luaosutils_internet_launch_website(lua_State *L)
 {
    auto urlString = get_lua_parameter<std::string>(L, 1, LUA_TSTRING);
 
@@ -312,8 +329,10 @@ static const luaL_Reg internet_utils[] = {
    {"post",                luaosutils_internet_post},
    {"post_sync",           luaosutils_internet_post_sync},
    {"cancel_session",      luaosutils_internet_cancel_session},
-   {"launch_website",      luaosutils_launch_website},
-   {"server_name",         luaosutils_server_name},
+   {"report_errors",       luaosutils_internet_report_errors},
+   {"launch_website",      luaosutils_internet_launch_website},
+   {"server_name",         luaosutils_internet_server_name},
+   {"url_escape",          luaosutils_internet_url_escape},
    {NULL, NULL} // sentinel
 };
 
@@ -325,8 +344,10 @@ static const luaL_Reg internet_utils_restricted[] = {
    {"post",                restricted_function},
    {"post_sync",           restricted_function},
    {"cancel_session",      restricted_function},
-   {"launch_website",      luaosutils_launch_website},
-   {"server_name",         luaosutils_server_name},
+   {"report_errors",       restricted_function},
+   {"launch_website",      luaosutils_internet_launch_website},
+   {"server_name",         luaosutils_internet_server_name},
+   {"url_escape",          luaosutils_internet_url_escape},
    {NULL, NULL} // sentinel
 };
 

@@ -1,12 +1,14 @@
 # The 'internet' namespace
 
-- [`close_session`](#internetclose_session) : Cancels a pending asynchronous request and closes its session.
+- [`cancel_session`](#internetcancel_session) : Cancels a pending asynchronous request and closes its session.
 - [`get`](#internetget) : Sends HTTPS `GET` command and retrieves the response. (Asynchronous)
 - [`get_sync`](#internetget_sync): Sends HTTPS `GET` command and retrieves the response. (Synchronous)
 - [`launch_website`](#internetlaunch_website) : Launches a URL in the default browser.
 - [`post`](#internetpost) : Sends HTTPS `POST` command and retrieves the response. (Asynchronous)
 - [`post_sync`](#internetpost_sync): Sends HTTPS `POST` command and retrieves the response. (Synchronous)
+- [`report_errors`](#internetreport_errors) : Sets whether the session should report errors to the user.
 - [`server_name`](#internetserver_name) : Extracts the servername from a URL.
+- [`url_escape`](#interneturl_escape) : Replaces non-transmissible characters with `%` codes.
 
 This namespace provides functions to send `GET` or `POST` requests to web servers. The functions then return the full response in a Lua string. For asynchronous calls, the response is passed to a callback function.
 
@@ -14,7 +16,9 @@ This namespace provides functions to send `GET` or `POST` requests to web server
 
 Asynchronous calls are the recommended option. They return a session variable that you maintain until the request completes. You return control to Finale and leave its Lua state open either with `finenv.RetainLuaState = true` or a dialog box or both. The completion function then finishes whatever needs to be done while running in the background.
 
-The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You could, however, open a modal dialog box and allow it to wait for the completion function. A more user-friendly option would be a modeless dialog, because modeless dialogs do not block the user from completing other tasks. Be mindful of how long your completion function runs when running in the background, because it blocks the UI.
+The completion function does not run in a separate thread, so you cannot wait on the request to complete directly within your script. You *can* call `process.run_main_thread` in a loop while waiting, and your callback will eventually be called. However, since the user interface remains blocked, there is normally no advantage to doing this over a synchronous call. In fact, there is a potential disadvantage because synchronous calls unblock as soon as they finish whereas `run_event_loop` blocks for the full specified timeout period.
+
+If you are launching calls from a dialog box, you should definitely use asynchronous calls. Your dialog box keeps the script alive while yielding control back to the operating system to enable UI response and callbacks. Be mindful of how long your completion function runs when running in the background, because it blocks the UI.
 
 You must keep a reference to the session until the callback is called. Your request is aborted if the session variable goes out of scope and is garbage-collected. Your request is also aborted if the Lua state that created it is closed.
 
@@ -47,6 +51,32 @@ local headers = {
             ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
             ["Accept-Language"] = "en-US,en;q=0.9"
         }
+```
+
+### internet.cancel\_session*
+
+Cancels and closes the session for a pending asynchronous request. You callback will not be called after calling this function. It is not necessary to call this if your script is ending,
+but you might call it if you are closing a window that has the callback procedure while
+retaining your Lua session.
+
+|Input Type|Description|
+|----------|-----------|
+|session|May be nil, and then the function does nothing.|
+
+|Output Type|Description|
+|----------|-----------|
+|nil|May be used to clear the script's session variable (see example).|
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+
+local post_data = "<your post data> (maybe JSON?)"
+local session = internet.post("https://mysite.com", post_data , function(success, data) end)
+
+-- no need to check for nil here first.
+-- after calling the function, session is assigned to nil.
+session = internet.cancel_session(session)
 ```
 
 ### internet.get
@@ -212,32 +242,29 @@ if download_successful then
 end
 ```
 
-### internet.close\_session
+### internet.report\_errors*
 
-Cancels and closes the session for a pending asynchronous request. You callback will not be called after calling this function. It is not necessary to call this if your script is ending,
-but you might call it if you are closing a window that has the callback procedure while
-retaining your Lua session.
+By default, errors that occur inside the async callback function are reported to the user in a popup dialog box. You can disable that behavior with this function. Use with caution, since disabling the error reporting could cause the script to fail silently. Generally, you should only set this if your script is known to be hosted by another script that is monitoring the return value.
 
 |Input Type|Description|
 |----------|-----------|
 |session|May be nil, and then the function does nothing.|
+|boolean|True means report errors. False means do not report errors.|
 
 |Output Type|Description|
 |----------|-----------|
-|nil|May be used to clear the script's session variable (see example).|
+|none||
 
 ```lua
 local osutils = require('luaosutils')
 local internet = osutils.internet
 
 local post_data = "<your post data> (maybe JSON?)"
-local session = internet.post_sync("https://mysite.com", post_data , function(success, data) end)
+local session = internet.post("https://mysite.com", post_data , function(success, data) end)
 
--- no need to check for nil here first.
--- after calling the function, session is assigned to nil.
-session = internet.close_session(session)
+-- do not report errors
+internet.report_errors(session, false)
 ```
-
 
 ### internet.server\_name
 
@@ -257,4 +284,32 @@ Example:
 local osutils = require('luaosutils')
 local internet = osutils.internet
 local host = internet.server_name("https://mysite.com") -- returns "mysite.com"
+```
+
+
+### internet.url\_escape
+
+Returns a string with characters converted to percent codes as needed for URLs. Most such characters are encoded, including "%" and "#", so you should not pass in a string that has already been percent-encoded. Since the function uses OS-specific APIs, there are slight platform differences in encoding. Notably:
+
+- "?" is percent-encoded on Windows but not on macOS.
+- "/" is percent-encoded on Windows but not on macOS.
+
+The best way to use this function is to build a URL component by component. You can use the function to encode a component but the caller should append the control characters.
+
+|Input Type|Description|
+|----------|-----------|
+|string|The string to process.|
+
+|Output Type|Description|
+|----------|-----------|
+|string|Version of the string with non-url characters converted to codes or an empty string if error.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local internet = osutils.internet
+local raw_string = "my string with spaces"
+local url_string = internet.url_escape(raw_string)
+print(url_string) -- prints "my%20string%20with%20spaces"
 ```

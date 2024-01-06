@@ -37,6 +37,7 @@ private:
    lua_State* m_L;
    int m_function;
    OSSESSION_ptr m_osSession;
+   bool m_reportErrors;
    
    static active_sessions_type& _get_active_sessions()
    {
@@ -60,7 +61,7 @@ public:
     * \param func A reference to a Lua callback function.
     * \param id A process-level unique instance identifier. Use #get_new_session_id to generate it.
     */
-   callback_session(lua_State* L, int func, id_type id) : m_L(L), m_function(func), m_ID(id)
+   callback_session(lua_State* L, int func, id_type id) : m_L(L), m_function(func), m_ID(id), m_reportErrors(true)
    {
       get_active_sessions_mutex().lock();
       _get_active_sessions().emplace(id, this);
@@ -101,8 +102,14 @@ public:
          m_osSession = std::move(session);
    }
    
-   /** \brief Lua-callable function that cancels any running request. */
+   /** \brief Cancels any running request. */
    void cancel() { m_osSession = nullptr; }
+   
+   /** \brief Returns whether to report errors in a dialog box. */
+   bool report_errors() const { return m_reportErrors; }
+   
+   /** \brief Sets whether to report errors in a dialog box. */
+   void set_report_errors(bool state) { m_reportErrors = state; }
    
    /** \brief Class-level function that finds a running session from its unique instance identifier.
     *

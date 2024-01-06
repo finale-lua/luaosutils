@@ -138,4 +138,30 @@ bool process_launch(const std::string& cmd, const std::string& dir)
    return true;
 }
 
+void run_event_loop(double timeoutSeconds)
+{
+   DWORD waitTime = std::lround(timeoutSeconds * 1000.0);
+   DWORD elapsed = 0;
+   MSG msg{};
+   DWORD result = 0;
+   ULONGLONG start = GetTickCount64();
+   while ((result = ::MsgWaitForMultipleObjects(0, NULL, FALSE, waitTime - elapsed, QS_ALLINPUT)) != WAIT_FAILED)
+   {
+       if (result == WAIT_OBJECT_0)
+       {
+           while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+           {
+               ::TranslateMessage(&msg);
+               ::DispatchMessage(&msg);
+           }
+       }
+       elapsed = static_cast<DWORD>(GetTickCount64() - start);
+       if (elapsed >= waitTime)
+           break;
+   }
+#ifdef _DEBUG
+   std::string errmsg = get_last_error_as_string();
+#endif
+}
+
 }

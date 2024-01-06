@@ -22,43 +22,46 @@ namespace luaosutils
 
 inline std::string GetStringFromLastError(DWORD errorCode, bool forWinInet = false)
 {
-   LPSTR ptr = nullptr;
-   HMODULE module = forWinInet ? GetModuleHandle(TEXT("wininet.dll")) : NULL;
+   LPWSTR ptr = nullptr;
+   HMODULE module = forWinInet && errorCode >= INTERNET_ERROR_BASE && errorCode <= INTERNET_ERROR_LAST
+                           ? GetModuleHandle(TEXT("wininet.dll"))
+                           : NULL;
+   INTERNET_ERROR_BASE;
    const DWORD reqFlag = module ? FORMAT_MESSAGE_FROM_HMODULE : FORMAT_MESSAGE_FROM_SYSTEM;
-   const DWORD numChars = FormatMessageA(reqFlag
+   const DWORD numChars = FormatMessageW(reqFlag
                                              | FORMAT_MESSAGE_IGNORE_INSERTS
                                              | FORMAT_MESSAGE_ALLOCATE_BUFFER,
                                           module,
                                           errorCode,
                                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                                          reinterpret_cast<LPSTR>(&ptr),
+                                          reinterpret_cast<LPWSTR>(&ptr),
                                           0,
                                           NULL);
 
-   std::string retval;
+   std::wstring retval;
    if (numChars > 0)
    {
       auto deleter = [](void *p) { ::LocalFree(p); };
-      std::unique_ptr<CHAR, decltype(deleter)> ptrBuffer(ptr, deleter);
-      retval = std::string(ptrBuffer.get(), numChars);
+      std::unique_ptr<WCHAR, decltype(deleter)> ptrBuffer(ptr, deleter);
+      retval = std::wstring(ptrBuffer.get(), numChars);
    }
    if (forWinInet && errorCode == ERROR_INTERNET_EXTENDED_ERROR)
    {
       DWORD numExtChars = 0;
       DWORD extErrorCode = 0;
-      InternetGetLastResponseInfoA(&extErrorCode, NULL, &numExtChars);
+      InternetGetLastResponseInfoW(&extErrorCode, NULL, &numExtChars);
       if (numExtChars)
       {
          numExtChars++; // make room for trailing zero
-         std::string extString("", numExtChars);
-         InternetGetLastResponseInfoA(&extErrorCode, extString.data(), &numExtChars);
+         std::wstring extString(L"", numExtChars);
+         InternetGetLastResponseInfoW(&extErrorCode, extString.data(), &numExtChars);
          if (retval.size())
-            retval += " ";
+            retval += ' ';
          retval += extString;
       }
    }
    if (retval.size())
-      return retval;
+      return WCHAR_to_utf8(retval.c_str());
 
    return "No error message.";
 }
@@ -141,6 +144,21 @@ static DWORD OnTerminate(win_request_context* session)
       session->readErrorCode = GetLastError();
    }
 
+   if (!session->readErrorCode && session->statusCode != HTTP_STATUS_OK)
+   {
+      DWORD msgSize;
+      session->buffer = "";
+      // per docs, non-ASCII characters are always encoded CP_ACP, so we'll need to bounce it to utf-8
+      if (!HttpQueryInfoA(session->hRequest, HTTP_QUERY_STATUS_TEXT, NULL, &msgSize, NULL) && GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+      {
+         std::string msg(msgSize, '\0');
+         if (HttpQueryInfoA(session->hRequest, HTTP_QUERY_STATUS_TEXT, msg.data(), &msgSize, NULL))
+            session->buffer = __char_to_utf8(msg.c_str());
+      }
+      else
+         session->buffer = "Request returned status " + std::to_string(session->statusCode) + ".";
+   }
+
    InternetCloseHandle(session->hRequest);
    session->hRequest = NULL;
    InternetCloseHandle(session->hConnect);
@@ -205,7 +223,7 @@ static void HandleRequestResult(win_request_context* session, DWORD result, bool
          if (session->readErrorCode)
             session->callbackFunction(false, GetStringFromLastError(session->readErrorCode, true));
          else
-            session->callbackFunction(session->statusCode == kHTTPStatusCodeOK, session->buffer);
+            session->callbackFunction(session->statusCode == HTTP_STATUS_OK, session->buffer);
          break;
       }
 
@@ -402,6 +420,23 @@ std::string server_name(const std::string& url)
    if (result != S_OK)
       return "";
    return WCHAR_to_utf8(buffer);
+}
+
+std::string url_escape(const std::string& input)
+{
+   auto inputW = utf8_to_WCHAR(input.c_str());
+   std::wstring result(256, '\0');
+   DWORD size = static_cast<DWORD>(result.size());
+   constexpr DWORD flags = URL_ESCAPE_PERCENT | URL_ESCAPE_SEGMENT_ONLY | URL_ESCAPE_AS_UTF8;
+   HRESULT hr = UrlEscapeW(inputW.c_str(), result.data(), &size, flags);
+   if (hr == E_POINTER)
+   {
+      result.resize(size);
+      hr = UrlEscapeW(inputW.c_str(), result.data(), &size, flags);
+   }
+   if (!SUCCEEDED(hr)) return "";
+
+   return WCHAR_to_utf8(result.c_str());
 }
 
 }

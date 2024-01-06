@@ -15,6 +15,8 @@
 namespace luaosutils
 {
 
+static const int kHTTPStatusCodeOK = 200;
+
 // WARNING:  get_id_mutex() and get_id_map() must be defined here
 //             and not in the header, because when RGPLua includes
 //             the header, it is not objective-c. Leaving these
@@ -88,8 +90,16 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string &u
                      }
                      else
                      {
-                        pSession->success = [httpResponse statusCode] == kHTTPStatusCodeOK;
-                        pSession->buffer = std::string(static_cast<const char *>([data bytes]), [data length]);
+                        if ([httpResponse statusCode] == kHTTPStatusCodeOK)
+                        {
+                           pSession->success = true;
+                           pSession->buffer = std::string(static_cast<const char *>([data bytes]), [data length]);
+                        }
+                        else
+                        {
+                           pSession->success = false;
+                           pSession->buffer = [[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]] UTF8String];
+                        }
                      }
                      auto codeBlock = ^{
                         mac_request_context* pSessionBlock = luaosutils::mac_request_context::get_context_from_id(sessionId);
@@ -187,6 +197,13 @@ std::string server_name(const std::string &url)
    NSURL* nsUrl = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
    const char * result = [nsUrl.host UTF8String];
    return result ? result : "";
+}
+
+std::string url_escape(const std::string &input)
+{
+   NSString* nsinput = [NSString stringWithUTF8String:input.c_str()];
+   NSString *encoded = [nsinput stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+   return [encoded UTF8String];
 }
 
 } // namespace luaosutils

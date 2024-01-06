@@ -20,8 +20,6 @@ namespace luaosutils
 using lua_callback = std::function<void (bool, const std::string&)>;
 using HeadersMap = std::map<std::string, std::string>;
 
-static const int kHTTPStatusCodeOK = 200;
-
 #if OPERATING_SYSTEM == WINDOWS
 #include <wininet.h>
 
@@ -184,6 +182,8 @@ OSSESSION_ptr https_request(const std::string& requestType, const std::string &u
 void error_message_box(const std::string &msg);
 
 std::string server_name(const std::string &url);
+
+std::string url_escape(const std::string &input);
 
 }
 

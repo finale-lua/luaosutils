@@ -71,12 +71,20 @@ static int luaosutils_process_list_dir(lua_State *L)
    return 1;
 }
 
+static int luaosutils_process_run_event_loop(lua_State *L)
+{
+   auto secondsTimeout = get_lua_parameter<double>(L, 1, LUA_TNUMBER);
+   luaosutils::run_event_loop(secondsTimeout);
+   return 0;
+}
+
 
 static const luaL_Reg process_utils[] = {
    {"execute",             luaosutils_process_execute},
    {"launch",              luaosutils_process_launch},
    {"make_dir",            luaosutils_process_make_dir},
    {"list_dir",            luaosutils_process_list_dir},
+   {"run_event_loop",      luaosutils_process_run_event_loop},
    {NULL, NULL} // sentinel
 };
 
@@ -85,6 +93,7 @@ static const luaL_Reg process_utils_restricted[] = {
    {"launch",              restricted_function},
    {"make_dir",            luaosutils_process_make_dir},
    {"list_dir",            luaosutils_process_list_dir},
+   {"run_event_loop",      luaosutils_process_run_event_loop},
    {NULL, NULL} // sentinel
 };
 

@@ -104,4 +104,9 @@ bool process_launch(const std::string& cmd, const std::string& dir)
    return false;
 }
 
+void run_event_loop(double timeoutSeconds)
+{
+   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:timeoutSeconds]];
+}
+
 }
