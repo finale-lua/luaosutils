@@ -53,6 +53,13 @@ bool menu_delete_submenu(menu_handle hMenu, window_handle hWnd)
 	return false;
 }
 
+bool menu_execute_command_id(long cmd, window_handle hWnd)
+{
+	if (cmd <= 0) return false;
+	SendMessage(hWnd, WM_COMMAND, cmd, 0);
+	return true;
+}
+
 menu_handle menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
