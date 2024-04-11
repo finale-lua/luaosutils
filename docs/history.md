@@ -1,5 +1,9 @@
 # Version History
 
+2.5.0
+
+- added `menu.execute_command_id`
+
 2.4.0
 
 - added `internet.url_escape`

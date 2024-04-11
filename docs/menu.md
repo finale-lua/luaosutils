@@ -1,6 +1,7 @@
 # The 'menu' namespace
 
 - [`delete_submenu`](#menudelete_submenu) : Deletes the specified submenu item from its parent menu.
+- [`execute_command_id`](#execute_command_id) : Execute the menu item specified by the input command-id.
 - [`find_item`](#menufind_item) : Finds the enclosing menu for the specified menu item text.
 - [`get_item_command_id`](#menuget_item_command_id) : Returns the command-id of the specified menu item.
 - [`get_item_count`](#menuget_item_count) : Returns the number of menu items in the specified menu.
@@ -76,6 +77,41 @@ local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua...", min_search_in
 menu.delete_submenu(rgp_lua_menu, finenv.GetFinaleMainWindow())
 ```
 
+### menu.execute\_command\_id
+
+Executes the menu item specified by the input command-id. You can use [`get_item_command_id`](#menuget_item_command_id) to get the command-id for a menu item. Note that (at least in Finale) command-ids do not change for core functions of the program. That means you can calculate the command-id once during development and then execute its hard-coded value at run-time. This has the advantage that
+
+- The Lua script is not dependent on which locale Finale is running in.
+- The Lua script is not dependent on changes in Finale's menus from version to version.
+
+However, variable menu items (such as plugins or bookmarks) may have different command-ids each time the program runs.
+
+
+|Input Type|Description|
+|----------|-----------|
+|integer|Menu command-id of the item to be executed.|
+|window_handle|The window with the menu to search (Windows) or `nil` (macOS).|
+
+|Output Type|Description|
+|----------|-----------|
+|boolean|True if the menu item was executed successfully.|
+
+Example:
+
+```lua
+local osutils = require('luaosutils')
+local menu = osutils.menu
+
+local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
+local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua")
+if rgp_lua_menu then
+    local command_id = menu.get_item_command_id(rgp_lua_menu, index)
+    -- opens the RGP Lua configuration window
+    menu.execute_command_id(command_id,　finenv.GetFinaleMainWindow())
+end
+```
+
+
 ### menu.find\_item
 
 Searches a menu for an item whose text matches the input text and returns the enclosing menu if it is found. The function searches any submenus as well. To search all menus, pass in the value returned by `menu.get_top_level_menu`.
@@ -134,7 +170,9 @@ local menu_bar = menu.get_top_level_menu(finenv.GetFinaleMainWindow())
 local rgp_lua_menu, index = menu.find_item(menu_bar, "RGP Lua")
 if rgp_lua_menu then
     local command_id = menu.get_item_command_id(rgp_lua_menu, index)
-    finenv.UI():ExecuteOSMenuCommand(command_id) -- opens the RGP Lua configuration window
+    local command_id = menu.get_item_command_id(rgp_lua_menu, index)
+    -- opens the RGP Lua configuration window
+    menu.execute_command_id(command_id,　finenv.GetFinaleMainWindow())
 end
 ```
 

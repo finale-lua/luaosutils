@@ -47,6 +47,32 @@ bool menu_delete_submenu(menu_handle hMenu, window_handle)
    return false;
 }
 
+bool menu_execute_command_id(long cmd, window_handle /*hWnd*/)
+{
+   std::function<NSMenuItem*(NSInteger, NSMenu*)> menuItemWithTagInMenu = [&menuItemWithTagInMenu](NSInteger tag, NSMenu *menu) -> NSMenuItem*
+   {
+       for (NSMenuItem *item : [menu itemArray])
+       {
+           if ([item tag] == tag) return item;
+           if ([item hasSubmenu])
+           {
+               NSMenuItem *foundItem = menuItemWithTagInMenu(tag, [item submenu]);
+               if (foundItem != nullptr) return foundItem;
+           }
+       }
+       return nullptr;
+   };
+   NSMenuItem* foundItem = menuItemWithTagInMenu(cmd, [NSApp mainMenu]);
+   if (foundItem)
+   {
+       NSMenu* menu = [foundItem menu];
+       [menu performActionForItemAtIndex:[menu indexOfItem:foundItem]];
+       return true;
+   }
+   return false;
+
+}
+
 menu_handle menu_find_item(menu_handle hMenu, const std::string& item_text, int starting_index, int& itemIndex)
 {
    // Search for the first menu item that starts with the input text
