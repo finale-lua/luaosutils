@@ -23,6 +23,17 @@ static int luaosutils_menu_delete_submenu(lua_State *L)
    return 1;
 }
 
+static int luaosutils_menu_execute_command_id(lua_State *L)
+{
+   auto cmd = get_lua_parameter<long>(L, 1, LUA_TNUMBER);
+   auto hWnd = get_lua_parameter<luaosutils::window_handle>(L, 2, LUA_TLIGHTUSERDATA MAC_PARM(nullptr));
+
+   bool retval = luaosutils::menu_execute_command_id(cmd, hWnd);
+   push_lua_return_value(L, retval);
+
+   return 1;
+}
+
 static int luaosutils_menu_find_item(lua_State *L)
 {
    auto hMenu = get_lua_parameter<luaosutils::menu_handle>(L, 1, LUA_TLIGHTUSERDATA);
@@ -236,6 +247,7 @@ static const std::map<std::string, luaosutils::MENUITEM_TYPES> constants =
 
 static const luaL_Reg menu_utils[] = {
    {"delete_submenu",      luaosutils_menu_delete_submenu},
+   {"execute_command_id",  luaosutils_menu_execute_command_id},
    {"find_item",           luaosutils_menu_find_item},
    {"get_item_command_id", luaosutils_menu_get_item_command_id},
    {"get_item_count",      luaosutils_menu_get_item_count},
@@ -255,6 +267,7 @@ static const luaL_Reg menu_utils[] = {
 
 static const luaL_Reg menu_utils_restricted[] = {
    {"delete_submenu",      restricted_function},
+   {"execute_command_id",  luaosutils_menu_execute_command_id},
    {"find_item",           luaosutils_menu_find_item},
    {"get_item_command_id", luaosutils_menu_get_item_command_id},
    {"get_item_count",      luaosutils_menu_get_item_count},
